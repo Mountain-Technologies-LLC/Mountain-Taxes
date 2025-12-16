@@ -6,7 +6,7 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
 
 ## Task List
 
-- [-] 1. Set up project structure and dependencies
+- [x] 1. Set up project structure and dependencies
   - Initialize TypeScript project in ./website folder with proper tsconfig.json
   - Install and configure npm dependencies: Bootstrap 5.3, Chart.js, fast-check, Jest, @testing-library/dom
   - Set up build scripts for TypeScript compilation and bundling

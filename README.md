@@ -1,22 +1,71 @@
-# Mountain Taxes
-A serverless lead management system built with .NET 8 Blazor WebAssembly and AWS cloud services.
+# Mountain Taxes Calculator
+An interactive state income tax calculator built with TypeScript, Bootstrap v5.3, and Chart.js. Visualize and compare tax obligations across different states and income levels.
 
-## Deployment
-Production: https://taxes.mountaintechnologiesllc.com
+## 🚀 Quick Start
 
-Single command deployment: `npm run deploy:full`
+### Production Deployment
+```bash
+./deploy.sh taxes.mountaintechnologiesllc.com
+```
 
-# Local Commands
-* `npm run start`
-- `npm run build`
+### Local Development
+```bash
+cd website
+npm install
+npm run dev
+```
 
-# AWS Commands for https://taxes.mountaintechnologiesllc.com
-- See [infrastructure README.md](./infrastructure/README.md) for more.
-- `npm run synth`
-- `npm run diff`
-- `npm run deploy`
-- Destroy from AWS
-   - `npm run destroy -- --context name=taxes.mountaintechnologiesllc.com`
+### Local Build & Preview
+```bash
+./build-local.sh
+cd website
+npm run preview
+```
+
+## 📦 Build Process
+
+The application uses an optimized TypeScript build process with:
+- **Vite** for fast bundling and development
+- **TypeScript** compilation with strict type checking
+- **Terser** minification for production builds
+- **Code splitting** for vendor libraries (Bootstrap, Chart.js)
+- **Source maps** for debugging
+
+### Build Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for development |
+| `npm run build:prod` | Build for production with optimizations |
+| `npm run preview` | Preview production build locally |
+| `npm run test` | Run test suite |
+| `npm run lint` | Check code quality |
+
+## 🏗️ Infrastructure
+
+The application deploys to AWS using CDK with:
+- **S3** static website hosting
+- **CloudFront** CDN with SSL certificate
+- **Route 53** DNS management
+- **Optimized caching** for static assets
+
+### Deployment Commands
+
+| Command | Description |
+|---------|-------------|
+| `./deploy.sh <domain>` | Full build and deploy |
+| `./build-local.sh` | Local build only |
+
+## 🧪 Testing
+
+Comprehensive test suite with:
+- **Unit tests** for component functionality
+- **Property-based tests** using fast-check
+- **Integration tests** for Chart.js components
+- **Type checking** with TypeScript compiler
+
+Run tests: `npm run test`
 
 
 # Initial Prompt

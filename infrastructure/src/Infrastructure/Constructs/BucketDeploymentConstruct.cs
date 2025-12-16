@@ -21,7 +21,7 @@ namespace Infrastructure.Constructs
                 this, "s3BucketDeploy",
                 new BucketDeploymentProps
                 {
-                    Sources = [Source.Asset("./website/bin/Release/net8.0/publish/wwwroot")],
+                    Sources = [Source.Asset("./website/dist")],
                     DestinationBucket = props.Bucket,
                     Distribution = props.distribution,
                     DistributionPaths = ["/*"],

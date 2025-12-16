@@ -5,7 +5,7 @@
  * and user feedback mechanisms for the application.
  */
 
-import { State, FilingType, TaxBracket, FilingTypeName, IncomeRange } from './types';
+import { FilingTypeName } from './types';
 
 /**
  * Validation result interface
@@ -533,7 +533,7 @@ export class GracefulDegradation {
      */
     static isChartJsAvailable(): boolean {
         try {
-            return typeof Chart !== 'undefined';
+            return typeof (window as any).Chart !== 'undefined';
         } catch {
             return false;
         }
@@ -544,7 +544,7 @@ export class GracefulDegradation {
      */
     static isBootstrapAvailable(): boolean {
         try {
-            return typeof bootstrap !== 'undefined' || document.querySelector('.bootstrap') !== null;
+            return typeof (window as any).bootstrap !== 'undefined' || document.querySelector('.bootstrap') !== null;
         } catch {
             return false;
         }

@@ -6,11 +6,23 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    minify: 'terser',
+    sourcemap: true,
+    target: 'es2020',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html')
+      },
+      output: {
+        manualChunks: {
+          vendor: ['bootstrap', 'chart.js']
+        },
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
-    }
+    },
+    chunkSizeWarningLimit: 1000
   },
   resolve: {
     alias: {
@@ -20,5 +32,8 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
+  },
+  optimizeDeps: {
+    include: ['bootstrap', 'chart.js']
   }
 });

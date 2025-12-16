@@ -38,7 +38,7 @@ describe('Data Model Conformance Tests', () => {
             fc.constantFrom(...getAllStateNames()),
             fc.constantFrom(FilingTypeName.Single, FilingTypeName.Married),
             fc.integer({ min: 0, max: 1000000 }),
-            (stateName: string, filingType: FilingTypeName, income: number) => {
+            (stateName: string, _filingType: FilingTypeName, _income: number) => {
                 // Mock fetch to detect any external API calls
                 const originalFetch = global.fetch;
                 const fetchSpy = jest.fn();

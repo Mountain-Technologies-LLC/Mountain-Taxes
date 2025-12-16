@@ -35,22 +35,22 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - **Property 9: Data model conformance**
   - **Validates: Requirements 6.1, 6.5**
 
-- [ ] 4. Create tax calculation engine
+- [x] 4. Create tax calculation engine
   - Implement core tax calculation logic for progressive tax brackets
   - Handle standard deductions and personal exemptions
   - Calculate effective and marginal tax rates
   - Support both Single and Married filing types
   - _Requirements: 1.3, 1.5_
 
-- [ ] 4.1 Write property test for tax calculation accuracy
+- [x] 4.1 Write property test for tax calculation accuracy
   - **Property 1: State selection adds correct tax calculations**
   - **Validates: Requirements 1.3**
 
-- [ ] 4.2 Write property test for earned income only
+- [x] 4.2 Write property test for earned income only
   - **Property 3: Tax calculations use only earned income**
   - **Validates: Requirements 1.5**
 
-- [ ] 4.3 Write unit tests for tax calculation edge cases
+- [x] 4.3 Write unit tests for tax calculation edge cases
   - Test zero income, negative income, and boundary conditions
   - Test states with no income tax and flat tax rates
   - Verify calculation accuracy for extreme income values

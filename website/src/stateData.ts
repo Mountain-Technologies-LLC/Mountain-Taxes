@@ -6,7 +6,7 @@
  * filing types, standard deductions, personal exemptions, and tax brackets.
  */
 
-import { State, FilingType, FilingTypeName, TaxBracket } from './types';
+import { State, FilingTypeName } from './types';
 
 /**
  * Complete state tax data for all 50 US states

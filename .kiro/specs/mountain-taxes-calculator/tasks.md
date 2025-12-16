@@ -56,22 +56,22 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - Verify calculation accuracy for extreme income values
   - _Requirements: 1.3, 1.5_
 
-- [ ] 5. Build Chart.js integration component
+- [x] 5. Build Chart.js integration component
   - Create Chart component class with TypeScript integration
   - Implement dynamic dataset management for multiple states
   - Configure responsive chart options and styling
   - Add income range adjustment functionality
   - _Requirements: 1.1, 1.2, 1.4_
 
-- [ ] 5.1 Write property test for multiple state datasets
+- [x] 5.1 Write property test for multiple state datasets
   - **Property 2: Multiple state datasets display independently**
   - **Validates: Requirements 1.4**
 
-- [ ] 5.2 Write property test for chart legend updates
+- [x] 5.2 Write property test for chart legend updates
   - **Property 6: Chart legend reflects current selection**
   - **Validates: Requirements 3.5**
 
-- [ ] 5.3 Write unit tests for chart initialization
+- [x] 5.3 Write unit tests for chart initialization
   - Test initial chart setup with correct axes and range
   - Verify chart responsiveness across container sizes
   - Test chart update and re-render functionality

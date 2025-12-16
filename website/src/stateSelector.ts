@@ -76,15 +76,26 @@ export class StateSelector {
         const allStates = getAllStateNames();
         const buttonsHtml = allStates.map(stateName => {
             const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
+            const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
             return `
-                <button 
-                    id="${buttonId}" 
-                    class="btn btn-outline-primary btn-sm state-button" 
-                    data-state="${stateName}"
-                    type="button"
-                >
-                    ${stateName}
-                </button>
+                <div class="state-button-group">
+                    <button 
+                        id="${buttonId}" 
+                        class="btn btn-outline-primary btn-sm state-button" 
+                        data-state="${stateName}"
+                        type="button"
+                    >
+                        ${stateName}
+                    </button>
+                    <a 
+                        href="#/state/${stateSlug}" 
+                        class="btn btn-outline-info btn-sm state-detail-link router-link"
+                        title="View ${stateName} tax details"
+                        data-state="${stateName}"
+                    >
+                        ℹ️
+                    </a>
+                </div>
             `;
         }).join('');
 
@@ -120,6 +131,18 @@ export class StateSelector {
         // Individual state buttons
         this.stateButtons.forEach((button, stateName) => {
             button.addEventListener('click', () => this.toggleState(stateName));
+        });
+
+        // State detail links
+        const stateDetailLinks = this.container.querySelectorAll('.state-detail-link');
+        stateDetailLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const href = (event.target as HTMLAnchorElement).getAttribute('href');
+                if (href && window.router) {
+                    window.router.navigate(href);
+                }
+            });
         });
 
         // Initialize bulk button UI state

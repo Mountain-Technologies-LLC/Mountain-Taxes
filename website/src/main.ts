@@ -10,6 +10,8 @@ import { Chart, registerables } from 'chart.js';
 import { TaxChart } from './chartComponent';
 import { StateSelector } from './stateSelector';
 import { IncomeRangeControls } from './incomeRangeControls';
+import { Router, StateDetailView } from './router';
+// STATE_TAX_DATA is used by the router component
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -21,23 +23,86 @@ class MountainTaxesApp {
     private taxChart: TaxChart | null = null;
     private stateSelector: StateSelector | null = null;
     private incomeRangeControls: IncomeRangeControls | null = null;
+    private router: Router;
+    private stateDetailView: StateDetailView;
 
     constructor() {
+        this.router = new Router();
+        this.stateDetailView = new StateDetailView('main-content');
+        
+        // Make router globally available for router links
+        window.router = this.router;
+        
         this.init();
     }
 
     private init(): void {
         console.log('Mountain Taxes Calculator initializing...');
         
+        // Set up routes
+        this.setupRoutes();
+        
         // Wait for DOM to be ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.render());
+            document.addEventListener('DOMContentLoaded', () => this.setupApplication());
         } else {
-            this.render();
+            this.setupApplication();
         }
     }
 
-    private render(): void {
+    /**
+     * Set up application routes
+     */
+    private setupRoutes(): void {
+        // Home route - main chart view
+        this.router.addRoute('', () => this.renderMainView());
+        this.router.addRoute('home', () => this.renderMainView());
+        this.router.addRoute('#/', () => this.renderMainView());
+        
+        // State detail routes
+        this.router.addRoute('state/:stateName', (params) => {
+            this.renderStateDetail(params.stateName);
+        });
+        this.router.addRoute('#/state/:stateName', (params) => {
+            this.renderStateDetail(params.stateName);
+        });
+    }
+
+    /**
+     * Setup application after DOM is ready
+     */
+    private setupApplication(): void {
+        // Add global router link handler for navbar
+        this.setupGlobalRouterLinks();
+        
+        // Start the router to handle initial route
+        this.router.start();
+        
+        console.log('Mountain Taxes Calculator initialized successfully');
+    }
+
+    /**
+     * Setup global router link handlers
+     */
+    private setupGlobalRouterLinks(): void {
+        // Handle navbar router links
+        document.addEventListener('click', (event) => {
+            const target = event.target as HTMLElement;
+            if (target.classList.contains('router-link') || target.closest('.router-link')) {
+                event.preventDefault();
+                const link = target.classList.contains('router-link') ? target : target.closest('.router-link');
+                const href = (link as HTMLAnchorElement).getAttribute('href');
+                if (href && this.router) {
+                    this.router.navigate(href);
+                }
+            }
+        });
+    }
+
+    /**
+     * Render the main chart view
+     */
+    private renderMainView(): void {
         const mainContent = document.getElementById('main-content');
         if (!mainContent) {
             console.error('Main content container not found');
@@ -100,7 +165,13 @@ class MountainTaxesApp {
         `;
 
         this.initializeComponents();
-        console.log('Mountain Taxes Calculator initialized successfully');
+    }
+
+    /**
+     * Render state detail view
+     */
+    private renderStateDetail(stateName: string): void {
+        this.stateDetailView.render(stateName);
     }
 
     /**

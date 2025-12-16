@@ -26,10 +26,22 @@
             gap: 4px;
         }
         
+        .state-button-group {
+            display: flex;
+            gap: 2px;
+            align-items: center;
+        }
+        
         .state-buttons-grid .state-button {
             flex: 0 0 auto;
             min-width: 120px;
             text-align: center;
+        }
+        
+        .state-detail-link {
+            min-width: 32px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
         }
         
         .bulk-controls {
@@ -67,7 +79,7 @@
     <div id="app">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href="#/">Mountain Taxes Calculator</a>
+                <a class="navbar-brand router-link" href="#/">Mountain Taxes Calculator</a>
             </div>
         </nav>
         

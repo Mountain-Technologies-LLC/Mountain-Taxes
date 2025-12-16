@@ -114,14 +114,14 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
 - [x] 8. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 9. Implement client-side routing
+- [x] 9. Implement client-side routing
   - Create router component for SPA navigation
   - Set up routes for main chart view and state detail pages
   - Implement browser history management
   - Handle deep linking and URL updates
   - _Requirements: 4.1, 8.3_
 
-- [ ] 9.1 Write property test for SPA routing
+- [x] 9.1 Write property test for SPA routing
   - **Property 11: SPA routing functionality**
   - **Validates: Requirements 8.3**
 

@@ -9,6 +9,7 @@
 import { Chart, registerables } from 'chart.js';
 import { TaxChart } from './chartComponent';
 import { StateSelector } from './stateSelector';
+import { IncomeRangeControls } from './incomeRangeControls';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -19,6 +20,7 @@ Chart.register(...registerables);
 class MountainTaxesApp {
     private taxChart: TaxChart | null = null;
     private stateSelector: StateSelector | null = null;
+    private incomeRangeControls: IncomeRangeControls | null = null;
 
     constructor() {
         this.init();
@@ -66,6 +68,21 @@ class MountainTaxesApp {
                 </div>
             </div>
             
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Income Range Controls</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="income-range-controls">
+                                <!-- Income range controls will be rendered here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -93,6 +110,9 @@ class MountainTaxesApp {
         try {
             // Initialize the tax chart
             this.taxChart = new TaxChart('tax-chart');
+            
+            // Initialize the income range controls
+            this.incomeRangeControls = new IncomeRangeControls('income-range-controls', this.taxChart);
             
             // Initialize the state selector
             this.stateSelector = new StateSelector('state-selector-container', this.taxChart);
@@ -135,6 +155,13 @@ class MountainTaxesApp {
      */
     public getStateSelector(): StateSelector | null {
         return this.stateSelector;
+    }
+
+    /**
+     * Get the income range controls instance
+     */
+    public getIncomeRangeControls(): IncomeRangeControls | null {
+        return this.incomeRangeControls;
     }
 }
 

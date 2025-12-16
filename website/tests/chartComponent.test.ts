@@ -220,6 +220,118 @@ describe('TaxChart Component', () => {
             expect(range.max).toBe(200000);
             expect(range.step).toBe(20000);
         });
+
+        // Unit tests for specific range increments
+        describe('Specific Range Increment Tests', () => {
+            test('should extend range by 10k correctly', () => {
+                const initialRange = chart.getIncomeRange();
+                chart.extendRange(10000);
+                const newRange = chart.getIncomeRange();
+                
+                expect(newRange.max).toBe(initialRange.max + 10000);
+                expect(newRange.min).toBe(initialRange.min);
+                expect(newRange.step).toBe(initialRange.step);
+            });
+
+            test('should extend range by 100k correctly', () => {
+                const initialRange = chart.getIncomeRange();
+                chart.extendRange(100000);
+                const newRange = chart.getIncomeRange();
+                
+                expect(newRange.max).toBe(initialRange.max + 100000);
+                expect(newRange.min).toBe(initialRange.min);
+                expect(newRange.step).toBe(initialRange.step);
+            });
+
+            test('should extend range by 1m correctly', () => {
+                const initialRange = chart.getIncomeRange();
+                chart.extendRange(1000000);
+                const newRange = chart.getIncomeRange();
+                
+                expect(newRange.max).toBe(initialRange.max + 1000000);
+                expect(newRange.min).toBe(initialRange.min);
+                expect(newRange.step).toBe(initialRange.step);
+            });
+
+            test('should extend range by 10m correctly', () => {
+                const initialRange = chart.getIncomeRange();
+                chart.extendRange(10000000);
+                const newRange = chart.getIncomeRange();
+                
+                expect(newRange.max).toBe(initialRange.max + 10000000);
+                expect(newRange.min).toBe(initialRange.min);
+                expect(newRange.step).toBe(initialRange.step);
+            });
+
+            test('should reduce range with "Remove data set" functionality', () => {
+                // First extend the range to have something to remove
+                chart.extendRange(50000);
+                const extendedRange = chart.getIncomeRange();
+                
+                // Now reduce by the same amount
+                chart.reduceRange(50000);
+                const reducedRange = chart.getIncomeRange();
+                
+                expect(reducedRange.max).toBe(extendedRange.max - 50000);
+                expect(reducedRange.min).toBe(extendedRange.min);
+                expect(reducedRange.step).toBe(extendedRange.step);
+            });
+
+            test('should handle multiple range extensions and reductions', () => {
+                const initialRange = chart.getIncomeRange();
+                
+                // Add some states to test data preservation
+                chart.addState('Colorado');
+                chart.addState('California');
+                
+                // Extend by 10k
+                chart.extendRange(10000);
+                expect(chart.getIncomeRange().max).toBe(initialRange.max + 10000);
+                expect(chart.getSelectedStates()).toEqual(['Colorado', 'California']);
+                
+                // Extend by 100k
+                chart.extendRange(100000);
+                expect(chart.getIncomeRange().max).toBe(initialRange.max + 110000);
+                expect(chart.getSelectedStates()).toEqual(['Colorado', 'California']);
+                
+                // Reduce by 50k
+                chart.reduceRange(50000);
+                expect(chart.getIncomeRange().max).toBe(initialRange.max + 60000);
+                expect(chart.getSelectedStates()).toEqual(['Colorado', 'California']);
+            });
+
+            test('should recalculate chart data after range changes', () => {
+                // Add a state to have data to verify
+                chart.addState('Colorado');
+                
+                const chartInstance = chart.getChartInstance();
+                if (!chartInstance) return;
+                
+                // Get initial data length
+                const initialDataLength = chartInstance.data.datasets[0]?.data.length || 0;
+                
+                // Extend range and verify data was recalculated
+                chart.extendRange(50000);
+                const newDataLength = chartInstance.data.datasets[0]?.data.length || 0;
+                
+                // Should have more data points after extending range
+                expect(newDataLength).toBeGreaterThan(initialDataLength);
+                
+                // Verify chart update was called
+                expect(chartInstance.update).toHaveBeenCalled();
+            });
+
+            test('should not reduce range below minimum threshold', () => {
+                const initialRange = chart.getIncomeRange();
+                
+                // Try to reduce more than the current range allows
+                chart.reduceRange(initialRange.max + 10000);
+                const reducedRange = chart.getIncomeRange();
+                
+                // Should not go below min + step
+                expect(reducedRange.max).toBeGreaterThanOrEqual(initialRange.min + initialRange.step);
+            });
+        });
     });
 
     describe('Filing Type Management', () => {
@@ -352,6 +464,88 @@ describe('TaxChart Component', () => {
                             expect(hasDataset).toBe(true);
                         });
                     });
+                }
+            ), { numRuns: 100 });
+        });
+
+        /**
+         * **Feature: mountain-taxes-calculator, Property 4: Range extension preserves existing data**
+         * **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5**
+         */
+        test('Property 4: Range extension preserves existing data', () => {
+            fc.assert(fc.property(
+                fc.array(fc.constantFrom(...getAllStateNames()), { minLength: 1, maxLength: 5 }),
+                fc.array(fc.constantFrom(10000, 100000, 1000000, 10000000), { minLength: 1, maxLength: 10 }),
+                (selectedStates, rangeExtensions) => {
+                    // Start with a clean chart
+                    chart.removeAllStates();
+                    chart.setIncomeRange(0, 100000, 10000); // Reset to initial range
+                    
+                    // Add selected states
+                    const uniqueStates = [...new Set(selectedStates)];
+                    uniqueStates.forEach(stateName => {
+                        chart.addState(stateName);
+                    });
+                    
+                    // Get initial chart data
+                    const chartInstance = chart.getChartInstance();
+                    if (!chartInstance) return; // Skip if chart not available
+                    
+                    // Store initial data for comparison
+                    const initialDatasets = chartInstance.data.datasets.map(dataset => ({
+                        label: dataset.label,
+                        dataLength: dataset.data.length,
+                        firstValues: dataset.data.slice(0, Math.min(5, dataset.data.length))
+                    }));
+                    
+                    const initialRange = chart.getIncomeRange();
+                    
+                    // Apply range extensions
+                    rangeExtensions.forEach(extension => {
+                        const rangeBeforeExtension = chart.getIncomeRange();
+                        chart.extendRange(extension);
+                        const rangeAfterExtension = chart.getIncomeRange();
+                        
+                        // Verify range was extended correctly
+                        expect(rangeAfterExtension.max).toBe(rangeBeforeExtension.max + extension);
+                        expect(rangeAfterExtension.min).toBe(rangeBeforeExtension.min);
+                        expect(rangeAfterExtension.step).toBe(rangeBeforeExtension.step);
+                        
+                        // Verify all states are still selected
+                        const currentSelectedStates = chart.getSelectedStates();
+                        expect(currentSelectedStates).toEqual(expect.arrayContaining(uniqueStates));
+                        expect(currentSelectedStates).toHaveLength(uniqueStates.length);
+                        
+                        // Verify datasets still exist for all states
+                        expect(chartInstance.data.datasets).toHaveLength(uniqueStates.length);
+                        
+                        // Verify each dataset has the correct label and extended data
+                        chartInstance.data.datasets.forEach((dataset, index) => {
+                            const initialDataset = initialDatasets[index];
+                            if (initialDataset) {
+                                // Label should be preserved
+                                expect(dataset.label).toBe(initialDataset.label);
+                                
+                                // Data should be extended (more points)
+                                expect(dataset.data.length).toBeGreaterThanOrEqual(initialDataset.dataLength);
+                                
+                                // Initial values should be preserved (within reasonable tolerance for recalculation)
+                                const currentFirstValues = dataset.data.slice(0, initialDataset.firstValues.length);
+                                currentFirstValues.forEach((value, valueIndex) => {
+                                    const initialValue = initialDataset.firstValues[valueIndex];
+                                    if (typeof value === 'number' && typeof initialValue === 'number') {
+                                        // Allow small differences due to recalculation
+                                        expect(Math.abs(value - initialValue)).toBeLessThan(0.01);
+                                    }
+                                });
+                            }
+                        });
+                    });
+                    
+                    // Verify final range is correct
+                    const finalRange = chart.getIncomeRange();
+                    const expectedMaxRange = initialRange.max + rangeExtensions.reduce((sum, ext) => sum + ext, 0);
+                    expect(finalRange.max).toBe(expectedMaxRange);
                 }
             ), { numRuns: 100 });
         });

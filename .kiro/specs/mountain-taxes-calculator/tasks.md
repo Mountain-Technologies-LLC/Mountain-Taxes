@@ -94,18 +94,18 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - Verify UI state consistency after operations
   - _Requirements: 3.2, 3.3_
 
-- [ ] 7. Create income range adjustment controls
+- [x] 7. Create income range adjustment controls
   - Implement "Add 10k", "Add 100k", "Add 1m", "Add 10m" buttons
   - Add "Remove data set" functionality for range reduction
   - Integrate range changes with chart updates and recalculation
   - Maintain chart data consistency during range modifications
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 7.1 Write property test for range extension behavior
+- [x] 7.1 Write property test for range extension behavior
   - **Property 4: Range extension preserves existing data**
   - **Validates: Requirements 2.1, 2.2, 2.3, 2.4, 2.5**
 
-- [ ] 7.2 Write unit tests for specific range increments
+- [x] 7.2 Write unit tests for specific range increments
   - Test each increment button (10k, 100k, 1m, 10m) individually
   - Test range reduction with "Remove data set"
   - Verify chart recalculation after range changes

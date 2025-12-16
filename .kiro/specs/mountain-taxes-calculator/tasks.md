@@ -77,18 +77,18 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - Test chart update and re-render functionality
   - _Requirements: 1.1, 1.2_
 
-- [ ] 6. Implement state selection and management
+- [x] 6. Implement state selection and management
   - Create state selector component with button interface
   - Implement individual state toggle functionality
   - Add "All states" and "Remove all" operations
   - Manage selected state tracking and UI updates
   - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 6.1 Write property test for state selection toggle
+- [x] 6.1 Write property test for state selection toggle
   - **Property 5: State selection toggle behavior**
   - **Validates: Requirements 3.1, 3.4**
 
-- [ ] 6.2 Write unit tests for bulk state operations
+- [x] 6.2 Write unit tests for bulk state operations
   - Test "All states" selection functionality
   - Test "Remove all" deselection functionality
   - Verify UI state consistency after operations

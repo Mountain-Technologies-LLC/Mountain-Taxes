@@ -20,12 +20,46 @@
             margin: 2px;
         }
         
+        .state-buttons-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        
+        .state-buttons-grid .state-button {
+            flex: 0 0 auto;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .bulk-controls {
+            margin-bottom: 15px;
+        }
+        
+        .bulk-controls .btn {
+            margin-right: 8px;
+        }
+        
         .income-controls {
             margin: 10px 0;
         }
         
         .income-controls .btn {
             margin: 2px;
+        }
+        
+        @media (max-width: 768px) {
+            .state-buttons-grid .state-button {
+                min-width: 100px;
+                font-size: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .state-buttons-grid .state-button {
+                min-width: 80px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>

@@ -7,6 +7,8 @@
 
 // Import Chart.js and register components
 import { Chart, registerables } from 'chart.js';
+import { TaxChart } from './chartComponent';
+import { StateSelector } from './stateSelector';
 
 // Register Chart.js components
 Chart.register(...registerables);
@@ -15,6 +17,9 @@ Chart.register(...registerables);
  * Application initialization
  */
 class MountainTaxesApp {
+    private taxChart: TaxChart | null = null;
+    private stateSelector: StateSelector | null = null;
+
     constructor() {
         this.init();
     }
@@ -37,26 +42,99 @@ class MountainTaxesApp {
             return;
         }
 
-        // Basic placeholder content - will be replaced in subsequent tasks
+        // Render the main application interface
         mainContent.innerHTML = `
             <div class="row">
                 <div class="col-12">
                     <h1 class="mb-4">Mountain Taxes Calculator</h1>
-                    <div class="alert alert-info">
-                        <h4 class="alert-heading">Setup Complete!</h4>
-                        <p>The TypeScript project structure has been initialized with:</p>
-                        <ul class="mb-0">
-                            <li>Bootstrap 5.3 with Bootswatch Brite theme</li>
-                            <li>Chart.js for interactive visualizations</li>
-                            <li>Jest and fast-check for testing</li>
-                            <li>TypeScript configuration and build tools</li>
-                        </ul>
+                    <p class="lead">Compare state income tax obligations across different income levels</p>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Tax Comparison Chart</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="tax-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">State Selection</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="state-selector-container">
+                                <!-- State selector will be rendered here -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
 
+        this.initializeComponents();
         console.log('Mountain Taxes Calculator initialized successfully');
+    }
+
+    /**
+     * Initialize chart and state selector components
+     */
+    private initializeComponents(): void {
+        try {
+            // Initialize the tax chart
+            this.taxChart = new TaxChart('tax-chart');
+            
+            // Initialize the state selector
+            this.stateSelector = new StateSelector('state-selector-container', this.taxChart);
+            
+            console.log('Components initialized successfully');
+        } catch (error) {
+            console.error('Error initializing components:', error);
+            this.showError('Failed to initialize application components. Please refresh the page.');
+        }
+    }
+
+    /**
+     * Show error message to user
+     */
+    private showError(message: string): void {
+        const mainContent = document.getElementById('main-content');
+        if (mainContent) {
+            mainContent.innerHTML = `
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-danger" role="alert">
+                            <h4 class="alert-heading">Error</h4>
+                            <p>${message}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Get the tax chart instance
+     */
+    public getTaxChart(): TaxChart | null {
+        return this.taxChart;
+    }
+
+    /**
+     * Get the state selector instance
+     */
+    public getStateSelector(): StateSelector | null {
+        return this.stateSelector;
     }
 }
 

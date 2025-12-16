@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.CertificateManager;
 using Amazon.CDK.AWS.CloudFront;
@@ -57,10 +58,33 @@ namespace Infrastructure.Constructs
                         ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                         CachePolicy = CachePolicy.CACHING_OPTIMIZED
                     },
+                    AdditionalBehaviors = new Dictionary<string, IBehaviorOptions>
+                    {
+                        // Cache static assets (JS, CSS, images) for longer periods
+                        ["/assets/*"] = new BehaviorOptions
+                        {
+                            Origin = s3BucketOrigin,
+                            Compress = true,
+                            AllowedMethods = AllowedMethods.ALLOW_GET_HEAD,
+                            CachedMethods = CachedMethods.CACHE_GET_HEAD,
+                            ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                            CachePolicy = CachePolicy.CACHING_OPTIMIZED
+                        },
+                        // Don't cache index.html to ensure SPA routing works correctly
+                        ["/index.html"] = new BehaviorOptions
+                        {
+                            Origin = s3BucketOrigin,
+                            Compress = true,
+                            AllowedMethods = AllowedMethods.ALLOW_GET_HEAD,
+                            CachedMethods = CachedMethods.CACHE_GET_HEAD,
+                            ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                            CachePolicy = CachePolicy.CACHING_DISABLED
+                        }
+                    },
                     ErrorResponses =
                     [
-                        new ErrorResponse { HttpStatus = 403, ResponsePagePath = "/index.html", ResponseHttpStatus = 403, Ttl = Duration.Minutes(0) },
-                        new ErrorResponse { HttpStatus = 404, ResponsePagePath = "/index.html", ResponseHttpStatus = 404, Ttl = Duration.Minutes(0) }
+                        new ErrorResponse { HttpStatus = 403, ResponsePagePath = "/index.html", ResponseHttpStatus = 200, Ttl = Duration.Minutes(0) },
+                        new ErrorResponse { HttpStatus = 404, ResponsePagePath = "/index.html", ResponseHttpStatus = 200, Ttl = Duration.Minutes(0) }
                     ],
                     PriceClass = PriceClass.PRICE_CLASS_100, // USA, Canada, Europe, & Israel
                     Enabled = true,

@@ -183,7 +183,7 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - Update infrastructure deployment path for TypeScript output
   - _Requirements: 5.1, 5.4, 5.5_
 
-- [ ] 14. Update CDK infrastructure for SPA support
+- [x] 14. Update CDK infrastructure for SPA support
   - Modify CloudFront error responses to return index.html for 404/403
   - Update deployment source path to use npm build output
   - Configure caching policies for static assets

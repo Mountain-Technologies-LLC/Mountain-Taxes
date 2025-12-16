@@ -16,6 +16,13 @@ import {
     IncomeRange,
     AppState
 } from '../src/types';
+import { 
+    STATE_TAX_DATA, 
+    validateStateData, 
+    validateAllStateData,
+    getAllStateNames,
+    getStateByName
+} from '../src/stateData';
 
 describe('Data Model Conformance Tests', () => {
     /**
@@ -25,6 +32,62 @@ describe('Data Model Conformance Tests', () => {
      * For any state in the system, the data should conform exactly to the 
      * specified TypeScript interfaces with all required fields populated
      */
+    test('Property 9: Hardcoded state data completeness and conformance', () => {
+        fc.assert(fc.property(
+            // Generate indices to test all states in the hardcoded data
+            fc.integer({ min: 0, max: STATE_TAX_DATA.length - 1 }),
+            (stateIndex: number) => {
+                const state = STATE_TAX_DATA[stateIndex];
+                
+                // Verify state exists and is valid
+                expect(state).toBeDefined();
+                expect(validateStateData(state)).toBe(true);
+                
+                // Verify state conforms to State interface
+                expect(typeof state.name).toBe('string');
+                expect(state.name.length).toBeGreaterThan(0);
+                expect(typeof state.dependentDeduction).toBe('number');
+                expect(state.dependentDeduction).toBeGreaterThanOrEqual(0);
+                expect(Array.isArray(state.filingType)).toBe(true);
+                expect(state.filingType.length).toBe(2); // Must have both Single and Married
+                
+                // Verify both filing types are present
+                const filingTypes = state.filingType.map(ft => ft.type);
+                expect(filingTypes).toContain(FilingTypeName.Single);
+                expect(filingTypes).toContain(FilingTypeName.Married);
+                
+                // Verify each filing type conforms to FilingType interface
+                state.filingType.forEach((filing: FilingType) => {
+                    expect(Object.values(FilingTypeName)).toContain(filing.type);
+                    expect(typeof filing.standardDeduction).toBe('number');
+                    expect(filing.standardDeduction).toBeGreaterThanOrEqual(0);
+                    expect(typeof filing.personalExemption).toBe('number');
+                    expect(filing.personalExemption).toBeGreaterThanOrEqual(0);
+                    expect(Array.isArray(filing.taxBrackets)).toBe(true);
+                    expect(filing.taxBrackets.length).toBeGreaterThan(0);
+
+                    // Verify each tax bracket conforms to TaxBracket interface
+                    filing.taxBrackets.forEach((bracket: TaxBracket) => {
+                        expect(typeof bracket.bracket).toBe('number');
+                        expect(bracket.bracket).toBeGreaterThanOrEqual(0);
+                        expect(typeof bracket.rate).toBe('number');
+                        expect(bracket.rate).toBeGreaterThanOrEqual(0);
+                        expect(bracket.rate).toBeLessThanOrEqual(1);
+                    });
+                    
+                    // Verify tax brackets are sorted by bracket amount
+                    for (let i = 1; i < filing.taxBrackets.length; i++) {
+                        expect(filing.taxBrackets[i].bracket).toBeGreaterThanOrEqual(
+                            filing.taxBrackets[i - 1].bracket
+                        );
+                    }
+                });
+
+                return true;
+            }
+        ), { numRuns: 100 });
+    });
+
     test('Property 9: State data conforms to TypeScript interfaces', () => {
         fc.assert(fc.property(
             // Generate valid state data
@@ -190,6 +253,60 @@ describe('Data Model Conformance Tests', () => {
 });
 
 describe('Unit Tests for Data Models', () => {
+    test('All 50 states are present in hardcoded data', () => {
+        expect(STATE_TAX_DATA).toHaveLength(50);
+        expect(validateAllStateData()).toBe(true);
+        
+        const stateNames = getAllStateNames();
+        expect(stateNames).toHaveLength(50);
+        expect(new Set(stateNames).size).toBe(50); // No duplicates
+    });
+
+    test('State lookup functions work correctly', () => {
+        const colorado = getStateByName('Colorado');
+        expect(colorado).toBeDefined();
+        expect(colorado?.name).toBe('Colorado');
+        
+        const nonExistent = getStateByName('NonExistentState');
+        expect(nonExistent).toBeUndefined();
+    });
+
+    test('State data validation catches invalid data', () => {
+        const validState: State = {
+            name: 'TestState',
+            dependentDeduction: 1000,
+            filingType: [
+                {
+                    type: FilingTypeName.Single,
+                    standardDeduction: 12950,
+                    personalExemption: 0,
+                    taxBrackets: [{ bracket: 0, rate: 0.05 }]
+                },
+                {
+                    type: FilingTypeName.Married,
+                    standardDeduction: 25900,
+                    personalExemption: 0,
+                    taxBrackets: [{ bracket: 0, rate: 0.05 }]
+                }
+            ]
+        };
+        expect(validateStateData(validState)).toBe(true);
+
+        // Test invalid state - missing filing type
+        const invalidState1 = { ...validState, filingType: [] };
+        expect(validateStateData(invalidState1)).toBe(false);
+
+        // Test invalid state - invalid tax rate
+        const invalidState2 = {
+            ...validState,
+            filingType: [{
+                ...validState.filingType[0],
+                taxBrackets: [{ bracket: 0, rate: 1.5 }] // Rate > 1
+            }]
+        };
+        expect(validateStateData(invalidState2)).toBe(false);
+    });
+
     test('FilingTypeName enum contains expected values', () => {
         expect(FilingTypeName.Single).toBe('Single');
         expect(FilingTypeName.Married).toBe('Married');

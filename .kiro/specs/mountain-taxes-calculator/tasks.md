@@ -24,14 +24,14 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - **Property 9: Data model conformance**
   - **Validates: Requirements 6.1, 6.5**
 
-- [ ] 3. Implement hardcoded state tax data
+- [x] 3. Implement hardcoded state tax data
   - Create comprehensive state tax data based on Tax Foundation 2025 rates
   - Populate all 50 states with filing types, deductions, and tax brackets
   - Implement data validation to ensure completeness
   - Export state data as typed constants
   - _Requirements: 6.2, 6.5_
 
-- [ ] 3.1 Write property test for state data completeness
+- [x] 3.1 Write property test for state data completeness
   - **Property 9: Data model conformance**
   - **Validates: Requirements 6.1, 6.5**
 

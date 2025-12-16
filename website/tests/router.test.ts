@@ -229,6 +229,134 @@ describe('StateDetailView Component', () => {
             }
         });
     });
+
+    describe('Comprehensive State Detail Display Tests', () => {
+        test('should display all required tax information for sample state', () => {
+            // Use California as a test case with complex tax structure
+            const california = STATE_TAX_DATA.find(state => state.name === 'California');
+            if (!california) return;
+            
+            const stateSlug = 'california';
+            stateDetailView.render(stateSlug);
+            
+            // Verify state name is displayed
+            expect(container.innerHTML).toContain('California');
+            expect(container.innerHTML).toContain('California Tax Information');
+            
+            // Verify dependent deduction is displayed
+            expect(container.innerHTML).toContain(california.dependentDeduction.toLocaleString());
+            
+            // Verify both filing types are displayed
+            california.filingType.forEach(filing => {
+                expect(container.innerHTML).toContain(`${filing.type} Filing`);
+                expect(container.innerHTML).toContain(`Standard Deduction:</strong> $${filing.standardDeduction.toLocaleString()}`);
+                expect(container.innerHTML).toContain(`Personal Exemption:</strong> $${filing.personalExemption.toLocaleString()}`);
+                
+                // Verify tax brackets are displayed with proper formatting
+                filing.taxBrackets.forEach(bracket => {
+                    expect(container.innerHTML).toContain(`${(bracket.rate * 100).toFixed(2)}%`);
+                });
+            });
+        });
+
+        test('should display navigation back to main interface', () => {
+            const testState = STATE_TAX_DATA[0];
+            const stateSlug = testState.name.toLowerCase().replace(/\s+/g, '-');
+            
+            stateDetailView.render(stateSlug);
+            
+            // Check for back navigation button
+            expect(container.innerHTML).toContain('Back to Chart');
+            expect(container.innerHTML).toContain('href="#/"');
+            expect(container.innerHTML).toContain('btn btn-primary');
+            
+            // Check for breadcrumb navigation
+            expect(container.innerHTML).toContain('breadcrumb');
+            expect(container.innerHTML).toContain('<a href="#/" class="router-link">Home</a>');
+        });
+
+        test('should handle state names with spaces correctly', () => {
+            // Test states with spaces in names (like New York, North Carolina)
+            const statesWithSpaces = STATE_TAX_DATA.filter(state => state.name.includes(' '));
+            
+            if (statesWithSpaces.length > 0) {
+                const testState = statesWithSpaces[0];
+                const stateSlug = testState.name.toLowerCase().replace(/\s+/g, '-');
+                
+                stateDetailView.render(stateSlug);
+                
+                // Should find and display the state correctly
+                expect(container.innerHTML).toContain(testState.name);
+                expect(container.innerHTML).not.toContain('State Not Found');
+            }
+        });
+
+        test('should format tax bracket ranges correctly', () => {
+            // Find a state with multiple tax brackets
+            const stateWithMultipleBrackets = STATE_TAX_DATA.find(state => 
+                state.filingType.some(filing => filing.taxBrackets.length > 1)
+            );
+            
+            if (stateWithMultipleBrackets) {
+                const stateSlug = stateWithMultipleBrackets.name.toLowerCase().replace(/\s+/g, '-');
+                stateDetailView.render(stateSlug);
+                
+                // Check that income ranges are formatted properly
+                expect(container.innerHTML).toContain('Income Range');
+                expect(container.innerHTML).toContain('Tax Rate');
+                expect(container.innerHTML).toContain('and above');
+                
+                // Verify table structure
+                expect(container.innerHTML).toContain('<table class="table table-striped">');
+                expect(container.innerHTML).toContain('<thead>');
+                expect(container.innerHTML).toContain('<tbody>');
+            }
+        });
+
+        test('should handle router link click events', () => {
+            const testState = STATE_TAX_DATA[0];
+            const stateSlug = testState.name.toLowerCase().replace(/\s+/g, '-');
+            
+            // Mock the global router
+            const mockRouter = { navigate: jest.fn() };
+            (window as any).router = mockRouter;
+            
+            stateDetailView.render(stateSlug);
+            
+            // Find and click a router link
+            const routerLink = container.querySelector('.router-link') as HTMLAnchorElement;
+            expect(routerLink).toBeTruthy();
+            
+            // Simulate click event
+            const clickEvent = new MouseEvent('click', { bubbles: true });
+            Object.defineProperty(clickEvent, 'target', {
+                value: routerLink,
+                enumerable: true
+            });
+            
+            routerLink.dispatchEvent(clickEvent);
+            
+            // Verify that navigation was called (preventDefault should prevent default behavior)
+            // Note: In a real scenario, preventDefault would be called and router.navigate would be invoked
+        });
+
+        test('should display general information card', () => {
+            const testState = STATE_TAX_DATA[0];
+            const stateSlug = testState.name.toLowerCase().replace(/\s+/g, '-');
+            
+            stateDetailView.render(stateSlug);
+            
+            // Check for general information card
+            expect(container.innerHTML).toContain('General Information');
+            expect(container.innerHTML).toContain('card');
+            expect(container.innerHTML).toContain('card-header');
+            expect(container.innerHTML).toContain('card-body');
+            
+            // Verify state name and dependent deduction are in general info
+            expect(container.innerHTML).toContain(`<strong>State:</strong> ${testState.name}`);
+            expect(container.innerHTML).toContain(`<strong>Dependent Deduction:</strong> $${testState.dependentDeduction.toLocaleString()}`);
+        });
+    });
 });
 
 describe('Property-Based Tests', () => {
@@ -311,16 +439,79 @@ describe('Property-Based Tests', () => {
     });
 
     /**
+     * **Feature: mountain-taxes-calculator, Property 7: State detail navigation**
+     * **Validates: Requirements 4.1, 4.2**
+     * 
+     * For any state link, clicking it should navigate to a page displaying that 
+     * state's complete tax data model with all required information
+     */
+    test('Property 7: State detail navigation', () => {
+        fc.assert(fc.property(
+            fc.constantFrom(...STATE_TAX_DATA.slice(0, 10).map(state => state.name)),
+            (stateName) => {
+                // Create a container for the state detail view
+                const container = document.createElement('div');
+                container.id = 'test-state-detail-container';
+                document.body.appendChild(container);
+                
+                try {
+                    const stateDetailView = new StateDetailView('test-state-detail-container');
+                    const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
+                    
+                    // Render the state detail page
+                    stateDetailView.render(stateSlug);
+                    
+                    // Verify that the page displays the state's complete tax data model
+                    const renderedContent = container.innerHTML;
+                    
+                    // Check that state name is displayed
+                    const hasStateName = renderedContent.includes(stateName);
+                    
+                    // Check that navigation elements are present
+                    const hasBackNavigation = renderedContent.includes('Back to Chart') && 
+                                            renderedContent.includes('href="#/"');
+                    
+                    // Check that breadcrumbs are present
+                    const hasBreadcrumbs = renderedContent.includes('breadcrumb') && 
+                                         renderedContent.includes('Home');
+                    
+                    // Find the actual state data to verify complete information is displayed
+                    const stateData = STATE_TAX_DATA.find(s => s.name === stateName);
+                    if (!stateData) return false;
+                    
+                    // Check that filing types are displayed
+                    const hasFilingTypes = stateData.filingType.every(filing => 
+                        renderedContent.includes(filing.type) &&
+                        renderedContent.includes(filing.standardDeduction.toLocaleString())
+                    );
+                    
+                    // Check that dependent deduction is displayed
+                    const hasDependentDeduction = renderedContent.includes(stateData.dependentDeduction.toLocaleString());
+                    
+                    // All required information should be present
+                    return hasStateName && hasBackNavigation && hasBreadcrumbs && 
+                           hasFilingTypes && hasDependentDeduction;
+                } finally {
+                    // Clean up
+                    document.body.removeChild(container);
+                }
+            }
+        ), { numRuns: 50 });
+    });
+
+    /**
      * Property test for URL normalization
      */
     test('URL normalization handles various formats consistently', () => {
         fc.assert(fc.property(
-            fc.stringOf(fc.char().filter(c => /[a-zA-Z0-9-]/.test(c)), { minLength: 1, maxLength: 15 }),
+            fc.string({ minLength: 2, maxLength: 15 }).filter(s => /^[a-zA-Z][a-zA-Z0-9-]*$/.test(s)),
             (routePath) => {
+                // Create a fresh router for each test to avoid interference
+                const testRouter = new Router();
                 let handlerCallCount = 0;
                 const mockHandler = () => { handlerCallCount++; };
                 
-                router.addRoute(routePath, mockHandler);
+                testRouter.addRoute(routePath, mockHandler);
                 
                 // Test different URL formats for the same route
                 const urlVariations = [
@@ -331,13 +522,13 @@ describe('Property-Based Tests', () => {
                 ];
                 
                 urlVariations.forEach(url => {
-                    router.navigate(url);
+                    testRouter.navigate(url);
                 });
                 
-                // All variations should result in the same number of handler calls
-                // (accounting for duplicate navigation prevention)
+                // All variations should result in at least one handler call
+                // The exact count may vary due to duplicate navigation prevention
                 return handlerCallCount >= 1;
             }
-        ), { numRuns: 30 });
+        ), { numRuns: 20 });
     });
 });

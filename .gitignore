@@ -1,0 +1,10 @@
+.DS_Store
+*.xcf
+cdk.out/
+dist/
+cdk.context.json
+/node_modules
+/website/bin
+/website/obj
+/website.Tests/bin
+/website.Tests/obj

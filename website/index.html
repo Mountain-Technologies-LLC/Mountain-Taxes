@@ -8,16 +8,40 @@
     <!-- Bootswatch Brite Theme -->
     <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/brite/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Custom styles -->
+    <!-- Custom styles for enhanced responsive design -->
     <style>
+        /* Chart container with responsive height */
         .chart-container {
             position: relative;
             height: 400px;
             width: 100%;
+            min-height: 300px;
         }
         
+        /* Responsive chart height adjustments */
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 350px;
+                min-height: 250px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .chart-container {
+                height: 300px;
+                min-height: 200px;
+            }
+        }
+        
+        /* State button styling with responsive design */
         .state-button {
             margin: 2px;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .state-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .state-buttons-grid {
@@ -30,6 +54,7 @@
             display: flex;
             gap: 2px;
             align-items: center;
+            flex-wrap: wrap;
         }
         
         .state-buttons-grid .state-button {
@@ -44,34 +69,110 @@
             font-size: 0.875rem;
         }
         
+        /* Bulk controls with responsive spacing */
         .bulk-controls {
             margin-bottom: 15px;
         }
         
         .bulk-controls .btn {
             margin-right: 8px;
+            margin-bottom: 4px;
         }
         
+        /* Income controls with responsive layout */
         .income-controls {
             margin: 10px 0;
         }
         
         .income-controls .btn {
             margin: 2px;
+            flex: 1 1 auto;
         }
         
+        /* Enhanced card styling */
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+        }
+        
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+            font-weight: 600;
+        }
+        
+        /* Responsive typography */
         @media (max-width: 768px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .lead {
+                font-size: 1rem;
+            }
+            
             .state-buttons-grid .state-button {
                 min-width: 100px;
                 font-size: 0.875rem;
             }
+            
+            .bulk-controls .btn {
+                font-size: 0.875rem;
+                padding: 0.375rem 0.75rem;
+            }
         }
         
         @media (max-width: 576px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .lead {
+                font-size: 0.95rem;
+            }
+            
             .state-buttons-grid .state-button {
                 min-width: 80px;
                 font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
             }
+            
+            .bulk-controls .btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .income-controls .btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+        }
+        
+        /* Accessibility improvements */
+        .btn:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        
+        /* Loading state improvements */
+        .spinner-border {
+            color: var(--bs-primary);
+        }
+        
+        /* Ensure proper contrast for accessibility */
+        .text-muted {
+            color: #6c757d !important;
+        }
+        
+        /* Smooth transitions for better UX */
+        .card {
+            transition: box-shadow 0.15s ease-in-out;
+        }
+        
+        .card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
         }
     </style>
 </head>

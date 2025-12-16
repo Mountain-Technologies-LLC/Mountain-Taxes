@@ -109,25 +109,14 @@ class MountainTaxesApp {
             return;
         }
 
-        // Render the main application interface
+        // Render the main application interface with enhanced responsive design
         mainContent.innerHTML = `
             <div class="row">
                 <div class="col-12">
-                    <h1 class="mb-4">Mountain Taxes Calculator</h1>
-                    <p class="lead">Compare state income tax obligations across different income levels</p>
-                </div>
-            </div>
-            
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Tax Comparison Chart</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container">
-                                <canvas id="tax-chart"></canvas>
-                            </div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                        <div>
+                            <h1 class="mb-2 mb-md-0">Mountain Taxes Calculator</h1>
+                            <p class="lead mb-0">Compare state income tax obligations across different income levels</p>
                         </div>
                     </div>
                 </div>
@@ -135,9 +124,30 @@ class MountainTaxesApp {
             
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Income Range Controls</h5>
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
+                                Tax Comparison Chart
+                            </h5>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="chart-container">
+                                <canvas id="tax-chart" role="img" aria-label="Interactive tax comparison chart showing tax obligations across income levels for selected states"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-sliders-h me-2" aria-hidden="true"></i>
+                                Income Range Controls
+                            </h5>
                         </div>
                         <div class="card-body">
                             <div id="income-range-controls">
@@ -146,18 +156,32 @@ class MountainTaxesApp {
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">State Selection</h5>
+                
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
+                                State Selection
+                            </h5>
                         </div>
                         <div class="card-body">
                             <div id="state-selector-container">
                                 <!-- State selector will be rendered here -->
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center text-muted">
+                            <small>
+                                Data based on Tax Foundation 2025 state income tax rates. 
+                                For detailed state information, click the "i" button next to any state.
+                            </small>
                         </div>
                     </div>
                 </div>

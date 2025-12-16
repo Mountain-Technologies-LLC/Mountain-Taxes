@@ -34,8 +34,8 @@ export class IncomeRangeControls {
             <div class="income-controls">
                 <div class="row">
                     <div class="col-12">
-                        <h6 class="mb-3">Income Range Adjustment</h6>
-                        <div class="btn-group flex-wrap" role="group" aria-label="Income range controls">
+                        <h6 class="mb-3">Earned Income Range Adjustment</h6>
+                        <div class="btn-group flex-wrap" role="group" aria-label="Earned Income range controls">
                             <button type="button" class="btn btn-outline-primary btn-sm" id="add-10k">
                                 Add 10k
                             </button>

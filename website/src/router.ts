@@ -26,7 +26,7 @@ export class Router {
      */
     private init(): void {
         // Handle browser back/forward navigation
-        window.addEventListener('popstate', (_event) => {
+        window.addEventListener('popstate', () => {
             this.handleRoute(window.location.pathname + window.location.hash);
         });
 

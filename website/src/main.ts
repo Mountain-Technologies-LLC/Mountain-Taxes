@@ -124,8 +124,8 @@ class MountainTaxesApp {
             
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-primary text-white">
+                    <div class="card">
+                        <div class="card-header bg-primary">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
                                 Tax Comparison Chart
@@ -141,9 +141,9 @@ class MountainTaxesApp {
             </div>
             
             <div class="row mb-4">
-                <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-secondary text-white">
+                <div class="col-12 mb-3">
+                    <div class="card">
+                        <div class="card-header bg-primary">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-sliders-h me-2" aria-hidden="true"></i>
                                 Income Range Controls
@@ -157,9 +157,9 @@ class MountainTaxesApp {
                     </div>
                 </div>
                 
-                <div class="col-12 col-lg-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-info text-white">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
                                 State Selection
@@ -173,10 +173,10 @@ class MountainTaxesApp {
                     </div>
                 </div>
             </div>
-            
-            <div class="row">
+
+            <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body text-center text-muted">
                             <small>
                                 Data based on Tax Foundation 2025 state income tax rates. 
@@ -184,6 +184,15 @@ class MountainTaxesApp {
                             </small>
                         </div>
                     </div>
+                </div>
+            </div> 
+
+            <div class="row mb-4">
+                <div class="col-12 text-center text-muted">
+                    <small>
+                        Mountain Technologies LLC © 2025 - All rights reserved<br>
+                        By the team at <a href="https://mountaintechnologiesllc.com" target="_blank">Mountain Technologies LLC</a> - MIT License
+                    </small>
                 </div>
             </div>
         `;

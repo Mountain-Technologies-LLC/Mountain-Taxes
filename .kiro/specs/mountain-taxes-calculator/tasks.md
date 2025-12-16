@@ -159,18 +159,18 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - Test accessibility features and ARIA attributes
   - _Requirements: 5.2, 5.3, 7.4, 7.5_
 
-- [ ] 12. Add data validation and error handling
+- [x] 12. Add data validation and error handling
   - Implement runtime data validation for state information
   - Add error handling for chart rendering failures
   - Create user feedback for error conditions
   - Ensure graceful degradation for unsupported features
   - _Requirements: 6.1, 6.3_
 
-- [ ] 12.1 Write property test for local data usage
+- [x] 12.1 Write property test for local data usage
   - **Property 8: Local data usage**
   - **Validates: Requirements 4.5, 6.3, 6.4**
 
-- [ ] 12.2 Write unit tests for error handling
+- [x] 12.2 Write unit tests for error handling
   - Test invalid input handling and validation
   - Test chart rendering failure scenarios
   - Verify error message display and recovery

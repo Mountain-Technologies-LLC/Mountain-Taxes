@@ -26,6 +26,80 @@ import {
 
 describe('Data Model Conformance Tests', () => {
     /**
+     * **Feature: mountain-taxes-calculator, Property 8: Local data usage**
+     * **Validates: Requirements 4.5, 6.3, 6.4**
+     * 
+     * For any application operation, the system should use only hardcoded local data 
+     * and make no external API calls
+     */
+    test('Property 8: Local data usage - no external API calls', () => {
+        fc.assert(fc.property(
+            // Generate random operations that might trigger data access
+            fc.constantFrom(...getAllStateNames()),
+            fc.constantFrom(FilingTypeName.Single, FilingTypeName.Married),
+            fc.integer({ min: 0, max: 1000000 }),
+            (stateName: string, filingType: FilingTypeName, income: number) => {
+                // Mock fetch to detect any external API calls
+                const originalFetch = global.fetch;
+                const fetchSpy = jest.fn();
+                global.fetch = fetchSpy;
+                
+                // Mock XMLHttpRequest to detect any AJAX calls
+                const originalXMLHttpRequest = global.XMLHttpRequest;
+                const xhrMock = {
+                    open: jest.fn(),
+                    send: jest.fn(),
+                    setRequestHeader: jest.fn(),
+                    readyState: 4,
+                    status: 200,
+                    response: ''
+                };
+                global.XMLHttpRequest = jest.fn(() => xhrMock) as any;
+                
+                try {
+                    // Perform operations that should use only local data
+                    
+                    // 1. Get state data - should use hardcoded data only
+                    const state = getStateByName(stateName);
+                    expect(state).toBeDefined();
+                    expect(state?.name).toBe(stateName);
+                    
+                    // 2. Validate state data - should use local validation only
+                    if (state) {
+                        const isValid = validateStateData(state);
+                        expect(typeof isValid).toBe('boolean');
+                    }
+                    
+                    // 3. Get all state names - should use hardcoded list only
+                    const allStates = getAllStateNames();
+                    expect(allStates).toContain(stateName);
+                    expect(allStates).toHaveLength(50);
+                    
+                    // 4. Validate all state data - should use local data only
+                    const allValid = validateAllStateData();
+                    expect(typeof allValid).toBe('boolean');
+                    
+                    // Verify no external API calls were made
+                    expect(fetchSpy).not.toHaveBeenCalled();
+                    expect(xhrMock.open).not.toHaveBeenCalled();
+                    expect(xhrMock.send).not.toHaveBeenCalled();
+                    
+                    // Verify data is immediately available (synchronous)
+                    // If data came from external sources, these operations would be async
+                    expect(state).toBeDefined(); // Should be immediately available
+                    expect(allStates.length).toBe(50); // Should be immediately available
+                    
+                    return true;
+                } finally {
+                    // Restore original implementations
+                    global.fetch = originalFetch;
+                    global.XMLHttpRequest = originalXMLHttpRequest;
+                }
+            }
+        ), { numRuns: 100 });
+    });
+
+    /**
      * **Feature: mountain-taxes-calculator, Property 9: Data model conformance**
      * **Validates: Requirements 6.1, 6.5**
      * 

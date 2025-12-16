@@ -10,6 +10,7 @@ import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
 import { ChartDataset, IncomeRange, FilingTypeName } from './types';
 import { calculateTaxForIncomes, generateIncomeRange } from './taxCalculator';
 import { getAllStateNames } from './stateData';
+import { ErrorHandler, ErrorSeverity, UserFeedback, GracefulDegradation, StateDataValidator } from './validation';
 
 /**
  * Chart component class for managing tax visualization
@@ -40,10 +41,29 @@ export class TaxChart {
     constructor(canvasId: string) {
         const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         if (!canvas) {
-            throw new Error(`Canvas element with id '${canvasId}' not found`);
+            const error = new Error(`Canvas element with id '${canvasId}' not found`);
+            ErrorHandler.logError('CANVAS_NOT_FOUND', error.message, ErrorSeverity.CRITICAL, { canvasId });
+            throw error;
         }
         this.canvas = canvas;
-        this.initializeChart();
+        
+        try {
+            this.initializeChart();
+        } catch (error) {
+            ErrorHandler.handleChartError(error as Error, { canvasId });
+            
+            // Provide fallback if Chart.js is not available
+            if (!GracefulDegradation.isChartJsAvailable()) {
+                GracefulDegradation.handleUnavailableFeature('Chart.js', () => {
+                    GracefulDegradation.provideChartFallback(canvasId, {
+                        message: 'Chart visualization is not available',
+                        selectedStates: this.selectedStates,
+                        incomeRange: this.incomeRange
+                    });
+                });
+            }
+            throw error;
+        }
     }
 
     /**
@@ -52,19 +72,28 @@ export class TaxChart {
     private initializeChart(): void {
         const ctx = this.canvas.getContext('2d');
         if (!ctx) {
-            throw new Error('Unable to get 2D context from canvas');
+            const error = new Error('Unable to get 2D context from canvas');
+            ErrorHandler.handleChartError(error);
+            throw error;
         }
 
-        const config: ChartConfiguration = {
-            type: 'line',
-            data: {
-                labels: this.generateIncomeLabels(),
-                datasets: []
-            },
-            options: this.getChartOptions()
-        };
+        try {
+            const config: ChartConfiguration = {
+                type: 'line',
+                data: {
+                    labels: this.generateIncomeLabels(),
+                    datasets: []
+                },
+                options: this.getChartOptions()
+            };
 
-        this.chart = new Chart(ctx, config);
+            this.chart = new Chart(ctx, config);
+            
+            ErrorHandler.logError('CHART_INITIALIZED', 'Chart initialized successfully', ErrorSeverity.INFO);
+        } catch (error) {
+            ErrorHandler.handleChartError(error as Error);
+            throw error;
+        }
     }
 
     /**
@@ -183,7 +212,11 @@ export class TaxChart {
                 this.chart.update();
             }
         } catch (error) {
-            console.error(`Error adding state ${stateName}:`, error);
+            ErrorHandler.handleStateDataError(stateName, error as Error);
+            UserFeedback.showMessage(
+                `Failed to add ${stateName} to chart: ${(error as Error).message}`,
+                ErrorSeverity.ERROR
+            );
             throw error;
         }
     }
@@ -211,7 +244,7 @@ export class TaxChart {
         if (this.selectedStates.includes(stateName)) {
             this.removeState(stateName);
         } else {
-            this.addState(stateName);
+            this.addState(stateName); // This will throw if state is invalid
         }
     }
 
@@ -242,25 +275,58 @@ export class TaxChart {
      * Extend the income range by a specified amount
      */
     public extendRange(increment: number): void {
-        this.incomeRange.max += increment;
-        this.updateChart();
+        if (isFinite(increment) && increment > 0) {
+            // Prevent overflow and keep within reasonable bounds
+            const maxAllowed = Number.MAX_SAFE_INTEGER / 2; // Conservative limit
+            const newMax = Math.min(maxAllowed, this.incomeRange.max + increment);
+            this.incomeRange.max = newMax;
+            this.updateChart();
+        }
     }
 
     /**
      * Reduce the income range by removing the last increment
      */
     public reduceRange(decrement: number): void {
-        const newMax = Math.max(this.incomeRange.min + this.incomeRange.step, this.incomeRange.max - decrement);
-        this.incomeRange.max = newMax;
-        this.updateChart();
+        if (isFinite(decrement) && decrement > 0) {
+            const newMax = Math.max(this.incomeRange.min + this.incomeRange.step, this.incomeRange.max - decrement);
+            this.incomeRange.max = newMax;
+            this.updateChart();
+        }
     }
 
     /**
      * Set a specific income range
      */
     public setIncomeRange(min: number, max: number, step: number): void {
-        this.incomeRange = { min, max, step };
-        this.updateChart();
+        // Validate income range
+        const validationResult = StateDataValidator.validateIncomeRange({ min, max, step });
+        
+        if (!validationResult.isValid) {
+            ErrorHandler.handleValidationError(validationResult, { min, max, step });
+            UserFeedback.showValidationErrors(validationResult);
+        }
+        
+        // Sanitize inputs even if validation fails to ensure chart continues working
+        const sanitizedMin = Math.max(0, isFinite(min) ? min : 0);
+        const sanitizedMax = isFinite(max) && max > sanitizedMin ? max : sanitizedMin + 100000;
+        const sanitizedStep = isFinite(step) && step > 0 ? step : 10000;
+        
+        this.incomeRange = { 
+            min: sanitizedMin, 
+            max: sanitizedMax, 
+            step: sanitizedStep 
+        };
+        
+        try {
+            this.updateChart();
+        } catch (error) {
+            ErrorHandler.handleChartError(error as Error, { incomeRange: this.incomeRange });
+            UserFeedback.showMessage(
+                'Failed to update chart with new income range',
+                ErrorSeverity.ERROR
+            );
+        }
     }
 
     /**

@@ -7,6 +7,7 @@
 
 import { FilingTypeName, TaxCalculationResult, TaxBracket } from './types';
 import { getStateByName } from './stateData';
+import { ErrorHandler, ErrorSeverity } from './validation';
 
 /**
  * Calculate tax owed for a given income and state
@@ -21,18 +22,24 @@ export function calculateTax(
     filingType: FilingTypeName
 ): TaxCalculationResult {
     // Validate input parameters
-    if (income < 0) {
-        throw new Error('Income must be non-negative');
+    if (typeof income !== 'number' || income < 0 || !isFinite(income) || isNaN(income)) {
+        const error = new Error('Income must be non-negative');
+        ErrorHandler.logError('INVALID_INCOME', error.message, ErrorSeverity.ERROR, { income, stateName, filingType });
+        throw error;
     }
     
     if (!Object.values(FilingTypeName).includes(filingType)) {
-        throw new Error('Invalid filing type');
+        const error = new Error('Invalid filing type');
+        ErrorHandler.logError('INVALID_FILING_TYPE', error.message, ErrorSeverity.ERROR, { income, stateName, filingType });
+        throw error;
     }
 
     // Get state data
     const state = getStateByName(stateName);
     if (!state) {
-        throw new Error(`State not found: ${stateName}`);
+        const error = new Error(`State not found: ${stateName}`);
+        ErrorHandler.handleStateDataError(stateName, error);
+        throw error;
     }
 
     // Get filing type data
@@ -161,8 +168,25 @@ export function calculateTaxForIncomes(
  * @returns Array of income values
  */
 export function generateIncomeRange(min: number, max: number, step: number): number[] {
+    // Handle edge cases
+    if (step <= 0 || !isFinite(step) || isNaN(step)) {
+        return [min]; // Return single point for invalid step
+    }
+    
+    if (max < min || !isFinite(min) || !isFinite(max) || isNaN(min) || isNaN(max)) {
+        return []; // Return empty array for invalid range
+    }
+    
+    // Prevent extremely large arrays that could cause memory issues
+    const maxPoints = 10000; // Reasonable limit for chart points
+    const estimatedPoints = Math.ceil((max - min) / step) + 1;
+    if (estimatedPoints > maxPoints) {
+        // Adjust step to keep within reasonable limits
+        step = (max - min) / (maxPoints - 1);
+    }
+    
     const incomes: number[] = [];
-    for (let income = min; income <= max; income += step) {
+    for (let income = min; income <= max && incomes.length < maxPoints; income += step) {
         incomes.push(income);
     }
     return incomes;

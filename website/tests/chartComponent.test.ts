@@ -51,6 +51,140 @@ describe('TaxChart Component', () => {
         jest.clearAllMocks();
     });
 
+    describe('Error Handling Tests', () => {
+        test('Chart rendering failure scenarios', () => {
+            // Test canvas not found error
+            expect(() => new TaxChart('nonexistent-canvas'))
+                .toThrow('Canvas element with id \'nonexistent-canvas\' not found');
+            
+            // Test context creation failure
+            jest.spyOn(mockCanvas, 'getContext').mockReturnValue(null);
+            expect(() => new TaxChart('test-chart'))
+                .toThrow('Unable to get 2D context from canvas');
+            
+            // Restore mock for other tests
+            jest.spyOn(mockCanvas, 'getContext').mockReturnValue(mockContext);
+        });
+
+        test('Invalid state handling in chart operations', () => {
+            const chart = new TaxChart('test-chart');
+            
+            // Test adding invalid state
+            expect(() => chart.addState('InvalidState')).toThrow('State not found: InvalidState');
+            expect(() => chart.addState('')).toThrow('State not found: ');
+            
+            // Test that chart state remains consistent after errors
+            chart.addState('Colorado');
+            expect(chart.getSelectedStates()).toContain('Colorado');
+            
+            try {
+                chart.addState('InvalidState');
+            } catch (error) {
+                // Error expected
+            }
+            
+            // Chart should still have Colorado selected
+            expect(chart.getSelectedStates()).toContain('Colorado');
+            expect(chart.getSelectedStates()).toHaveLength(1);
+            
+            chart.destroy();
+        });
+
+        test('Error message display and recovery', () => {
+            const chart = new TaxChart('test-chart');
+            
+            // Test that removing non-existent state doesn't throw
+            expect(() => chart.removeState('NonExistentState')).not.toThrow();
+            expect(() => chart.toggleState('NonExistentState')).toThrow('State not found: NonExistentState');
+            
+            // Test that chart operations continue to work after errors
+            chart.addState('Colorado');
+            expect(chart.isStateSelected('Colorado')).toBe(true);
+            
+            // Try invalid operation
+            try {
+                chart.addState('InvalidState');
+            } catch (error) {
+                // Expected error
+            }
+            
+            // Valid operations should still work
+            chart.addState('California');
+            expect(chart.isStateSelected('California')).toBe(true);
+            expect(chart.getSelectedStates()).toHaveLength(2);
+            
+            chart.destroy();
+        });
+
+        test('Graceful degradation for unsupported features', () => {
+            const chart = new TaxChart('test-chart');
+            
+            // Test extreme range values - should be sanitized
+            expect(() => chart.setIncomeRange(-1000000, 1000000, 10000)).not.toThrow();
+            expect(() => chart.setIncomeRange(0, 10000000, 1000000)).not.toThrow(); // More reasonable max
+            
+            // Test extreme range extensions - should be limited
+            expect(() => chart.extendRange(1000000000)).not.toThrow(); // Large but not MAX_SAFE_INTEGER
+            expect(() => chart.reduceRange(1000000000)).not.toThrow();
+            
+            // Test invalid inputs
+            expect(() => chart.setIncomeRange(NaN, 100000, 10000)).not.toThrow();
+            expect(() => chart.setIncomeRange(0, NaN, 10000)).not.toThrow();
+            expect(() => chart.setIncomeRange(0, 100000, NaN)).not.toThrow();
+            expect(() => chart.setIncomeRange(0, 100000, 0)).not.toThrow();
+            expect(() => chart.setIncomeRange(0, 100000, -10000)).not.toThrow();
+            
+            // Test that chart maintains valid state even with extreme inputs
+            const range = chart.getIncomeRange();
+            expect(typeof range.min).toBe('number');
+            expect(typeof range.max).toBe('number');
+            expect(typeof range.step).toBe('number');
+            expect(range.max).toBeGreaterThanOrEqual(range.min);
+            expect(range.step).toBeGreaterThan(0);
+            expect(isFinite(range.min)).toBe(true);
+            expect(isFinite(range.max)).toBe(true);
+            expect(isFinite(range.step)).toBe(true);
+            
+            chart.destroy();
+        });
+
+        test('Chart destruction and cleanup', () => {
+            const chart = new TaxChart('test-chart');
+            const chartInstance = chart.getChartInstance();
+            
+            expect(chartInstance).toBeDefined();
+            
+            // Test that destroy works properly
+            expect(() => chart.destroy()).not.toThrow();
+            
+            // Test that operations after destroy don't crash
+            expect(chart.getChartInstance()).toBeNull();
+            
+            // Test that multiple destroy calls don't crash
+            expect(() => chart.destroy()).not.toThrow();
+        });
+
+        test('Memory management and resource cleanup', () => {
+            // Test creating and destroying multiple charts
+            for (let i = 0; i < 10; i++) {
+                const canvas = document.createElement('canvas');
+                canvas.id = `test-chart-${i}`;
+                jest.spyOn(canvas, 'getContext').mockReturnValue(mockContext);
+                document.body.appendChild(canvas);
+                
+                const chart = new TaxChart(canvas.id);
+                chart.addState('Colorado');
+                chart.extendRange(50000);
+                
+                expect(() => chart.destroy()).not.toThrow();
+                document.body.removeChild(canvas);
+            }
+            
+            // Verify no memory leaks or hanging references
+            expect(document.querySelectorAll('canvas')).toHaveLength(1); // Only original test canvas
+        });
+    });
+
     describe('Chart Initialization', () => {
         test('should initialize chart with correct canvas', () => {
             const chart = new TaxChart('test-chart');

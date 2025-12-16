@@ -164,6 +164,148 @@ describe('Tax Calculation Engine Tests', () => {
     });
 });
 
+describe('Unit Tests for Error Handling', () => {
+    test('Invalid input handling and validation', () => {
+        // Test invalid income values
+        expect(() => calculateTax(-1000, 'Colorado', FilingTypeName.Single))
+            .toThrow('Income must be non-negative');
+        
+        expect(() => calculateTax(NaN, 'Colorado', FilingTypeName.Single))
+            .toThrow('Income must be non-negative');
+        
+        expect(() => calculateTax(Infinity, 'Colorado', FilingTypeName.Single))
+            .toThrow('Income must be non-negative');
+        
+        expect(() => calculateTax(-Infinity, 'Colorado', FilingTypeName.Single))
+            .toThrow('Income must be non-negative');
+        
+        // Test invalid state names
+        expect(() => calculateTax(50000, '', FilingTypeName.Single))
+            .toThrow('State not found: ');
+        
+        expect(() => calculateTax(50000, 'InvalidState', FilingTypeName.Single))
+            .toThrow('State not found: InvalidState');
+        
+        expect(() => calculateTax(50000, 'NonExistentState', FilingTypeName.Single))
+            .toThrow('State not found: NonExistentState');
+        
+        // Test invalid filing types
+        expect(() => calculateTax(50000, 'Colorado', 'InvalidFilingType' as FilingTypeName))
+            .toThrow('Invalid filing type');
+        
+        expect(() => calculateTax(50000, 'Colorado', null as any))
+            .toThrow('Invalid filing type');
+        
+        expect(() => calculateTax(50000, 'Colorado', undefined as any))
+            .toThrow('Invalid filing type');
+    });
+
+    test('Graceful handling of edge case inputs', () => {
+        // Test boundary values that should work
+        expect(() => calculateTax(0, 'Colorado', FilingTypeName.Single)).not.toThrow();
+        expect(() => calculateTax(1, 'Colorado', FilingTypeName.Single)).not.toThrow();
+        expect(() => calculateTax(Number.MAX_SAFE_INTEGER, 'Colorado', FilingTypeName.Single)).not.toThrow();
+        
+        // Test all valid states don't throw errors
+        const allStates = getAllStateNames();
+        allStates.forEach(stateName => {
+            expect(() => calculateTax(50000, stateName, FilingTypeName.Single)).not.toThrow();
+            expect(() => calculateTax(50000, stateName, FilingTypeName.Married)).not.toThrow();
+        });
+        
+        // Test both valid filing types
+        expect(() => calculateTax(50000, 'Colorado', FilingTypeName.Single)).not.toThrow();
+        expect(() => calculateTax(50000, 'Colorado', FilingTypeName.Married)).not.toThrow();
+    });
+
+    test('Error recovery and consistent behavior', () => {
+        // Test that errors don't affect subsequent valid calculations
+        try {
+            calculateTax(-1000, 'Colorado', FilingTypeName.Single);
+        } catch (error) {
+            // Error expected, continue
+        }
+        
+        // Subsequent valid calculation should work normally
+        const result = calculateTax(50000, 'Colorado', FilingTypeName.Single);
+        expect(result.income).toBe(50000);
+        expect(result.taxOwed).toBeGreaterThanOrEqual(0);
+        
+        // Test that invalid state doesn't affect valid state lookup
+        try {
+            calculateTax(50000, 'InvalidState', FilingTypeName.Single);
+        } catch (error) {
+            // Error expected, continue
+        }
+        
+        // Valid state should still work
+        const validResult = calculateTax(50000, 'California', FilingTypeName.Single);
+        expect(validResult.income).toBe(50000);
+        expect(validResult.taxOwed).toBeGreaterThanOrEqual(0);
+    });
+
+    test('Validation functions handle invalid inputs gracefully', () => {
+        // Test validateEarnedIncome with various invalid inputs
+        expect(validateEarnedIncome(-1)).toBe(false);
+        expect(validateEarnedIncome(NaN)).toBe(false);
+        expect(validateEarnedIncome(Infinity)).toBe(false);
+        expect(validateEarnedIncome(-Infinity)).toBe(false);
+        expect(validateEarnedIncome(null as any)).toBe(false);
+        expect(validateEarnedIncome(undefined as any)).toBe(false);
+        expect(validateEarnedIncome('50000' as any)).toBe(false);
+        expect(validateEarnedIncome({} as any)).toBe(false);
+        expect(validateEarnedIncome([] as any)).toBe(false);
+        
+        // Test valid inputs still work
+        expect(validateEarnedIncome(0)).toBe(true);
+        expect(validateEarnedIncome(50000)).toBe(true);
+        expect(validateEarnedIncome(1000000)).toBe(true);
+    });
+
+    test('Array functions handle invalid inputs', () => {
+        // Test calculateTaxForIncomes with invalid inputs
+        expect(() => calculateTaxForIncomes([], 'Colorado', FilingTypeName.Single))
+            .not.toThrow(); // Empty array should return empty array
+        
+        const emptyResult = calculateTaxForIncomes([], 'Colorado', FilingTypeName.Single);
+        expect(emptyResult).toEqual([]);
+        
+        // Test with invalid state in array function
+        expect(() => calculateTaxForIncomes([50000], 'InvalidState', FilingTypeName.Single))
+            .toThrow('State not found: InvalidState');
+        
+        // Test with invalid income in array
+        expect(() => calculateTaxForIncomes([-1000], 'Colorado', FilingTypeName.Single))
+            .toThrow('Income must be non-negative');
+        
+        // Test generateIncomeRange with invalid inputs
+        expect(() => generateIncomeRange(-1000, 50000, 10000)).not.toThrow(); // Should handle gracefully
+        expect(() => generateIncomeRange(50000, 10000, 10000)).not.toThrow(); // Max < min should handle gracefully
+        expect(() => generateIncomeRange(0, 50000, 0)).not.toThrow(); // Zero step should handle gracefully
+        expect(() => generateIncomeRange(0, 50000, -10000)).not.toThrow(); // Negative step should handle gracefully
+        
+        // Verify the results are sensible
+        const invalidRange1 = generateIncomeRange(50000, 10000, 10000); // max < min
+        expect(invalidRange1).toEqual([]); // Should return empty array
+        
+        const invalidRange2 = generateIncomeRange(0, 50000, 0); // zero step
+        expect(invalidRange2).toEqual([0]); // Should return single point
+        
+        const invalidRange3 = generateIncomeRange(0, 50000, -10000); // negative step
+        expect(invalidRange3).toEqual([0]); // Should return single point
+        
+        // Test calculateTaxComparison with invalid inputs
+        expect(() => calculateTaxComparison(50000, [], FilingTypeName.Single))
+            .not.toThrow(); // Empty array should return empty array
+        
+        const emptyComparison = calculateTaxComparison(50000, [], FilingTypeName.Single);
+        expect(emptyComparison).toEqual([]);
+        
+        expect(() => calculateTaxComparison(50000, ['InvalidState'], FilingTypeName.Single))
+            .toThrow('State not found: InvalidState');
+    });
+});
+
 describe('Unit Tests for Tax Calculation Edge Cases', () => {
     test('Zero income results in zero tax for all states', () => {
         const allStates = getAllStateNames();

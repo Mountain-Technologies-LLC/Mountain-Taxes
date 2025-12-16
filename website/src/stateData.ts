@@ -7,6 +7,7 @@
  */
 
 import { State, FilingTypeName } from './types';
+import { StateDataValidator, ErrorHandler, ErrorSeverity } from './validation';
 
 /**
  * Complete state tax data for all 50 US states
@@ -1418,7 +1419,17 @@ export const STATE_TAX_DATA: State[] = [
  * @returns State object or undefined if not found
  */
 export function getStateByName(stateName: string): State | undefined {
-    return STATE_TAX_DATA.find(state => state.name === stateName);
+    const state = STATE_TAX_DATA.find(state => state.name === stateName);
+    
+    if (state) {
+        // Validate state data at runtime
+        const validationResult = StateDataValidator.validateState(state);
+        if (!validationResult.isValid) {
+            ErrorHandler.handleValidationError(validationResult, { stateName });
+        }
+    }
+    
+    return state;
 }
 
 /**
@@ -1474,8 +1485,22 @@ export function validateStateData(state: State): boolean {
  */
 export function validateAllStateData(): boolean {
     if (STATE_TAX_DATA.length !== 50) {
+        ErrorHandler.logError(
+            'INCOMPLETE_STATE_DATA',
+            `Expected 50 states, found ${STATE_TAX_DATA.length}`,
+            ErrorSeverity.ERROR
+        );
         return false;
     }
     
-    return STATE_TAX_DATA.every(validateStateData);
+    let allValid = true;
+    STATE_TAX_DATA.forEach((state, index) => {
+        const validationResult = StateDataValidator.validateState(state);
+        if (!validationResult.isValid) {
+            allValid = false;
+            ErrorHandler.handleValidationError(validationResult, { stateIndex: index, stateName: state.name });
+        }
+    });
+    
+    return allValid;
 }

@@ -111,7 +111,7 @@ This implementation plan converts the Mountain Taxes Calculator design into a se
   - Verify chart recalculation after range changes
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 8. Checkpoint - Ensure all tests pass
+- [x] 8. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 9. Implement client-side routing

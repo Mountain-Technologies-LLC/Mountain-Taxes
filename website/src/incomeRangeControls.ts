@@ -64,6 +64,7 @@ export class IncomeRangeControls {
 
         this.attachEventListeners();
         this.updateRangeInfo();
+        this.updateRemoveButtonState();
     }
 
     /**

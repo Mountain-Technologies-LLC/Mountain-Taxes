@@ -36,7 +36,7 @@ describe('IncomeRangeControls Component', () => {
         mockCanvas.id = 'test-chart';
         mockContext = {
             getContext: jest.fn()
-        } as any;
+        } as unknown;
         
         // Mock getContext to return our mock context
         jest.spyOn(mockCanvas, 'getContext').mockReturnValue(mockContext);
@@ -84,6 +84,13 @@ describe('IncomeRangeControls Component', () => {
             const rangeInfo = document.getElementById('range-info');
             expect(rangeInfo).toBeTruthy();
             expect(rangeInfo?.textContent).toContain('Current range: $0 - $100K');
+        });
+
+        test('should disable remove button initially', () => {
+            new IncomeRangeControls('test-controls', taxChart);
+            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+            expect(removeBtn).toBeTruthy();
+            expect(removeBtn.classList.contains('disabled')).toBe(true);
         });
     });
 
@@ -151,11 +158,11 @@ describe('IncomeRangeControls Component', () => {
             const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
             const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
             
-            expect(removeBtn.disabled).toBe(true);
+            expect(removeBtn.classList.contains('disabled')).toBe(true);
             
             add10kBtn.click();
             
-            expect(removeBtn.disabled).toBe(false);
+            expect(removeBtn.classList.contains('disabled')).toBe(false);
         });
     });
 
@@ -189,10 +196,10 @@ describe('IncomeRangeControls Component', () => {
             
             // Extend then reduce
             add10kBtn.click();
-            expect(removeBtn.disabled).toBe(false);
+            expect(removeBtn.classList.contains('disabled')).toBe(false);
             
             removeBtn.click();
-            expect(removeBtn.disabled).toBe(true);
+            expect(removeBtn.classList.contains('disabled')).toBe(true);
         });
 
         test('should update range information after reduction', () => {
@@ -274,11 +281,11 @@ describe('IncomeRangeControls Component', () => {
             
             add10kBtn.click();
             expect(controls.getLastIncrement()).toBe(10000);
-            expect(removeBtn.disabled).toBe(false);
+            expect(removeBtn.classList.contains('disabled')).toBe(false);
             
             controls.resetLastIncrement();
             expect(controls.getLastIncrement()).toBe(0);
-            expect(removeBtn.disabled).toBe(true);
+            expect(removeBtn.classList.contains('disabled')).toBe(true);
         });
     });
 

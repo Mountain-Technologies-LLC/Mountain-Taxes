@@ -14,7 +14,7 @@ This document summarizes the comprehensive implementation of the HTML legend fea
   - Bottom-start positioning as specified
   - **Shows all 50 states by default** with visual distinction between selected and unselected
   - **Bootstrap button styling**: `btn-secondary` for unselected, `btn-outline-secondary` for selected states
-  - Interactive legend items for dataset visibility toggling and state selection
+  - Interactive legend items for complete state management (add/remove states from chart)
   - Keyboard navigation support (Enter/Space keys)
   - Visual distinction between selected and unselected states using Bootstrap classes
   - Error handling for chart integration failures
@@ -159,6 +159,17 @@ export interface HtmlLegendConfig {
 - **Mobile Optimization**: Proper scaling for small screens
 - **Touch Interactions**: Touch-friendly legend items
 - **Flexible Layout**: Adapts to different container sizes
+
+## Bug Fixes
+
+### Legend Button State Update Issue (Fixed - December 2024)
+- **Issue**: When clicking on a selected state in the legend to unselect it, the button visual state would not update properly from `btn-outline-secondary` back to `btn-secondary`
+- **Root Cause**: Race conditions between multiple legend update calls and timing conflicts. The event handler was making manual `setTimeout` calls that competed with the chart's automatic callback mechanism
+- **Investigation**: Multiple approaches were attempted including changing from `toggleDatasetVisibility()` to `removeState()`, adding explicit legend refresh calls, and modifying timing mechanisms
+- **Final Solution**: Simplified the event handler to rely solely on the chart's callback mechanism. Removed all manual `setTimeout` calls and let the chart's `triggerLegendUpdate()` method handle timing automatically
+- **Implementation**: Event handler now simply calls `chart.addState()` or `chart.removeState()` and trusts the chart's callback system to update the legend at the correct time
+- **Verification**: Created comprehensive browser test files (`test-fix.html`, `minimal-test.html`) to verify the fix works in real browser environments, not just unit tests
+- **Impact**: Legend buttons now correctly and reliably toggle between `btn-outline-secondary` (selected) and `btn-secondary` (unselected) states without timing issues
 
 ## Conclusion
 

@@ -158,24 +158,25 @@ export class HtmlLegend {
         legendItems.forEach(item => {
             const handleToggle = () => {
                 const stateName = item.getAttribute('data-state-name');
-                const datasetIndex = parseInt(item.getAttribute('data-dataset-index') || '-1');
                 
                 if (!stateName) return;
                 
-                if (datasetIndex >= 0) {
-                    // State is selected - toggle visibility or remove from chart
-                    this.chart.toggleDatasetVisibility(datasetIndex);
-                } else {
-                    // State is not selected - add to chart
-                    try {
-                        this.chart.addState(stateName);
-                    } catch (error) {
-                        console.warn(`Failed to add state ${stateName}:`, error);
-                    }
-                }
+                // Check current selection state directly from chart
+                const isCurrentlySelected = this.chart.getSelectedStates().includes(stateName);
                 
-                // Update legend after change
-                setTimeout(() => this.updateLegend(), 0);
+                try {
+                    if (isCurrentlySelected) {
+                        // State is selected - remove from chart completely
+                        this.chart.removeState(stateName);
+                    } else {
+                        // State is not selected - add to chart
+                        this.chart.addState(stateName);
+                    }
+                    // The chart's removeState/addState methods will call triggerLegendUpdate()
+                    // which will call our updateLegend() method automatically
+                } catch (error) {
+                    console.warn(`Failed to ${isCurrentlySelected ? 'remove' : 'add'} state ${stateName}:`, error);
+                }
             };
 
             // Handle click events

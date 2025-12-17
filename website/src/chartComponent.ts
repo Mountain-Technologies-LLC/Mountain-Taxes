@@ -209,7 +209,10 @@ export class TaxChart {
             if (this.chart) {
                 this.chart.data.datasets.push(dataset);
                 this.chart.update();
-                this.triggerLegendUpdate();
+                // Use setTimeout to ensure the chart update completes before triggering legend update
+                setTimeout(() => {
+                    this.triggerLegendUpdate();
+                }, 0);
             }
         } catch (error) {
             ErrorHandler.handleStateDataError(stateName, error as Error);
@@ -234,7 +237,10 @@ export class TaxChart {
         if (this.chart) {
             this.chart.data.datasets.splice(stateIndex, 1);
             this.chart.update();
-            this.triggerLegendUpdate();
+            // Use setTimeout to ensure the chart update completes before triggering legend update
+            setTimeout(() => {
+                this.triggerLegendUpdate();
+            }, 0);
         }
     }
 
@@ -269,7 +275,10 @@ export class TaxChart {
         if (this.chart) {
             this.chart.data.datasets = [];
             this.chart.update();
-            this.triggerLegendUpdate();
+            // Use setTimeout to ensure the chart update completes before triggering legend update
+            setTimeout(() => {
+                this.triggerLegendUpdate();
+            }, 0);
         }
     }
 
@@ -368,7 +377,10 @@ export class TaxChart {
         });
 
         this.chart.update();
-        this.triggerLegendUpdate();
+        // Use setTimeout to ensure the chart update completes before triggering legend update
+        setTimeout(() => {
+            this.triggerLegendUpdate();
+        }, 0);
     }
 
     /**

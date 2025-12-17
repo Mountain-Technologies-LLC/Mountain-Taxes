@@ -258,7 +258,7 @@ describe('HtmlLegend', () => {
             const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
             legendItem.dispatchEvent(escapeEvent);
             
-            expect(mockChart.toggleDatasetVisibility).not.toHaveBeenCalled();
+            expect(mockChart.removeState).not.toHaveBeenCalled();
         });
 
         test('should handle click events on unselected states', () => {
@@ -273,12 +273,12 @@ describe('HtmlLegend', () => {
             
             unselectedItem.click();
             
-            // Should call addState instead of toggleDatasetVisibility
+            // Should call addState instead of removeState
             expect(mockChart.addState).toHaveBeenCalled();
-            expect(mockChart.toggleDatasetVisibility).not.toHaveBeenCalled();
+            expect(mockChart.removeState).not.toHaveBeenCalled();
         });
 
-        test('should handle click events on selected states with valid dataset index', async () => {
+        test('should handle click events on selected states', async () => {
             // Create a scenario where California is both selected and has a chart legend item
             const mockLegendItems: LegendItem[] = [
                 { label: 'California', color: '#FF6384', hidden: false, datasetIndex: 0 }
@@ -296,21 +296,12 @@ describe('HtmlLegend', () => {
             
             expect(californiaItem).toBeTruthy();
             
-            // If California has a valid dataset index, it should call toggleDatasetVisibility
-            if (californiaItem.getAttribute('data-dataset-index') !== '-1') {
-                californiaItem.click();
-                
-                await new Promise(resolve => setTimeout(resolve, 10));
-                
-                expect(mockChart.toggleDatasetVisibility).toHaveBeenCalled();
-            } else {
-                // If it's still treated as unselected, it should call addState
-                californiaItem.click();
-                
-                await new Promise(resolve => setTimeout(resolve, 10));
-                
-                expect(mockChart.addState).toHaveBeenCalled();
-            }
+            // Since California is selected (in getSelectedStates), clicking should call removeState
+            californiaItem.click();
+            
+            await new Promise(resolve => setTimeout(resolve, 10));
+            
+            expect(mockChart.removeState).toHaveBeenCalledWith('California');
         });
     });
 

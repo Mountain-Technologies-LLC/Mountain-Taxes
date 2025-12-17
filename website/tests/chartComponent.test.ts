@@ -310,12 +310,16 @@ describe('TaxChart Component', () => {
             expect(legendItems).toHaveLength(0);
         });
 
-        test('should register legend update callback', () => {
+        test('should register legend update callback', async () => {
             const mockCallback = jest.fn();
             chart.onLegendUpdate(mockCallback);
             
             // Adding a state should trigger the callback
             chart.addState('Colorado');
+            
+            // Wait for the setTimeout to complete
+            await new Promise(resolve => setTimeout(resolve, 10));
+            
             expect(mockCallback).toHaveBeenCalled();
         });
 
@@ -348,24 +352,29 @@ describe('TaxChart Component', () => {
             expect(legendItems[0].color).toMatch(/^#[0-9A-Fa-f]{6}$/); // Hex color format
         });
 
-        test('should handle legend updates when chart changes', () => {
+        test('should handle legend updates when chart changes', async () => {
             const mockCallback = jest.fn();
             chart.onLegendUpdate(mockCallback);
             
             // Test various chart operations that should trigger legend updates
             chart.addState('Colorado');
+            await new Promise(resolve => setTimeout(resolve, 10));
             expect(mockCallback).toHaveBeenCalledTimes(1);
             
             chart.addState('California');
+            await new Promise(resolve => setTimeout(resolve, 10));
             expect(mockCallback).toHaveBeenCalledTimes(2);
             
             chart.removeState('Colorado');
+            await new Promise(resolve => setTimeout(resolve, 10));
             expect(mockCallback).toHaveBeenCalledTimes(3);
             
             chart.removeAllStates();
+            await new Promise(resolve => setTimeout(resolve, 10));
             expect(mockCallback).toHaveBeenCalledTimes(4);
             
             chart.setIncomeRange(0, 200000, 20000);
+            await new Promise(resolve => setTimeout(resolve, 10));
             expect(mockCallback).toHaveBeenCalledTimes(5);
         });
     });

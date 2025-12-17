@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Income Range Adjustment Controls
+ * Mountain Taxes - Income Range Adjustment Controls
  * 
  * This component provides UI controls for adjusting the income range displayed
  * on the tax comparison chart. It includes buttons for extending the range by
@@ -36,19 +36,19 @@ export class IncomeRangeControls {
                     <div class="col-12">
                         <h6 class="mb-3">Earned Income Range Adjustment</h6>
                         <div class="btn-group flex-wrap" role="group" aria-label="Earned Income range controls">
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-10k">
+                            <button type="button" class="btn btn-primary btn-sm" id="add-10k">
                                 Add 10k
                             </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-100k">
+                            <button type="button" class="btn btn-primary btn-sm" id="add-100k">
                                 Add 100k
                             </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-1m">
+                            <button type="button" class="btn btn-primary btn-sm" id="add-1m">
                                 Add 1m
                             </button>
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-10m">
+                            <button type="button" class="btn btn-primary btn-sm" id="add-10m">
                                 Add 10m
                             </button>
-                            <button type="button" class="btn btn-outline-danger btn-sm" id="remove-data-set" disabled>
+                            <button type="button" class="btn btn-danger btn-sm" id="remove-data-set">
                                 Remove data set
                             </button>
                         </div>
@@ -157,7 +157,12 @@ export class IncomeRangeControls {
     private updateRemoveButtonState(): void {
         const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
         if (removeBtn) {
-            removeBtn.disabled = this.lastIncrement <= 0;
+            if (this.lastIncrement == 0) {
+                removeBtn.classList.add('disabled');
+            } else {
+                removeBtn.classList.remove('disabled');
+            }
+
             removeBtn.title = this.lastIncrement <= 0 
                 ? 'No increment to remove' 
                 : `Remove last increment of ${this.formatCurrency(this.lastIncrement)}`;

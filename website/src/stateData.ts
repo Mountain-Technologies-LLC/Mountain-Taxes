@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - State Tax Data
+ * Mountain Taxes - State Tax Data
  * 
  * Comprehensive state income tax data based on Tax Foundation 2025 rates.
  * This file contains hardcoded tax information for all 50 US states including

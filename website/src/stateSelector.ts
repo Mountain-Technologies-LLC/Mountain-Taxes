@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - State Selection Component
+ * Mountain Taxes - State Selection Component
  * 
  * This component manages the state selection interface, providing buttons for
  * individual state selection, bulk operations (All states, Remove all), and
@@ -47,7 +47,7 @@ export class StateSelector {
                     <div class="col-12">
                         <div class="bulk-controls">
                             <button id="all-states-btn" class="btn btn-primary btn-sm me-2">All States</button>
-                            <button id="remove-all-btn" class="btn btn-outline-secondary btn-sm">Remove All</button>
+                            <button id="remove-all-btn" class="btn btn-secondary btn-sm">Remove All</button>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ export class StateSelector {
                 <div class="state-button-group">
                     <button 
                         id="${buttonId}" 
-                        class="btn btn-outline-primary btn-sm state-button" 
+                        class="btn btn-primary btn-sm state-button" 
                         data-state="${stateName}"
                         type="button"
                     >
@@ -89,7 +89,7 @@ export class StateSelector {
                     </button>
                     <a 
                         href="#/state/${stateSlug}" 
-                        class="btn btn-outline-info btn-sm state-detail-link router-link"
+                        class="btn btn-info btn-sm state-detail-link router-link"
                         title="View ${stateName} tax details"
                         data-state="${stateName}"
                     >
@@ -227,11 +227,11 @@ export class StateSelector {
         if (!button) return;
 
         if (isSelected) {
-            button.classList.remove('btn-outline-primary');
-            button.classList.add('btn-primary');
-        } else {
             button.classList.remove('btn-primary');
             button.classList.add('btn-outline-primary');
+        } else {
+            button.classList.remove('btn-outline-primary');
+            button.classList.add('btn-primary');
         }
     }
 

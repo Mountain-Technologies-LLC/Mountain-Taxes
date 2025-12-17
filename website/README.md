@@ -1,6 +1,6 @@
-# Mountain Taxes Calculator
+# Mountain Taxes
 
-A TypeScript-based web application for visualizing and comparing state income tax obligations across different income levels.
+A TypeScript-based web application for visualizing and comparing state earned income tax obligations across different income levels.
 
 ## Features
 

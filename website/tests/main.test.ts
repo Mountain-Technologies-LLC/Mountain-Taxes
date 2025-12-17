@@ -47,7 +47,7 @@ describe('Main Application Tests', () => {
             <div id="app">
                 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
                     <div class="container">
-                        <a class="navbar-brand router-link" href="#/">Mountain Taxes Calculator</a>
+                        <a class="navbar-brand router-link" href="#/">Mountain Taxes</a>
                     </div>
                 </nav>
                 <div class="container mt-4">
@@ -56,7 +56,7 @@ describe('Main Application Tests', () => {
                             <div class="spinner-border" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            <p class="mt-2">Loading Mountain Taxes Calculator...</p>
+                            <p class="mt-2">Loading Mountain Taxes...</p>
                         </div>
                     </div>
                 </div>

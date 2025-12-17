@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - State Selector Tests
+ * Mountain Taxes - State Selector Tests
  * 
  * This file contains unit tests and property-based tests for the state selection component.
  */
@@ -120,19 +120,19 @@ describe('StateSelector Component', () => {
             const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
             const button = document.getElementById(buttonId) as HTMLButtonElement;
             
-            // Initially should have outline style
-            expect(button.classList.contains('btn-outline-primary')).toBe(true);
-            expect(button.classList.contains('btn-primary')).toBe(false);
-            
-            // After selection should have filled style
-            stateSelector.toggleState(stateName);
-            expect(button.classList.contains('btn-outline-primary')).toBe(false);
+            // Initially should have filled style
             expect(button.classList.contains('btn-primary')).toBe(true);
+            expect(button.classList.contains('btn-outline-primary')).toBe(false);
             
-            // After deselection should return to outline style
+            // After selection should have outline style
             stateSelector.toggleState(stateName);
-            expect(button.classList.contains('btn-outline-primary')).toBe(true);
             expect(button.classList.contains('btn-primary')).toBe(false);
+            expect(button.classList.contains('btn-outline-primary')).toBe(true);
+            
+            // After deselection should return to filled style
+            stateSelector.toggleState(stateName);
+            expect(button.classList.contains('btn-primary')).toBe(true);
+            expect(button.classList.contains('btn-outline-primary')).toBe(false);
         });
     });
 
@@ -256,9 +256,9 @@ describe('StateSelector Component', () => {
                     if (button) {
                         if (afterSecondToggle) {
                             expect(button.classList.contains('btn-primary')).toBe(true);
-                            expect(button.classList.contains('btn-outline-primary')).toBe(false);
+                            expect(button.classList.contains('btn-primary')).toBe(false);
                         } else {
-                            expect(button.classList.contains('btn-outline-primary')).toBe(true);
+                            expect(button.classList.contains('btn-primary')).toBe(true);
                             expect(button.classList.contains('btn-primary')).toBe(false);
                         }
                     }
@@ -323,9 +323,9 @@ describe('StateSelector Component', () => {
             const removeAllBtn = document.getElementById('remove-all-btn') as HTMLButtonElement;
             
             expect(allStatesBtn.textContent?.trim()).toBe('All States');
-            expect(allStatesBtn.classList.contains('btn-primary')).toBe(true);
+            expect(allStatesBtn.classList.contains('btn-outline-primary')).toBe(true);
             expect(removeAllBtn.disabled).toBe(true);
-            expect(removeAllBtn.classList.contains('btn-outline-secondary')).toBe(true);
+            expect(removeAllBtn.classList.contains('btn-secondary')).toBe(true);
         });
 
         test('should verify UI state consistency after operations', () => {
@@ -345,12 +345,12 @@ describe('StateSelector Component', () => {
             // Test bulk deselection
             stateSelector.removeAllStates();
             
-            // Verify all buttons return to outline style
+            // Verify all buttons return to filled style
             testStates.forEach(stateName => {
                 const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
                 const button = document.getElementById(buttonId) as HTMLButtonElement;
-                expect(button.classList.contains('btn-outline-primary')).toBe(true);
-                expect(button.classList.contains('btn-primary')).toBe(false);
+                expect(button.classList.contains('btn-primary')).toBe(true);
+                expect(button.classList.contains('btn-outline-primary')).toBe(false);
             });
             
             // Test bulk selection

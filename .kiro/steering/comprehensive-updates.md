@@ -1,7 +1,7 @@
 # Comprehensive Update Requirements
 
 ## Overview
-This steering document establishes the requirement that any changes or updates to the Mountain Taxes Calculator repository must include comprehensive updates across all related components to maintain consistency and quality.
+This steering document establishes the requirement that any changes or updates to the Mountain Taxes repository must include comprehensive updates across all related components to maintain consistency and quality.
 
 ## Update Requirements
 

@@ -1,4 +1,4 @@
-# Mountain Taxes Calculator
+# Mountain Taxes
 An interactive state income tax calculator built with TypeScript, Bootstrap v5.3, and Chart.js. Visualize and compare tax obligations across different states and income levels.
 
 ## 🚀 Quick Start

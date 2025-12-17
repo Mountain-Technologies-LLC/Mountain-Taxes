@@ -1,8 +1,8 @@
-# Mountain Taxes Calculator - Design Document
+# Mountain Taxes - Design Document
 
 ## Overview
 
-The Mountain Taxes Calculator is a TypeScript-based web application built with Bootstrap v5.3 that provides interactive visualization of state income tax obligations. The application uses Chart.js for dynamic line charts, allowing users to compare tax burdens across different states and income levels. The system is designed as a single-page application (SPA) with client-side routing and hardcoded tax data for optimal performance.
+The Mountain Taxes is a TypeScript-based web application built with Bootstrap v5.3 that provides interactive visualization of state earned income tax obligations. The application uses Chart.js for dynamic line charts, allowing users to compare tax burdens across different states and income levels. The system is designed as a single-page application (SPA) with client-side routing and hardcoded tax data for optimal performance.
 
 The application serves two primary use cases:
 1. **Interactive Tax Comparison**: Users can visualize and compare tax obligations across multiple states using dynamic charts
@@ -310,7 +310,7 @@ After analyzing all acceptance criteria, several properties can be consolidated 
 
 ### Dual Testing Approach
 
-The Mountain Taxes Calculator will implement both unit testing and property-based testing to ensure comprehensive coverage and correctness validation.
+The Mountain Taxes will implement both unit testing and property-based testing to ensure comprehensive coverage and correctness validation.
 
 **Unit Testing Requirements:**
 - Unit tests verify specific examples, edge cases, and error conditions

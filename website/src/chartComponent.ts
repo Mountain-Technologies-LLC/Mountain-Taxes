@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Chart.js Integration Component
+ * Mountain Taxes - Chart.js Integration Component
  * 
  * This component manages the Chart.js visualization for displaying state income tax
  * obligations across different income levels. It handles dynamic dataset management,

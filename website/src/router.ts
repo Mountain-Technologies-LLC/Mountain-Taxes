@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Client-Side Router
+ * Mountain Taxes - Client-Side Router
  * 
  * Handles SPA navigation between main chart view and state detail pages.
  * Manages browser history, deep linking, and URL updates.

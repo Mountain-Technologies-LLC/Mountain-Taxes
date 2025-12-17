@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Router Tests
+ * Mountain Taxes - Router Tests
  * 
  * Tests for client-side routing functionality including navigation,
  * browser history management, and deep linking support.

@@ -1,5 +1,5 @@
 /**
- * Integration Tests for Mountain Taxes Calculator
+ * Integration Tests for Mountain Taxes
  * 
  * These tests verify end-to-end functionality of the complete application
  * including component integration, routing, and user workflows.
@@ -25,7 +25,7 @@ const setupDOM = () => {
         <div id="app">
             <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
                 <div class="container">
-                    <a class="navbar-brand router-link" href="#/">Mountain Taxes Calculator</a>
+                    <a class="navbar-brand router-link" href="#/">Mountain Taxes</a>
                 </div>
             </nav>
             <div class="container mt-4">
@@ -34,7 +34,7 @@ const setupDOM = () => {
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
-                        <p class="mt-2">Loading Mountain Taxes Calculator...</p>
+                        <p class="mt-2">Loading Mountain Taxes...</p>
                     </div>
                 </div>
             </div>
@@ -70,7 +70,7 @@ HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
     clip: jest.fn(),
 })) as any;
 
-describe('Mountain Taxes Calculator - Integration Tests', () => {
+describe('Mountain Taxes - Integration Tests', () => {
     beforeEach(() => {
         // Set up DOM
         setupDOM();
@@ -216,7 +216,7 @@ describe('Mountain Taxes Calculator - Integration Tests', () => {
             
             const brandLink = document.querySelector('.navbar-brand');
             expect(brandLink).toBeTruthy();
-            expect(brandLink?.textContent).toBe('Mountain Taxes Calculator');
+            expect(brandLink?.textContent).toBe('Mountain Taxes');
         });
     });
 

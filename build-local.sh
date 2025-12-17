@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Mountain Taxes Calculator Local Build Script
+# Mountain Taxes Local Build Script
 # This script builds the TypeScript application for local testing
 
 set -e  # Exit on any error
 
-echo "🏔️  Mountain Taxes Calculator Local Build"
+echo "🏔️  Mountain Taxes Local Build"
 echo "========================================"
 
 echo "📦 Installing dependencies..."

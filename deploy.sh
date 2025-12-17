@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Mountain Taxes Calculator Deployment Script
+# Mountain Taxes Deployment Script
 # This script builds the TypeScript application and deploys it using CDK
 
 set -e  # Exit on any error
 
-echo "🏔️  Mountain Taxes Calculator Deployment"
+echo "🏔️  Mountain Taxes Deployment"
 echo "========================================"
 
 # Check if domain name is provided

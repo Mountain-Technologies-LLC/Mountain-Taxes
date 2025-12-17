@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Mountain Taxes is a Bootstrap v5.3 web application that helps users visualize and compare state income tax obligations across different earned income levels. The application provides interactive charts and detailed state-by-state tax information to help users understand how their tax burden changes as their income increases.
+Mountain Taxes is a Bootstrap v5.3 web application that helps users visualize and compare state earned income tax obligations across different earned income levels. The application provides interactive charts and detailed state-by-state tax information to help users understand how their tax burden changes as their income increases.
 
 ## Glossary
 

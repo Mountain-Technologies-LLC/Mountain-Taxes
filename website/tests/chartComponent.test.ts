@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Chart Component Tests
+ * Mountain Taxes - Chart Component Tests
  * 
  * This file contains unit tests and property-based tests for the Chart.js integration component.
  */

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implementation plan converts the Mountain Taxes Calculator design into a series of incremental coding tasks. Each task builds on previous work and focuses on writing, modifying, or testing code components. The plan follows implementation-first development with property-based testing integrated throughout.
+This implementation plan converts the Mountain Taxes design into a series of incremental coding tasks. Each task builds on previous work and focuses on writing, modifying, or testing code components. The plan follows implementation-first development with property-based testing integrated throughout.
 
 ## Task List
 

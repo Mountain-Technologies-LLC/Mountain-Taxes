@@ -1,7 +1,7 @@
 /**
- * Mountain Taxes Calculator - Main Application Entry Point
+ * Mountain Taxes - Main Application Entry Point
  * 
- * This TypeScript application provides interactive visualization of state income tax obligations
+ * This TypeScript application provides interactive visualization of state earned income tax obligations
  * using Chart.js and Bootstrap v5.3 with Bootswatch Brite theme.
  */
 
@@ -37,7 +37,7 @@ class MountainTaxesApp {
     }
 
     private init(): void {
-        console.log('Mountain Taxes Calculator initializing...');
+        console.log('Mountain Taxes initializing...');
         
         // Set up routes
         this.setupRoutes();
@@ -78,7 +78,7 @@ class MountainTaxesApp {
         // Start the router to handle initial route
         this.router.start();
         
-        console.log('Mountain Taxes Calculator initialized successfully');
+        console.log('Mountain Taxes initialized successfully');
     }
 
     /**
@@ -115,8 +115,8 @@ class MountainTaxesApp {
                 <div class="col-12">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
                         <div>
-                            <h1 class="mb-2 mb-md-0">Mountain Taxes Calculator</h1>
-                            <p class="lead mb-0">Compare state income tax obligations across different income levels</p>
+                            <h1 class="mb-2 mb-md-0">Mountain Taxes</h1>
+                            <p class="lead mb-0">Compare state earned income tax obligations across different income levels</p>
                         </div>
                     </div>
                 </div>

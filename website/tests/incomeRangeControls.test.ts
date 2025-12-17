@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Income Range Controls Tests
+ * Mountain Taxes - Income Range Controls Tests
  * 
  * This file contains unit tests for the Income Range Controls component.
  */

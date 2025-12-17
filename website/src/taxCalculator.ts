@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Tax Calculation Engine
+ * Mountain Taxes - Tax Calculation Engine
  * 
  * This module implements the core tax calculation logic for progressive tax brackets,
  * handling standard deductions, personal exemptions, and both Single and Married filing types.

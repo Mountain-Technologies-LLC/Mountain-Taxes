@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Data Validation and Error Handling
+ * Mountain Taxes - Data Validation and Error Handling
  * 
  * This module provides runtime data validation, error handling utilities,
  * and user feedback mechanisms for the application.

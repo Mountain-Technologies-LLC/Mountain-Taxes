@@ -1,5 +1,5 @@
 /**
- * Mountain Taxes Calculator - Core TypeScript Interfaces and Data Models
+ * Mountain Taxes - Core TypeScript Interfaces and Data Models
  * 
  * This file defines all the core data structures used throughout the application
  * for state tax data, calculations, and Chart.js integration.

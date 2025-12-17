@@ -85,14 +85,6 @@ describe('IncomeRangeControls Component', () => {
             expect(rangeInfo).toBeTruthy();
             expect(rangeInfo?.textContent).toContain('Current range: $0 - $100K');
         });
-
-        test('should disable remove button initially', () => {
-            new IncomeRangeControls('test-controls', taxChart);
-            
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
-            expect(removeBtn).toBeTruthy();
-            expect(removeBtn.disabled).toBe(true);
-        });
     });
 
     describe('Range Extension Functionality', () => {

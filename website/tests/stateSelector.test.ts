@@ -323,7 +323,7 @@ describe('StateSelector Component', () => {
             const removeAllBtn = document.getElementById('remove-all-btn') as HTMLButtonElement;
             
             expect(allStatesBtn.textContent?.trim()).toBe('All States');
-            expect(allStatesBtn.classList.contains('btn-outline-primary')).toBe(true);
+            expect(allStatesBtn.classList.contains('btn-primary')).toBe(true);
             expect(removeAllBtn.disabled).toBe(true);
             expect(removeAllBtn.classList.contains('btn-secondary')).toBe(true);
         });

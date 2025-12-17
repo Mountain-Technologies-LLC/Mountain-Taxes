@@ -234,15 +234,16 @@ describe('Mountain Taxes - Integration Tests', () => {
             // Test integration
             chart.addState('Colorado');
             
-            // Legend should update automatically
+            // Legend should show all states by default
             const legendItems = legendContainer.querySelectorAll('.legend-item');
             expect(legendItems.length).toBeGreaterThan(0);
             
-            // Legend should show Colorado
+            // Legend should show Colorado as selected (not unselected)
             const coloradoLegend = Array.from(legendItems).find(item => 
                 item.querySelector('.legend-label')?.textContent === 'Colorado'
             );
             expect(coloradoLegend).toBeTruthy();
+            expect(coloradoLegend).not.toHaveClass('legend-item-unselected');
         });
     });
 

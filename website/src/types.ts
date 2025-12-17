@@ -156,6 +156,8 @@ export interface LegendItem {
     hidden: boolean;
     /** Index of the dataset in the chart */
     datasetIndex: number;
+    /** Whether this state is currently selected in the chart */
+    isSelected?: boolean;
 }
 
 /**

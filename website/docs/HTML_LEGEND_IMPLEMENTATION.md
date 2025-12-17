@@ -12,8 +12,10 @@ This document summarizes the comprehensive implementation of the HTML legend fea
 - **Purpose**: Custom HTML legend component with accessibility features
 - **Key Features**:
   - Bottom-start positioning as specified
-  - Interactive legend items for dataset visibility toggling
+  - **Shows all 50 states by default** with visual distinction between selected and unselected
+  - Interactive legend items for dataset visibility toggling and state selection
   - Keyboard navigation support (Enter/Space keys)
+  - Visual distinction between selected and unselected states (opacity and styling)
   - Error handling for chart integration failures
   - Responsive design with mobile optimizations
 
@@ -40,6 +42,7 @@ export interface LegendItem {
     color: string;
     hidden: boolean;
     datasetIndex: number;
+    isSelected?: boolean;  // NEW: Indicates if state is currently selected
 }
 
 export interface HtmlLegendConfig {
@@ -57,6 +60,8 @@ export interface HtmlLegendConfig {
   - `.html-legend-container`: Main legend container with background and border
   - `.legend-items`: Flexbox layout for legend items
   - `.legend-item`: Individual legend item styling with hover effects
+  - `.legend-item-unselected`: Styling for unselected states (dashed border, reduced opacity)
+  - `.legend-item-hidden`: Styling for hidden datasets (reduced opacity)
   - `.legend-color-box`: Color indicator for each dataset
   - `.legend-label`: Text styling for state names
   - **Responsive breakpoints**: Mobile-optimized sizing for different screen sizes
@@ -65,8 +70,9 @@ export interface HtmlLegendConfig {
 
 - **Keyboard Navigation**: Full keyboard support with Enter/Space key handling
 - **ARIA Attributes**: Proper `role`, `tabindex`, and `aria-label` attributes
-- **Screen Reader Support**: Descriptive labels and titles for all interactive elements
+- **Screen Reader Support**: Descriptive labels indicating state selection status and actions
 - **Focus Management**: Visible focus indicators and proper tab order
+- **State Indication**: Clear visual and textual indication of selected vs. unselected states
 
 ### 5. Integration Points
 

@@ -8,6 +8,7 @@
 
 import { TaxChart } from './chartComponent';
 import { LegendItem, HtmlLegendConfig } from './types';
+import { getAllStateNames } from './stateData';
 
 /**
  * HTML Legend component for managing custom chart legend
@@ -70,15 +71,47 @@ export class HtmlLegend {
     }
 
     /**
-     * Update the legend items based on current chart datasets
+     * Update the legend items based on all available states
      */
     public updateLegend(): void {
         if (!this.legendContainer) return;
 
-        let legendItems: LegendItem[] = [];
-        
         try {
-            legendItems = this.chart.generateLegendItems();
+            const allStates = getAllStateNames();
+            const selectedStates = this.chart.getSelectedStates();
+            const chartLegendItems = this.chart.generateLegendItems();
+            
+            // Create legend items for all states
+            const legendItems: LegendItem[] = allStates.map((stateName, index) => {
+                const isSelected = selectedStates.includes(stateName);
+                const chartItem = chartLegendItems.find(item => item.label === stateName);
+                
+                return {
+                    label: stateName,
+                    color: chartItem?.color || this.getStateColor(index),
+                    hidden: chartItem?.hidden || false,
+                    datasetIndex: chartItem?.datasetIndex || -1,
+                    isSelected: isSelected
+                };
+            });
+
+            const legendHtml = legendItems.map(item => `
+                <div class="legend-item ${!item.isSelected ? 'legend-item-unselected' : ''} ${item.hidden ? 'legend-item-hidden' : ''}" 
+                     data-state-name="${item.label}"
+                     data-dataset-index="${item.datasetIndex}"
+                     role="button"
+                     tabindex="0"
+                     aria-label="${item.isSelected ? 'Hide' : 'Show'} ${item.label} ${item.isSelected && item.hidden ? '(currently hidden)' : ''}"
+                     title="Click to ${item.isSelected ? (item.hidden ? 'show' : 'hide') : 'add'} ${item.label}">
+                    <div class="legend-color-box" 
+                         style="background-color: ${item.color}; ${!item.isSelected ? 'opacity: 0.3;' : (item.hidden ? 'opacity: 0.5;' : '')}">
+                    </div>
+                    <span class="legend-label ${!item.isSelected ? 'text-muted' : (item.hidden ? 'text-muted' : '')}">${item.label}</span>
+                </div>
+            `).join('');
+
+            this.legendContainer.innerHTML = legendHtml;
+            this.attachLegendEventListeners();
         } catch (error) {
             console.warn('Failed to generate legend items:', error);
             this.legendContainer.innerHTML = `
@@ -86,34 +119,26 @@ export class HtmlLegend {
                     <small>Legend temporarily unavailable.</small>
                 </div>
             `;
-            return;
         }
-        
-        if (legendItems.length === 0) {
-            this.legendContainer.innerHTML = `
-                <div class="no-states-message text-muted">
-                    <small>No states selected. Choose states above to see them in the legend.</small>
-                </div>
-            `;
-            return;
-        }
+    }
 
-        const legendHtml = legendItems.map(item => `
-            <div class="legend-item ${item.hidden ? 'legend-item-hidden' : ''}" 
-                 data-dataset-index="${item.datasetIndex}"
-                 role="button"
-                 tabindex="0"
-                 aria-label="Toggle ${item.label} visibility"
-                 title="Click to toggle ${item.label} visibility">
-                <div class="legend-color-box" 
-                     style="background-color: ${item.color}; ${item.hidden ? 'opacity: 0.3;' : ''}">
-                </div>
-                <span class="legend-label ${item.hidden ? 'text-muted' : ''}">${item.label}</span>
-            </div>
-        `).join('');
-
-        this.legendContainer.innerHTML = legendHtml;
-        this.attachLegendEventListeners();
+    /**
+     * Get a consistent color for a state based on its index
+     */
+    private getStateColor(index: number): string {
+        const colorPalette = [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384',
+            '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+            '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384', '#36A2EB',
+            '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384',
+            '#C9CBCF', '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56',
+            '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF',
+            '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+            '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0',
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+        ];
+        return colorPalette[index % colorPalette.length];
     }
 
     /**
@@ -126,9 +151,25 @@ export class HtmlLegend {
         
         legendItems.forEach(item => {
             const handleToggle = () => {
-                const datasetIndex = parseInt(item.getAttribute('data-dataset-index') || '0');
-                this.chart.toggleDatasetVisibility(datasetIndex);
-                this.updateLegend();
+                const stateName = item.getAttribute('data-state-name');
+                const datasetIndex = parseInt(item.getAttribute('data-dataset-index') || '-1');
+                
+                if (!stateName) return;
+                
+                if (datasetIndex >= 0) {
+                    // State is selected - toggle visibility or remove from chart
+                    this.chart.toggleDatasetVisibility(datasetIndex);
+                } else {
+                    // State is not selected - add to chart
+                    try {
+                        this.chart.addState(stateName);
+                    } catch (error) {
+                        console.warn(`Failed to add state ${stateName}:`, error);
+                    }
+                }
+                
+                // Update legend after change
+                setTimeout(() => this.updateLegend(), 0);
             };
 
             // Handle click events

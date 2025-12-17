@@ -36,7 +36,7 @@ describe('IncomeRangeControls Component', () => {
         mockCanvas.id = 'test-chart';
         mockContext = {
             getContext: jest.fn()
-        } as unknown;
+        } as unknown as CanvasRenderingContext2D;
         
         // Mock getContext to return our mock context
         jest.spyOn(mockCanvas, 'getContext').mockReturnValue(mockContext);

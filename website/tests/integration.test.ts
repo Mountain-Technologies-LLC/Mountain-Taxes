@@ -193,6 +193,57 @@ describe('Mountain Taxes - Integration Tests', () => {
             // Should create without throwing
             expect(() => new Router()).not.toThrow();
         });
+
+        test('should create HtmlLegend component without errors', async () => {
+            // Add container element to DOM
+            const container = document.createElement('div');
+            container.id = 'test-legend-container';
+            document.body.appendChild(container);
+            
+            // Add canvas for chart
+            const canvas = document.createElement('canvas');
+            canvas.id = 'test-chart';
+            document.body.appendChild(canvas);
+            
+            const { HtmlLegend } = await import('../src/htmlLegend');
+            const { TaxChart } = await import('../src/chartComponent');
+            
+            const chart = new TaxChart('test-chart');
+            
+            // Should create without throwing
+            expect(() => new HtmlLegend('test-legend-container', chart)).not.toThrow();
+        });
+
+        test('should integrate chart and HTML legend components', async () => {
+            // Setup DOM elements
+            const chartCanvas = document.createElement('canvas');
+            chartCanvas.id = 'integration-chart';
+            document.body.appendChild(chartCanvas);
+            
+            const legendContainer = document.createElement('div');
+            legendContainer.id = 'integration-legend';
+            document.body.appendChild(legendContainer);
+            
+            const { TaxChart } = await import('../src/chartComponent');
+            const { HtmlLegend } = await import('../src/htmlLegend');
+            
+            // Create components
+            const chart = new TaxChart('integration-chart');
+            new HtmlLegend('integration-legend', chart);
+            
+            // Test integration
+            chart.addState('Colorado');
+            
+            // Legend should update automatically
+            const legendItems = legendContainer.querySelectorAll('.legend-item');
+            expect(legendItems.length).toBeGreaterThan(0);
+            
+            // Legend should show Colorado
+            const coloradoLegend = Array.from(legendItems).find(item => 
+                item.querySelector('.legend-label')?.textContent === 'Colorado'
+            );
+            expect(coloradoLegend).toBeTruthy();
+        });
     });
 
     describe('Accessibility', () => {

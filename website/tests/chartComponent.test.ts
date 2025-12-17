@@ -21,7 +21,9 @@ jest.mock('chart.js', () => ({
         options: config?.options || {
             responsive: true,
             maintainAspectRatio: false
-        }
+        },
+        isDatasetVisible: jest.fn().mockReturnValue(true),
+        getDatasetMeta: jest.fn().mockReturnValue({ hidden: null })
     })),
     registerables: []
 }));
@@ -274,6 +276,97 @@ describe('TaxChart Component', () => {
             expect(updateSpy).toHaveBeenCalled();
             
             chart.destroy();
+        });
+    });
+
+    describe('HTML Legend Integration', () => {
+        let chart: TaxChart;
+
+        beforeEach(() => {
+            chart = new TaxChart('test-chart');
+        });
+
+        afterEach(() => {
+            chart.destroy();
+        });
+
+        test('should generate legend items for selected states', () => {
+            chart.addState('Colorado');
+            chart.addState('California');
+            
+            const legendItems = chart.generateLegendItems();
+            
+            expect(legendItems).toHaveLength(2);
+            expect(legendItems[0].label).toBe('Colorado');
+            expect(legendItems[1].label).toBe('California');
+            expect(legendItems[0].datasetIndex).toBe(0);
+            expect(legendItems[1].datasetIndex).toBe(1);
+            expect(legendItems[0].hidden).toBe(false);
+            expect(legendItems[1].hidden).toBe(false);
+        });
+
+        test('should return empty array when no states selected', () => {
+            const legendItems = chart.generateLegendItems();
+            expect(legendItems).toHaveLength(0);
+        });
+
+        test('should register legend update callback', () => {
+            const mockCallback = jest.fn();
+            chart.onLegendUpdate(mockCallback);
+            
+            // Adding a state should trigger the callback
+            chart.addState('Colorado');
+            expect(mockCallback).toHaveBeenCalled();
+        });
+
+        test('should toggle dataset visibility for HTML legend', () => {
+            chart.addState('Colorado');
+            chart.addState('California');
+            
+            const chartInstance = chart.getChartInstance();
+            if (!chartInstance) return;
+            
+            // Mock the getDatasetMeta method
+            const mockMeta = { hidden: null };
+            jest.spyOn(chartInstance, 'getDatasetMeta').mockReturnValue(mockMeta as any);
+            const updateSpy = jest.spyOn(chartInstance, 'update');
+            
+            // Toggle visibility
+            chart.toggleDatasetVisibility(0);
+            
+            expect(chartInstance.getDatasetMeta).toHaveBeenCalledWith(0);
+            expect(updateSpy).toHaveBeenCalled();
+        });
+
+        test('should include color information in legend items', () => {
+            chart.addState('Colorado');
+            
+            const legendItems = chart.generateLegendItems();
+            
+            expect(legendItems[0].color).toBeDefined();
+            expect(typeof legendItems[0].color).toBe('string');
+            expect(legendItems[0].color).toMatch(/^#[0-9A-Fa-f]{6}$/); // Hex color format
+        });
+
+        test('should handle legend updates when chart changes', () => {
+            const mockCallback = jest.fn();
+            chart.onLegendUpdate(mockCallback);
+            
+            // Test various chart operations that should trigger legend updates
+            chart.addState('Colorado');
+            expect(mockCallback).toHaveBeenCalledTimes(1);
+            
+            chart.addState('California');
+            expect(mockCallback).toHaveBeenCalledTimes(2);
+            
+            chart.removeState('Colorado');
+            expect(mockCallback).toHaveBeenCalledTimes(3);
+            
+            chart.removeAllStates();
+            expect(mockCallback).toHaveBeenCalledTimes(4);
+            
+            chart.setIncomeRange(0, 200000, 20000);
+            expect(mockCallback).toHaveBeenCalledTimes(5);
         });
     });
 

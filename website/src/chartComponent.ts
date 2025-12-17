@@ -7,7 +7,7 @@
  */
 
 import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
-import { ChartDataset, IncomeRange, FilingTypeName } from './types';
+import { ChartDataset, IncomeRange, FilingTypeName, LegendItem } from './types';
 import { calculateTaxForIncomes, generateIncomeRange } from './taxCalculator';
 import { getAllStateNames } from './stateData';
 import { ErrorHandler, ErrorSeverity, UserFeedback, GracefulDegradation, StateDataValidator } from './validation';
@@ -158,8 +158,7 @@ export class TaxChart {
             },
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'top'
+                    display: false // Disable default legend to use HTML legend
                 },
                 tooltip: {
                     enabled: true,
@@ -210,6 +209,7 @@ export class TaxChart {
             if (this.chart) {
                 this.chart.data.datasets.push(dataset);
                 this.chart.update();
+                this.triggerLegendUpdate();
             }
         } catch (error) {
             ErrorHandler.handleStateDataError(stateName, error as Error);
@@ -234,6 +234,7 @@ export class TaxChart {
         if (this.chart) {
             this.chart.data.datasets.splice(stateIndex, 1);
             this.chart.update();
+            this.triggerLegendUpdate();
         }
     }
 
@@ -268,6 +269,7 @@ export class TaxChart {
         if (this.chart) {
             this.chart.data.datasets = [];
             this.chart.update();
+            this.triggerLegendUpdate();
         }
     }
 
@@ -366,6 +368,7 @@ export class TaxChart {
         });
 
         this.chart.update();
+        this.triggerLegendUpdate();
     }
 
     /**
@@ -411,5 +414,70 @@ export class TaxChart {
      */
     public getChartInstance(): Chart | null {
         return this.chart;
+    }
+
+    /**
+     * Generate HTML legend items for the current datasets
+     */
+    public generateLegendItems(): LegendItem[] {
+        if (!this.chart) return [];
+
+        return this.chart.data.datasets.map((dataset, index) => {
+            let hidden = false;
+            try {
+                // Check if isDatasetVisible method exists and use it
+                if (this.chart && typeof this.chart.isDatasetVisible === 'function') {
+                    hidden = !this.chart.isDatasetVisible(index);
+                } else {
+                    // Fallback: check dataset meta if available
+                    const meta = this.chart?.getDatasetMeta?.(index);
+                    hidden = meta?.hidden === true;
+                }
+            } catch (error) {
+                // If there's an error, assume dataset is visible
+                hidden = false;
+            }
+            
+            return {
+                label: dataset.label || `Dataset ${index + 1}`,
+                color: dataset.borderColor as string || this.colorPalette[index % this.colorPalette.length],
+                hidden,
+                datasetIndex: index
+            };
+        });
+    }
+
+    /**
+     * Toggle dataset visibility (for HTML legend clicks)
+     */
+    public toggleDatasetVisibility(datasetIndex: number): void {
+        if (!this.chart) return;
+
+        try {
+            const meta = this.chart.getDatasetMeta(datasetIndex);
+            const isCurrentlyHidden = meta.hidden === true;
+            (meta as any).hidden = isCurrentlyHidden ? null : true;
+            this.chart.update();
+        } catch (error) {
+            console.warn('Failed to toggle dataset visibility:', error);
+        }
+    }
+
+    /**
+     * Register callback for legend updates
+     */
+    public onLegendUpdate(callback: () => void): void {
+        this.legendUpdateCallback = callback;
+    }
+
+    private legendUpdateCallback?: () => void;
+
+    /**
+     * Trigger legend update callback
+     */
+    private triggerLegendUpdate(): void {
+        if (this.legendUpdateCallback) {
+            this.legendUpdateCallback();
+        }
     }
 }

@@ -40,6 +40,14 @@ jest.mock('../src/router', () => ({
     }))
 }));
 
+jest.mock('../src/htmlLegend', () => ({
+    HtmlLegend: jest.fn().mockImplementation(() => ({
+        updateLegend: jest.fn(),
+        getContainer: jest.fn(),
+        destroy: jest.fn()
+    }))
+}));
+
 describe('Main Application Tests', () => {
     beforeEach(() => {
         // Set up the HTML structure that matches index.html

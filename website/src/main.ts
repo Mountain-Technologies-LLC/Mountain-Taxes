@@ -10,6 +10,7 @@ import { Chart, registerables } from 'chart.js';
 import { TaxChart } from './chartComponent';
 import { StateSelector } from './stateSelector';
 import { IncomeRangeControls } from './incomeRangeControls';
+import { HtmlLegend } from './htmlLegend';
 import { Router, StateDetailView } from './router';
 // STATE_TAX_DATA is used by the router component
 
@@ -23,6 +24,7 @@ class MountainTaxesApp {
     private taxChart: TaxChart | null = null;
     private stateSelector: StateSelector | null = null;
     private incomeRangeControls: IncomeRangeControls | null = null;
+    private htmlLegend: HtmlLegend | null = null;
     private router: Router;
     private stateDetailView: StateDetailView;
 
@@ -135,6 +137,9 @@ class MountainTaxesApp {
                             <div class="chart-container">
                                 <canvas id="tax-chart" role="img" aria-label="Interactive tax comparison chart showing tax obligations across income levels for selected states"></canvas>
                             </div>
+                            <div id="chart-legend-container">
+                                <!-- HTML Legend will be rendered here -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -215,6 +220,9 @@ class MountainTaxesApp {
             // Initialize the tax chart
             this.taxChart = new TaxChart('tax-chart');
             
+            // Initialize the HTML legend
+            this.htmlLegend = new HtmlLegend('chart-legend-container', this.taxChart);
+            
             // Initialize the income range controls
             this.incomeRangeControls = new IncomeRangeControls('income-range-controls', this.taxChart);
             
@@ -266,6 +274,13 @@ class MountainTaxesApp {
      */
     public getIncomeRangeControls(): IncomeRangeControls | null {
         return this.incomeRangeControls;
+    }
+
+    /**
+     * Get the HTML legend instance
+     */
+    public getHtmlLegend(): HtmlLegend | null {
+        return this.htmlLegend;
     }
 }
 

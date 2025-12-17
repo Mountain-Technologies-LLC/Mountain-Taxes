@@ -143,3 +143,31 @@ export interface AppState {
     /** Current filing type for calculations */
     currentFilingType: FilingTypeName;
 }
+
+/**
+ * Represents a legend item for HTML legend display
+ */
+export interface LegendItem {
+    /** Display label for the legend item */
+    label: string;
+    /** Color associated with this legend item */
+    color: string;
+    /** Whether this dataset is currently hidden */
+    hidden: boolean;
+    /** Index of the dataset in the chart */
+    datasetIndex: number;
+}
+
+/**
+ * Configuration for HTML legend component
+ */
+export interface HtmlLegendConfig {
+    /** Container element ID where legend will be rendered */
+    containerId: string;
+    /** Position of the legend (bottom-start, bottom-center, etc.) */
+    position: 'bottom-start' | 'bottom-center' | 'bottom-end' | 'top-start' | 'top-center' | 'top-end';
+    /** Whether to show legend title */
+    showTitle: boolean;
+    /** Custom title text (defaults to "Selected States") */
+    titleText?: string;
+}

@@ -1,6 +1,15 @@
 # Mountain Taxes
 An interactive state income tax calculator built with TypeScript, Bootstrap v5.3, and Chart.js. Visualize and compare tax obligations across different states and income levels.
 
+## ✨ Features
+
+- **Interactive Chart.js Visualizations**: Compare state tax obligations with dynamic line charts
+- **Custom HTML Legend**: Accessible legend positioned at bottom-start for better user experience
+- **Responsive Design**: Bootstrap 5.3 with Bootswatch Brite theme for all device sizes
+- **TypeScript**: Full type safety and modern development experience
+- **Comprehensive Testing**: Unit tests, property-based tests, and integration tests
+- **State Tax Data**: Hardcoded 2025 tax rates from Tax Foundation for fast loading
+
 ## 🚀 Quick Start
 
 ### Production Deployment

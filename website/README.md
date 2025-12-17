@@ -4,11 +4,12 @@ A TypeScript-based web application for visualizing and comparing state earned in
 
 ## Features
 
-- Interactive Chart.js visualizations
+- Interactive Chart.js visualizations with custom HTML legend
 - Bootstrap 5.3 with Bootswatch Flatly theme (local assets)
 - TypeScript for type safety
 - Comprehensive testing with Jest and fast-check
 - Responsive design for all devices
+- Accessible HTML legend positioned at bottom-start
 - Local asset hosting for improved reliability
 
 ## Development Setup

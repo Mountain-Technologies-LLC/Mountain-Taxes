@@ -13,9 +13,10 @@ This document summarizes the comprehensive implementation of the HTML legend fea
 - **Key Features**:
   - Bottom-start positioning as specified
   - **Shows all 50 states by default** with visual distinction between selected and unselected
+  - **Bootstrap button styling**: `btn-secondary` for unselected, `btn-outline-secondary` for selected states
   - Interactive legend items for dataset visibility toggling and state selection
   - Keyboard navigation support (Enter/Space keys)
-  - Visual distinction between selected and unselected states (opacity and styling)
+  - Visual distinction between selected and unselected states using Bootstrap classes
   - Error handling for chart integration failures
   - Responsive design with mobile optimizations
 
@@ -56,11 +57,14 @@ export interface HtmlLegendConfig {
 ### 3. Styling Implementation
 
 #### `website/index.html`
+- **Bootstrap Button Integration**:
+  - **Unselected states**: Use `btn btn-secondary` classes for consistent Bootstrap styling
+  - **Selected states**: Use `btn btn-outline-secondary` classes to show selection state
+  - **Hidden states**: Additional `.legend-item-hidden` class for reduced opacity
 - **Added CSS Classes**:
   - `.html-legend-container`: Main legend container with background and border
   - `.legend-items`: Flexbox layout for legend items
-  - `.legend-item`: Individual legend item styling with hover effects
-  - `.legend-item-unselected`: Styling for unselected states (dashed border, reduced opacity)
+  - `.legend-item`: Base legend item styling that works with Bootstrap button classes
   - `.legend-item-hidden`: Styling for hidden datasets (reduced opacity)
   - `.legend-color-box`: Color indicator for each dataset
   - `.legend-label`: Text styling for state names

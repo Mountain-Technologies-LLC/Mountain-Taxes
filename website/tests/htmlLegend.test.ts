@@ -119,9 +119,9 @@ describe('HtmlLegend', () => {
             const legendItems = container.querySelectorAll('.legend-item');
             expect(legendItems.length).toBeGreaterThan(0);
             
-            // All items should be unselected
+            // All items should be unselected (using btn-secondary class)
             legendItems.forEach(item => {
-                expect(item).toHaveClass('legend-item-unselected');
+                expect(item).toHaveClass('btn-secondary');
             });
         });
 
@@ -149,12 +149,12 @@ describe('HtmlLegend', () => {
             expect(californiaItem).toBeTruthy();
             expect(texasItem).toBeTruthy();
             
-            // California should be selected and visible
-            expect(californiaItem).not.toHaveClass('legend-item-unselected');
+            // California should be selected (btn-outline-secondary) and visible
+            expect(californiaItem).toHaveClass('btn-outline-secondary');
             expect(californiaItem).not.toHaveClass('legend-item-hidden');
             
-            // Texas should be selected but hidden
-            expect(texasItem).not.toHaveClass('legend-item-unselected');
+            // Texas should be selected (btn-outline-secondary) but hidden
+            expect(texasItem).toHaveClass('btn-outline-secondary');
             expect(texasItem).toHaveClass('legend-item-hidden');
         });
 
@@ -174,8 +174,7 @@ describe('HtmlLegend', () => {
             );
             
             expect(californiaItem).toBeTruthy();
-            expect(californiaItem).toHaveAttribute('role', 'button');
-            expect(californiaItem).toHaveAttribute('tabindex', '0');
+            expect(californiaItem).toHaveAttribute('type', 'button');
             expect(californiaItem).toHaveAttribute('aria-label', 'Hide California ');
             expect(californiaItem).toHaveAttribute('title', 'Click to hide California');
         });
@@ -201,7 +200,7 @@ describe('HtmlLegend', () => {
             const californiaItem = container.querySelector('[data-state-name="California"]') as HTMLElement;
             
             expect(californiaItem).toBeTruthy();
-            expect(californiaItem).toHaveClass('legend-item-unselected');
+            expect(californiaItem).toHaveClass('btn-secondary');
             expect(californiaItem.getAttribute('data-dataset-index')).toBe('-1');
             
             // Click the item to add the state
@@ -223,7 +222,7 @@ describe('HtmlLegend', () => {
             const californiaItem = container.querySelector('[data-state-name="California"]') as HTMLElement;
             
             expect(californiaItem).toBeTruthy();
-            expect(californiaItem).toHaveClass('legend-item-unselected');
+            expect(californiaItem).toHaveClass('btn-secondary');
             expect(californiaItem.getAttribute('data-dataset-index')).toBe('-1');
             
             // Test Enter key
@@ -268,8 +267,8 @@ describe('HtmlLegend', () => {
             mockChart.getSelectedStates.mockReturnValue([]);
             htmlLegend.updateLegend();
             
-            // Find an unselected state (should have class legend-item-unselected)
-            const unselectedItem = container.querySelector('.legend-item-unselected') as HTMLElement;
+            // Find an unselected state (should have btn-secondary class)
+            const unselectedItem = container.querySelector('.btn-secondary') as HTMLElement;
             expect(unselectedItem).toBeTruthy();
             
             unselectedItem.click();

@@ -95,20 +95,26 @@ export class HtmlLegend {
                 };
             });
 
-            const legendHtml = legendItems.map(item => `
-                <div class="legend-item ${!item.isSelected ? 'legend-item-unselected' : ''} ${item.hidden ? 'legend-item-hidden' : ''}" 
-                     data-state-name="${item.label}"
-                     data-dataset-index="${item.datasetIndex}"
-                     role="button"
-                     tabindex="0"
-                     aria-label="${item.isSelected ? 'Hide' : 'Show'} ${item.label} ${item.isSelected && item.hidden ? '(currently hidden)' : ''}"
-                     title="Click to ${item.isSelected ? (item.hidden ? 'show' : 'hide') : 'add'} ${item.label}">
-                    <div class="legend-color-box" 
-                         style="background-color: ${item.color}; ${!item.isSelected ? 'opacity: 0.3;' : (item.hidden ? 'opacity: 0.5;' : '')}">
-                    </div>
-                    <span class="legend-label ${!item.isSelected ? 'text-muted' : (item.hidden ? 'text-muted' : '')}">${item.label}</span>
-                </div>
-            `).join('');
+            const legendHtml = legendItems.map(item => {
+                // Determine Bootstrap button classes based on selection state
+                // Unselected states use btn-secondary, selected states use btn-outline-secondary
+                const buttonClass = !item.isSelected ? 'btn btn-secondary' : 'btn btn-outline-secondary';
+                const hiddenClass = item.hidden ? 'legend-item-hidden' : '';
+                
+                return `
+                    <button class="legend-item ${buttonClass} ${hiddenClass}" 
+                            data-state-name="${item.label}"
+                            data-dataset-index="${item.datasetIndex}"
+                            type="button"
+                            aria-label="${item.isSelected ? 'Hide' : 'Show'} ${item.label} ${item.isSelected && item.hidden ? '(currently hidden)' : ''}"
+                            title="Click to ${item.isSelected ? (item.hidden ? 'show' : 'hide') : 'add'} ${item.label}">
+                        <div class="legend-color-box" 
+                             style="background-color: ${item.color}; ${!item.isSelected ? 'opacity: 0.3;' : (item.hidden ? 'opacity: 0.5;' : '')}">
+                        </div>
+                        <span class="legend-label ${!item.isSelected ? 'text-muted' : (item.hidden ? 'text-muted' : '')}">${item.label}</span>
+                    </button>
+                `;
+            }).join('');
 
             this.legendContainer.innerHTML = legendHtml;
             this.attachLegendEventListeners();

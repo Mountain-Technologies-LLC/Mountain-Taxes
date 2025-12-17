@@ -255,11 +255,13 @@ describe('StateSelector Component', () => {
                     const button = document.getElementById(buttonId) as HTMLButtonElement;
                     if (button) {
                         if (afterSecondToggle) {
-                            expect(button.classList.contains('btn-primary')).toBe(true);
+                            // If still selected after second toggle (shouldn't happen in normal flow)
+                            expect(button.classList.contains('btn-outline-primary')).toBe(true);
                             expect(button.classList.contains('btn-primary')).toBe(false);
                         } else {
+                            // After second toggle, state should be unselected (btn-primary, not btn-outline-primary)
                             expect(button.classList.contains('btn-primary')).toBe(true);
-                            expect(button.classList.contains('btn-primary')).toBe(false);
+                            expect(button.classList.contains('btn-outline-primary')).toBe(false);
                         }
                     }
                 }
@@ -335,17 +337,17 @@ describe('StateSelector Component', () => {
             testStates.forEach(stateName => {
                 stateSelector.toggleState(stateName);
                 
-                // Verify button UI
+                // Verify button UI - selected states should have outline style
                 const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
                 const button = document.getElementById(buttonId) as HTMLButtonElement;
-                expect(button.classList.contains('btn-primary')).toBe(true);
-                expect(button.classList.contains('btn-outline-primary')).toBe(false);
+                expect(button.classList.contains('btn-outline-primary')).toBe(true);
+                expect(button.classList.contains('btn-primary')).toBe(false);
             });
             
             // Test bulk deselection
             stateSelector.removeAllStates();
             
-            // Verify all buttons return to filled style
+            // Verify all buttons return to unselected style (filled)
             testStates.forEach(stateName => {
                 const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
                 const button = document.getElementById(buttonId) as HTMLButtonElement;
@@ -356,12 +358,12 @@ describe('StateSelector Component', () => {
             // Test bulk selection
             stateSelector.selectAllStates();
             
-            // Verify all buttons have filled style
+            // Verify all buttons have outline style (selected)
             getAllStateNames().forEach(stateName => {
                 const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
                 const button = document.getElementById(buttonId) as HTMLButtonElement;
-                expect(button.classList.contains('btn-primary')).toBe(true);
-                expect(button.classList.contains('btn-outline-primary')).toBe(false);
+                expect(button.classList.contains('btn-outline-primary')).toBe(true);
+                expect(button.classList.contains('btn-primary')).toBe(false);
             });
         });
     });

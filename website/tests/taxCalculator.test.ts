@@ -138,7 +138,9 @@ describe('Tax Calculation Engine Tests', () => {
                 const result = calculateTax(income, stateName, filingType);
                 
                 // Marginal rate should be >= effective rate for all tax systems
-                expect(result.marginalRate).toBeGreaterThanOrEqual(result.effectiveRate);
+                // Use a small tolerance for floating-point precision issues
+                const tolerance = 1e-10;
+                expect(result.marginalRate + tolerance).toBeGreaterThanOrEqual(result.effectiveRate);
                 
                 // For zero tax states, both rates should be zero
                 if (result.marginalRate === 0 && result.effectiveRate === 0) {

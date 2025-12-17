@@ -12,6 +12,7 @@ import { StateSelector } from './stateSelector';
 import { IncomeRangeControls } from './incomeRangeControls';
 import { HtmlLegend } from './htmlLegend';
 import { Router, StateDetailView } from './router';
+import { Navbar } from './navbar';
 // STATE_TAX_DATA is used by the router component
 
 // Register Chart.js components
@@ -25,6 +26,7 @@ class MountainTaxesApp {
     private stateSelector: StateSelector | null = null;
     private incomeRangeControls: IncomeRangeControls | null = null;
     private htmlLegend: HtmlLegend | null = null;
+    private navbar: Navbar | null = null;
     private router: Router;
     private stateDetailView: StateDetailView;
 
@@ -74,6 +76,9 @@ class MountainTaxesApp {
      * Setup application after DOM is ready
      */
     private setupApplication(): void {
+        // Initialize navbar component
+        this.initializeNavbar();
+        
         // Add global router link handler for navbar
         this.setupGlobalRouterLinks();
         
@@ -81,6 +86,18 @@ class MountainTaxesApp {
         this.router.start();
         
         console.log('Mountain Taxes initialized successfully');
+    }
+
+    /**
+     * Initialize navbar component
+     */
+    private initializeNavbar(): void {
+        try {
+            this.navbar = new Navbar('states-dropdown-content', this.router);
+            console.log('Navbar initialized successfully');
+        } catch (error) {
+            console.error('Error initializing navbar:', error);
+        }
     }
 
     /**
@@ -281,6 +298,13 @@ class MountainTaxesApp {
      */
     public getHtmlLegend(): HtmlLegend | null {
         return this.htmlLegend;
+    }
+
+    /**
+     * Get the navbar instance
+     */
+    public getNavbar(): Navbar | null {
+        return this.navbar;
     }
 }
 

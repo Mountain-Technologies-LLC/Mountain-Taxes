@@ -5,7 +5,9 @@ An interactive state income tax calculator built with TypeScript, Bootstrap v5.3
 
 - **Interactive Chart.js Visualizations**: Compare state tax obligations with dynamic line charts
 - **Custom HTML Legend**: Accessible legend positioned at bottom-start for better user experience
+- **States Navigation Dropdown**: Easy access to individual state tax information via responsive navbar
 - **Responsive Design**: Bootstrap 5.3 with Bootswatch Brite theme for all device sizes
+- **Mobile-Optimized Navigation**: Collapsible hamburger menu with touch-friendly state selection
 - **TypeScript**: Full type safety and modern development experience
 - **Comprehensive Testing**: Unit tests, property-based tests, and integration tests
 - **State Tax Data**: Hardcoded 2025 tax rates from Tax Foundation for fast loading

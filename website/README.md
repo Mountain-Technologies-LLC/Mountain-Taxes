@@ -10,6 +10,9 @@ A TypeScript-based web application for visualizing and comparing state earned in
 - Comprehensive testing with Jest and fast-check
 - Responsive design for all devices
 - Accessible HTML legend positioned at bottom-start
+- **States Navigation Dropdown**: Easy access to individual state tax information
+- **Responsive Navbar**: Mobile-friendly navigation with collapsible menu
+- **State Detail Pages**: Comprehensive tax information for each state
 - Local asset hosting for improved reliability
 
 ## Development Setup
@@ -55,13 +58,23 @@ npm run lint
 ```
 website/
 ├── src/                 # TypeScript source files
+│   ├── main.ts         # Application entry point
+│   ├── navbar.ts       # Navigation bar component
+│   ├── router.ts       # Client-side routing
+│   ├── chartComponent.ts # Chart visualization
+│   ├── stateSelector.ts # State selection controls
+│   ├── stateData.ts    # State tax data
+│   ├── types.ts        # TypeScript interfaces
+│   └── ...             # Other components
 ├── tests/              # Test files
+│   ├── navbar.test.ts  # Navbar component tests
+│   └── ...             # Other test files
 ├── public/             # Static assets
 │   └── assets/         # Local CSS and JS files
 │       ├── css/        # Bootstrap/Bootswatch CSS
 │       └── js/         # Bootstrap JavaScript
 ├── dist/               # Built output (generated)
-├── index.html          # Main HTML file
+├── index.html          # Main HTML file with navbar
 ├── package.json        # Dependencies and scripts
 ├── tsconfig.json       # TypeScript configuration
 ├── jest.config.js      # Jest testing configuration
@@ -88,6 +101,26 @@ The project uses a dual testing approach:
 - **Property-Based Tests**: Universal properties using fast-check
 
 Tests are located in the `tests/` directory and use the `.test.ts` extension.
+
+## Navigation Features
+
+### States Dropdown Menu
+
+The application includes a responsive states dropdown in the navigation bar that provides:
+
+- **Alphabetical State Listing**: All 50 US states sorted alphabetically
+- **Tax Status Indicators**: Visual indicators for states without income tax
+- **Direct State Navigation**: Click any state to view detailed tax information
+- **Mobile-Responsive Design**: Optimized layout for small screens
+- **Keyboard Accessibility**: Full keyboard navigation support
+
+### Responsive Design
+
+The navbar adapts to different screen sizes:
+
+- **Desktop**: Horizontal dropdown with two-column state layout
+- **Tablet**: Single-column dropdown with full-width menu
+- **Mobile**: Collapsible hamburger menu with touch-friendly state selection
 
 ## Local Assets
 

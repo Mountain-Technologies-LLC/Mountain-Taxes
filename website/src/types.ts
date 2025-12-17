@@ -173,3 +173,27 @@ export interface HtmlLegendConfig {
     /** Custom title text (defaults to "Selected States") */
     titleText?: string;
 }
+
+/**
+ * Represents grouped states by tax status for navbar functionality
+ */
+export interface StatesByTaxStatus {
+    /** States that have income tax */
+    withTax: State[];
+    /** States that do not have income tax */
+    withoutTax: State[];
+}
+
+/**
+ * Configuration for navbar dropdown behavior
+ */
+export interface NavbarConfig {
+    /** Container element ID where dropdown content will be rendered */
+    containerId: string;
+    /** Whether to show tax status indicators */
+    showTaxStatus: boolean;
+    /** Whether to enable search functionality */
+    enableSearch: boolean;
+    /** Maximum height for dropdown menu */
+    maxHeight?: string;
+}

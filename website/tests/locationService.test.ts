@@ -482,7 +482,7 @@ describe('LocationService', () => {
                 })
             };
             
-            (global.navigator as unknown).geolocation = mockGeolocation;
+            (global.navigator as any).geolocation = mockGeolocation;
 
             const result = await locationService.detectLocation();
             

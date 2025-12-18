@@ -81,6 +81,7 @@ describe('FilerDetails Component', () => {
 
             const form = container.querySelector('.d-flex');
             expect(form).toBeTruthy();
+            expect(form?.classList.contains('justify-content-center')).toBe(false);
 
             const label = container.querySelector('.form-label');
             expect(label?.textContent?.trim()).toBe('Filing Type');

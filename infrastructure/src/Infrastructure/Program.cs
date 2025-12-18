@@ -43,9 +43,9 @@ namespace Infrastructure
                 throw new ArgumentException("The value {name} was not found. Sample: 'cdk deploy --context name={name}'");
             }
 
-            if (!Directory.Exists("./website/dist"))
+            if (!Directory.Exists("../website/dist"))
             {
-                throw new FileNotFoundException("The folder './website/dist' does not exist. Run 'npm run build' in the website directory first. Contents in this folder are copied into an S3 Bucket.");
+                throw new FileNotFoundException("The folder '../website/dist' does not exist. Run 'npm run build' in the website directory first. Contents in this folder are copied into an S3 Bucket.");
             }
         }
     }

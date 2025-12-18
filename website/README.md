@@ -62,7 +62,7 @@ website/
 │   ├── navbar.ts       # Navigation bar component
 │   ├── router.ts       # Client-side routing
 │   ├── chartComponent.ts # Chart visualization
-│   ├── stateSelector.ts # State selection controls
+│   ├── stateSelector.ts # Bulk state selection controls
 │   ├── stateData.ts    # State tax data
 │   ├── types.ts        # TypeScript interfaces
 │   └── ...             # Other components

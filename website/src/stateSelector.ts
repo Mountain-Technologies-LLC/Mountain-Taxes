@@ -1,22 +1,23 @@
 /**
  * Mountain Taxes - State Selection Component
  * 
- * This component manages the state selection interface, providing buttons for
- * individual state selection, bulk operations (All states, Remove all), and
- * UI state management for the tax visualization chart.
+ * This component manages the state selection interface, providing bulk operations
+ * (All states, Remove all) for state selection and UI state management for the 
+ * tax visualization chart. Individual state buttons have been removed to simplify
+ * the interface while maintaining programmatic state selection capabilities.
  */
 
 import { getAllStateNames } from './stateData';
 import { TaxChart } from './chartComponent';
 
 /**
- * State selector component for managing state selection UI and interactions
+ * State selector component for managing state selection UI and interactions.
+ * Provides bulk operations for state selection without individual state buttons.
  */
 export class StateSelector {
     private container: HTMLElement;
     private chart: TaxChart;
     private selectedStates: Set<string> = new Set();
-    private stateButtons: Map<string, HTMLButtonElement> = new Map();
     private allStatesButton: HTMLButtonElement | null = null;
     private removeAllButton: HTMLButtonElement | null = null;
 
@@ -39,7 +40,7 @@ export class StateSelector {
                 <div class="row mb-3">
                     <div class="col-12">
                         <h5>Select States to Compare</h5>
-                        <p class="text-muted">Click individual states to add/remove them from the chart, or use the bulk operations below.</p>
+                        <p class="text-muted">Use the bulk operations below to select states for comparison.</p>
                     </div>
                 </div>
                 
@@ -51,69 +52,16 @@ export class StateSelector {
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-12">
-                        <div id="state-buttons-container" class="state-buttons-grid">
-                            <!-- State buttons will be rendered here -->
-                        </div>
-                    </div>
-                </div>
             </div>
         `;
 
-        this.renderStateButtons();
         this.attachEventListeners();
     }
 
-    /**
-     * Render individual state buttons
-     */
-    private renderStateButtons(): void {
-        const stateButtonsContainer = document.getElementById('state-buttons-container');
-        if (!stateButtonsContainer) return;
 
-        const allStates = getAllStateNames();
-        const buttonsHtml = allStates.map(stateName => {
-            const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
-            const stateSlug = stateName.toLowerCase().replace(/\s+/g, '-');
-            return `
-                <div class="state-button-group">
-                    <button 
-                        id="${buttonId}" 
-                        class="btn btn-primary btn-sm state-button" 
-                        data-state="${stateName}"
-                        type="button"
-                    >
-                        ${stateName}
-                    </button>
-                    <a 
-                        href="#/state/${stateSlug}" 
-                        class="btn btn-info btn-sm state-detail-link router-link"
-                        title="View ${stateName} tax details"
-                        data-state="${stateName}"
-                    >
-                        ℹ️
-                    </a>
-                </div>
-            `;
-        }).join('');
-
-        stateButtonsContainer.innerHTML = buttonsHtml;
-
-        // Store references to state buttons
-        this.stateButtons.clear();
-        allStates.forEach(stateName => {
-            const buttonId = `state-btn-${stateName.replace(/\s+/g, '-').toLowerCase()}`;
-            const button = document.getElementById(buttonId) as HTMLButtonElement;
-            if (button) {
-                this.stateButtons.set(stateName, button);
-            }
-        });
-    }
 
     /**
-     * Attach event listeners to all buttons
+     * Attach event listeners to bulk operation buttons
      */
     private attachEventListeners(): void {
         // Bulk operation buttons
@@ -128,23 +76,6 @@ export class StateSelector {
             this.removeAllButton.addEventListener('click', () => this.removeAllStates());
         }
 
-        // Individual state buttons
-        this.stateButtons.forEach((button, stateName) => {
-            button.addEventListener('click', () => this.toggleState(stateName));
-        });
-
-        // State detail links
-        const stateDetailLinks = this.container.querySelectorAll('.state-detail-link');
-        stateDetailLinks.forEach(link => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const href = (event.target as HTMLAnchorElement).getAttribute('href');
-                if (href && window.router) {
-                    window.router.navigate(href);
-                }
-            });
-        });
-
         // Initialize bulk button UI state
         this.updateBulkButtonsUI();
     }
@@ -158,12 +89,12 @@ export class StateSelector {
                 // Remove state
                 this.selectedStates.delete(stateName);
                 this.chart.removeState(stateName);
-                this.updateStateButtonUI(stateName, false);
+                this.updateStateButtonUI();
             } else {
                 // Add state
                 this.selectedStates.add(stateName);
                 this.chart.addState(stateName);
-                this.updateStateButtonUI(stateName, true);
+                this.updateStateButtonUI();
             }
             this.updateBulkButtonsUI();
         } catch (error) {
@@ -171,7 +102,7 @@ export class StateSelector {
             // Revert UI state if chart operation failed
             if (this.selectedStates.has(stateName)) {
                 this.selectedStates.delete(stateName);
-                this.updateStateButtonUI(stateName, false);
+                this.updateStateButtonUI();
             }
         }
     }
@@ -188,7 +119,7 @@ export class StateSelector {
                 if (!this.selectedStates.has(stateName)) {
                     this.selectedStates.add(stateName);
                     this.chart.addState(stateName);
-                    this.updateStateButtonUI(stateName, true);
+                    this.updateStateButtonUI();
                 }
             });
             this.updateBulkButtonsUI();
@@ -209,7 +140,7 @@ export class StateSelector {
             statesToRemove.forEach(stateName => {
                 this.selectedStates.delete(stateName);
                 this.chart.removeState(stateName);
-                this.updateStateButtonUI(stateName, false);
+                this.updateStateButtonUI();
             });
             this.updateBulkButtonsUI();
         } catch (error) {
@@ -220,19 +151,12 @@ export class StateSelector {
     }
 
     /**
-     * Update the visual state of a state button
+     * Update the visual state of a state (no longer used since individual buttons are removed)
+     * Kept for backward compatibility with existing code
      */
-    private updateStateButtonUI(stateName: string, isSelected: boolean): void {
-        const button = this.stateButtons.get(stateName);
-        if (!button) return;
-
-        if (isSelected) {
-            button.classList.remove('btn-primary');
-            button.classList.add('btn-outline-primary');
-        } else {
-            button.classList.remove('btn-outline-primary');
-            button.classList.add('btn-primary');
-        }
+    private updateStateButtonUI(): void {
+        // No-op since individual state buttons have been removed
+        // This method is kept to maintain compatibility with existing toggle logic
     }
 
     /**
@@ -280,12 +204,7 @@ export class StateSelector {
         this.selectedStates.clear();
         chartSelectedStates.forEach(state => this.selectedStates.add(state));
 
-        // Update UI for all buttons
-        this.stateButtons.forEach((_, stateName) => {
-            const isSelected = this.selectedStates.has(stateName);
-            this.updateStateButtonUI(stateName, isSelected);
-        });
-
+        // Update bulk button UI only (individual state buttons no longer exist)
         this.updateBulkButtonsUI();
     }
 

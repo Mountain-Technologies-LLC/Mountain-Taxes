@@ -101,13 +101,17 @@ export class HtmlLegend {
                 const buttonClass = !item.isSelected ? 'btn btn-secondary' : 'btn btn-outline-secondary';
                 const hiddenClass = item.hidden ? 'legend-item-hidden' : '';
                 
+                // Create highlighted background color (lighter version of the main color)
+                const highlightedBgColor = item.isSelected && !item.hidden ? this.lightenColor(item.color, 0.8) : 'transparent';
+                
                 return `
                     <button class="legend-item ${buttonClass} ${hiddenClass}" 
                             data-state-name="${item.label}"
                             data-dataset-index="${item.datasetIndex}"
                             type="button"
                             aria-label="${item.isSelected ? 'Hide' : 'Show'} ${item.label} ${item.isSelected && item.hidden ? '(currently hidden)' : ''}"
-                            title="Click to ${item.isSelected ? (item.hidden ? 'show' : 'hide') : 'add'} ${item.label}">
+                            title="Click to ${item.isSelected ? (item.hidden ? 'show' : 'hide') : 'add'} ${item.label}"
+                            style="background-color: ${highlightedBgColor}; ${item.isSelected && !item.hidden ? 'border-color: ' + item.color + ';' : ''}">
                         <div class="legend-color-box" 
                              style="background-color: ${item.color}; ${!item.isSelected ? 'opacity: 0.3;' : (item.hidden ? 'opacity: 0.5;' : '')}">
                         </div>
@@ -145,6 +149,28 @@ export class HtmlLegend {
             '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
         ];
         return colorPalette[index % colorPalette.length];
+    }
+
+    /**
+     * Lighten a hex color by a given amount (0-1, where 1 is white)
+     */
+    private lightenColor(color: string, amount: number): string {
+        // Remove # if present
+        const hex = color.replace('#', '');
+        
+        // Parse RGB values
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Lighten each component
+        const newR = Math.round(r + (255 - r) * amount);
+        const newG = Math.round(g + (255 - g) * amount);
+        const newB = Math.round(b + (255 - b) * amount);
+        
+        // Convert back to hex
+        const toHex = (n: number) => n.toString(16).padStart(2, '0');
+        return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
     }
 
     /**

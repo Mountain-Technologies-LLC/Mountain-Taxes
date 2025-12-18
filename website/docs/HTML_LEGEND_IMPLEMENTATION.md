@@ -14,6 +14,7 @@ This document summarizes the comprehensive implementation of the HTML legend fea
   - Bottom-start positioning as specified
   - **Shows all 50 states by default** with visual distinction between selected and unselected
   - **Bootstrap button styling**: `btn-secondary` for unselected, `btn-outline-secondary` for selected states
+  - **Visual highlighting**: Selected states get highlighted background color and border matching their legend color
   - Interactive legend items for complete state management (add/remove states from chart)
   - Keyboard navigation support (Enter/Space keys)
   - Visual distinction between selected and unselected states using Bootstrap classes
@@ -27,6 +28,7 @@ This document summarizes the comprehensive implementation of the HTML legend fea
   - Added `toggleDatasetVisibility()` method for legend interactions
   - Added `onLegendUpdate()` callback registration
   - Added `triggerLegendUpdate()` for automatic legend updates
+  - Added `lightenColor()` helper method for generating highlighted background colors
 
 #### Updated `website/src/main.ts`
 - **Changes**:
@@ -61,6 +63,10 @@ export interface HtmlLegendConfig {
   - **Unselected states**: Use `btn btn-secondary` classes for consistent Bootstrap styling
   - **Selected states**: Use `btn btn-outline-secondary` classes to show selection state
   - **Hidden states**: Additional `.legend-item-hidden` class for reduced opacity
+- **Visual Highlighting**:
+  - **Selected states**: Get highlighted background color (lightened version of legend color) and matching border
+  - **Unselected states**: Transparent background with no special border
+  - **Hidden selected states**: No highlighting to indicate hidden status
 - **Added CSS Classes**:
   - `.html-legend-container`: Main legend container with background and border
   - `.legend-items`: Flexbox layout for legend items
@@ -100,6 +106,8 @@ export interface HtmlLegendConfig {
   - Chart integration callbacks
   - Component lifecycle management
   - Responsive design configurations
+  - Highlighting functionality (background colors and borders)
+  - Color lightening utility function
   - Error handling scenarios
 
 #### Updated Existing Tests

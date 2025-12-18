@@ -116,6 +116,29 @@ Task 15 (Final Integration and Testing) has been successfully completed. The Mou
 - **Verification**: All 204 tests pass, TypeScript compilation succeeds, temporary test files cleaned up after successful fix validation
 - **Result**: Legend buttons now correctly toggle between selected (`btn-outline-secondary`) and unselected (`btn-secondary`) states without timing issues
 
+### HTML Legend Visual Highlighting Enhancement (December 2024)
+- **Feature**: Added visual highlighting to legend items when states are selected or clicked
+- **Implementation**:
+  - **Background Highlighting**: Selected states get a highlighted background color (lightened version of their legend color)
+  - **Border Enhancement**: Selected states get a border matching their legend color for better visual distinction
+  - **Color Algorithm**: Added `lightenColor()` utility function that lightens hex colors by a specified amount (0-1 scale)
+  - **State-Based Styling**: Unselected states have transparent background, hidden selected states don't get highlighting
+- **Components Updated**:
+  - `website/src/htmlLegend.ts`: Added highlighting logic and `lightenColor()` helper method
+  - `website/tests/htmlLegend.test.ts`: Added comprehensive tests for highlighting functionality and color lightening
+  - `website/docs/HTML_LEGEND_IMPLEMENTATION.md`: Updated documentation with highlighting feature details
+- **User Experience Improvements**:
+  - **Visual Feedback**: Immediate visual indication when states are selected/clicked
+  - **Color Consistency**: Highlighting uses the same color palette as the chart legend
+  - **Accessibility**: Enhanced visual distinction while maintaining accessibility compliance
+  - **Responsive Design**: Highlighting works across all screen sizes and device types
+- **Technical Details**:
+  - **Dynamic Styling**: Background and border colors applied via inline styles for precise color matching
+  - **Performance**: Efficient color calculations with minimal overhead
+  - **Cross-Browser**: Uses standard hex color manipulation compatible with all modern browsers
+- **Testing**: Added 4 new test cases covering highlighted backgrounds, color lightening algorithm, and state-specific highlighting behavior
+- **Validation**: All 254 tests pass, TypeScript compilation succeeds, no accessibility regressions
+
 ### States Navigation Dropdown (December 2024)
 - **Feature**: Added responsive states dropdown to navbar for easy access to individual state pages
 - **Implementation**: 

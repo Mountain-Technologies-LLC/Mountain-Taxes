@@ -365,6 +365,80 @@ describe('HtmlLegend', () => {
         });
     });
 
+    describe('Highlighting Functionality', () => {
+        beforeEach(() => {
+            htmlLegend = new HtmlLegend('test-legend-container', mockChart);
+        });
+
+        test('should apply highlighted background color to selected states', () => {
+            const mockLegendItems: LegendItem[] = [
+                { label: 'California', color: '#FF6384', hidden: false, datasetIndex: 0 }
+            ];
+            mockChart.generateLegendItems.mockReturnValue(mockLegendItems);
+            mockChart.getSelectedStates.mockReturnValue(['California']);
+            
+            htmlLegend.updateLegend();
+            
+            const californiaItem = container.querySelector('[data-state-name="California"]') as HTMLElement;
+            expect(californiaItem).toBeTruthy();
+            
+            // Should have highlighted background color and border
+            const style = californiaItem.getAttribute('style');
+            expect(style).toContain('background-color: #');
+            expect(style).toContain('border-color: #FF6384');
+            expect(style).not.toContain('background-color: transparent');
+        });
+
+        test('should not apply highlighted background to unselected states', () => {
+            mockChart.generateLegendItems.mockReturnValue([]);
+            mockChart.getSelectedStates.mockReturnValue([]);
+            
+            htmlLegend.updateLegend();
+            
+            const californiaItem = container.querySelector('[data-state-name="California"]') as HTMLElement;
+            expect(californiaItem).toBeTruthy();
+            
+            // Should have transparent background
+            const style = californiaItem.getAttribute('style');
+            expect(style).toContain('background-color: transparent');
+            expect(style).not.toContain('border-color: #');
+        });
+
+        test('should not apply highlighted background to hidden selected states', () => {
+            const mockLegendItems: LegendItem[] = [
+                { label: 'California', color: '#FF6384', hidden: true, datasetIndex: 0 }
+            ];
+            mockChart.generateLegendItems.mockReturnValue(mockLegendItems);
+            mockChart.getSelectedStates.mockReturnValue(['California']);
+            
+            htmlLegend.updateLegend();
+            
+            const californiaItem = container.querySelector('[data-state-name="California"]') as HTMLElement;
+            expect(californiaItem).toBeTruthy();
+            
+            // Should have transparent background for hidden states
+            const style = californiaItem.getAttribute('style');
+            expect(style).toContain('background-color: transparent');
+        });
+
+        test('should lighten colors correctly', () => {
+            // Access the private method through any to test it
+            const legend = htmlLegend as unknown;
+            
+            // Test lightening a red color
+            const lightRed = legend.lightenColor('#FF0000', 0.5);
+            expect(lightRed).toBe('#ff8080');
+            
+            // Test lightening a blue color
+            const lightBlue = legend.lightenColor('#0000FF', 0.8);
+            expect(lightBlue).toBe('#ccccff');
+            
+            // Test with color without # prefix
+            const lightGreen = legend.lightenColor('00FF00', 0.3);
+            expect(lightGreen).toBe('#4dff4d');
+        });
+    });
+
     describe('Error Handling', () => {
         test('should handle missing legend container gracefully', () => {
             htmlLegend = new HtmlLegend('test-legend-container', mockChart);

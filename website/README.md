@@ -10,6 +10,7 @@ A TypeScript-based web application for visualizing and comparing state earned in
 - Comprehensive testing with Jest and fast-check
 - Responsive design for all devices
 - Accessible HTML legend positioned at bottom-start
+- **Smart Location Detection**: Automatically selects your state or all states based on location
 - **Filer Details Component**: Filing type selection (Single or Married) with real-time tax calculations
 - **Advanced Income Range Controls**: Step-by functionality with configurable base income
 - **States Navigation Dropdown**: Easy access to individual state tax information
@@ -67,6 +68,7 @@ website/
 │   ├── filerDetails.ts # Filing type selection component
 │   ├── incomeRangeControls.ts # Income range step controls
 │   ├── stateSelector.ts # Bulk state selection controls
+│   ├── locationService.ts # Location detection service
 │   ├── stateData.ts    # State tax data
 │   ├── types.ts        # TypeScript interfaces
 │   └── ...             # Other components
@@ -184,3 +186,40 @@ The application uses local copies of Bootstrap and Bootswatch assets for improve
 - **Bootstrap JS**: `public/assets/js/bootstrap.bundle.min.js`
 
 These assets are served locally instead of relying on CDN links, ensuring the application works reliably in all environments.
+
+## Smart Location Detection
+
+The application automatically detects the user's location to provide intelligent default state selection:
+
+### Location Detection Methods
+
+- **Browser Geolocation API**: Primary method using GPS/WiFi positioning
+- **IP-based Fallback**: Secondary method using IP geolocation services
+- **Privacy-Conscious**: Requests permission and handles denials gracefully
+
+### Default Selection Logic
+
+- **US Users**: If location is detected within a specific US state, that state is pre-selected
+- **Non-US Users**: All states are selected for comprehensive comparison
+- **Detection Failure**: Falls back to selecting all states
+
+### User Experience
+
+- **Status Messages**: Friendly notifications about location detection and selection
+- **Auto-Dismissing Alerts**: Status messages automatically disappear after 5 seconds
+- **Manual Override**: Users can always add/remove states using the interactive legend
+- **No Tracking**: Location data is used only for initial selection and not stored
+
+### Privacy & Security
+
+- **Permission-Based**: Only activates with user consent for geolocation
+- **No Data Storage**: Location information is not saved or transmitted
+- **Graceful Degradation**: Full functionality available even if location is denied
+- **HTTPS Compatible**: Works with secure connections and modern browsers
+
+### Technical Implementation
+
+- **Coordinate Mapping**: Uses state boundary coordinates for accurate detection
+- **Error Handling**: Comprehensive error handling for all failure scenarios
+- **Performance Optimized**: Fast detection with configurable timeouts
+- **Cross-Platform**: Works on desktop, tablet, and mobile devices

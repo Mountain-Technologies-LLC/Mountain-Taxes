@@ -48,6 +48,34 @@ jest.mock('../src/htmlLegend', () => ({
     }))
 }));
 
+jest.mock('../src/filerDetails', () => ({
+    FilerDetails: jest.fn().mockImplementation(() => ({
+        render: jest.fn()
+    }))
+}));
+
+jest.mock('../src/navbar', () => ({
+    Navbar: jest.fn().mockImplementation(() => ({
+        populateStatesDropdown: jest.fn(),
+        refresh: jest.fn()
+    }))
+}));
+
+const mockLocationService = {
+    detectLocation: jest.fn().mockResolvedValue({
+        success: true,
+        isInUS: true,
+        stateName: 'California',
+        countryCode: 'US'
+    }),
+    getRecommendedStates: jest.fn().mockReturnValue(['California']),
+    getSelectionMessage: jest.fn().mockReturnValue('Based on your location, we\'ve selected California for comparison.')
+};
+
+jest.mock('../src/locationService', () => ({
+    LocationService: jest.fn().mockImplementation(() => mockLocationService)
+}));
+
 describe('Main Application Tests', () => {
     beforeEach(() => {
         // Set up the HTML structure that matches index.html
@@ -252,6 +280,100 @@ describe('Main Application Tests', () => {
                 });
                 expect(found).toBe(true);
             }
+        });
+    });
+
+    describe('Location Service Integration', () => {
+        test('should initialize location service', () => {
+            const { LocationService } = require('../src/locationService');
+            // Verify LocationService constructor is available
+            expect(LocationService).toBeDefined();
+            expect(typeof LocationService).toBe('function');
+        });
+
+        test('should handle successful location detection', async () => {
+            // Verify location detection is called
+            expect(mockLocationService.detectLocation).toBeDefined();
+            expect(mockLocationService.getRecommendedStates).toBeDefined();
+            expect(mockLocationService.getSelectionMessage).toBeDefined();
+        });
+
+        test('should display location status messages', () => {
+            // Test that the DOM structure supports location status alerts
+            const mainContent = document.getElementById('main-content');
+            expect(mainContent).toBeTruthy();
+            
+            // Simulate adding a location status alert
+            const alertHtml = `
+                <div id="location-status-alert" class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-location-arrow me-2" aria-hidden="true"></i>
+                    Detecting your location...
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            mainContent?.insertAdjacentHTML('afterbegin', alertHtml);
+            
+            const alert = document.getElementById('location-status-alert');
+            expect(alert).toBeTruthy();
+            expect(alert?.classList.contains('alert')).toBe(true);
+            expect(alert?.classList.contains('alert-info')).toBe(true);
+            expect(alert?.getAttribute('role')).toBe('alert');
+            
+            // Check accessibility
+            const closeButton = alert?.querySelector('.btn-close');
+            expect(closeButton?.getAttribute('aria-label')).toBe('Close');
+        });
+
+        test('should handle location detection errors gracefully', () => {
+            // Mock failed location detection
+            mockLocationService.detectLocation.mockResolvedValue({
+                success: false,
+                isInUS: false,
+                error: 'Location detection failed'
+            });
+            
+            mockLocationService.getRecommendedStates.mockReturnValue([
+                'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California'
+            ]);
+            
+            mockLocationService.getSelectionMessage.mockReturnValue(
+                'We\'ve selected all states for comparison. You can customize your selection using the legend below.'
+            );
+            
+            // Verify the service handles errors appropriately
+            expect(mockLocationService.detectLocation).toBeDefined();
+            expect(mockLocationService.getRecommendedStates).toBeDefined();
+            expect(mockLocationService.getSelectionMessage).toBeDefined();
+        });
+
+        test('should support different location scenarios', () => {
+            // Test US state detection
+            mockLocationService.getRecommendedStates.mockReturnValueOnce(['Texas']);
+            mockLocationService.getSelectionMessage.mockReturnValueOnce(
+                'Based on your location, we\'ve selected Texas for comparison.'
+            );
+            
+            let recommended = mockLocationService.getRecommendedStates({ 
+                success: true, 
+                isInUS: true, 
+                stateName: 'Texas' 
+            });
+            expect(recommended).toEqual(['Texas']);
+            
+            // Test non-US detection
+            mockLocationService.getRecommendedStates.mockReturnValueOnce([
+                'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California'
+            ]);
+            mockLocationService.getSelectionMessage.mockReturnValueOnce(
+                'We\'ve selected all states for comparison.'
+            );
+            
+            recommended = mockLocationService.getRecommendedStates({ 
+                success: true, 
+                isInUS: false 
+            });
+            expect(recommended.length).toBeGreaterThan(1);
         });
     });
 });

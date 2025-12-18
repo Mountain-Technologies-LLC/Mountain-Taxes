@@ -14,6 +14,7 @@ import { HtmlLegend } from './htmlLegend';
 import { FilerDetails } from './filerDetails';
 import { Router, StateDetailView } from './router';
 import { Navbar } from './navbar';
+import { LocationService } from './locationService';
 // STATE_TAX_DATA is used by the router component
 
 // Register Chart.js components
@@ -31,10 +32,12 @@ class MountainTaxesApp {
     private navbar: Navbar | null = null;
     private router: Router;
     private stateDetailView: StateDetailView;
+    private locationService: LocationService;
 
     constructor() {
         this.router = new Router();
         this.stateDetailView = new StateDetailView('main-content');
+        this.locationService = new LocationService();
         
         // Make router globally available for router links
         window.router = this.router;
@@ -242,7 +245,7 @@ class MountainTaxesApp {
     /**
      * Initialize chart and state selector components
      */
-    private initializeComponents(): void {
+    private async initializeComponents(): Promise<void> {
         try {
             // Initialize the tax chart
             this.taxChart = new TaxChart('tax-chart');
@@ -259,10 +262,89 @@ class MountainTaxesApp {
             // Initialize the state selector
             this.stateSelector = new StateSelector('state-selector-container', this.taxChart);
             
+            // Apply location-based default state selection
+            await this.applyLocationBasedDefaults();
+            
             console.log('Components initialized successfully');
         } catch (error) {
             console.error('Error initializing components:', error);
             this.showError('Failed to initialize application components. Please refresh the page.');
+        }
+    }
+
+    /**
+     * Apply location-based default state selection
+     */
+    private async applyLocationBasedDefaults(): Promise<void> {
+        try {
+            console.log('Detecting user location for default state selection...');
+            
+            // Show loading indicator
+            this.showLocationDetectionStatus('Detecting your location...');
+            
+            const locationResult = await this.locationService.detectLocation();
+            const recommendedStates = this.locationService.getRecommendedStates(locationResult);
+            const selectionMessage = this.locationService.getSelectionMessage(locationResult);
+            
+            // Apply the recommended state selection
+            if (this.stateSelector && recommendedStates.length > 0) {
+                this.stateSelector.setSelectedStates(recommendedStates);
+            }
+            
+            // Show user-friendly message about the selection
+            this.showLocationDetectionStatus(selectionMessage, 'success');
+            
+            // Hide the message after a few seconds
+            setTimeout(() => {
+                this.hideLocationDetectionStatus();
+            }, 5000);
+            
+            console.log('Location-based defaults applied:', {
+                locationResult,
+                recommendedStates: recommendedStates.length,
+                message: selectionMessage
+            });
+        } catch (error) {
+            console.warn('Failed to apply location-based defaults:', error);
+            // Don't show error to user, just log it and continue with no selection
+            this.hideLocationDetectionStatus();
+        }
+    }
+
+    /**
+     * Show location detection status message
+     */
+    private showLocationDetectionStatus(message: string, type: 'info' | 'success' = 'info'): void {
+        const existingAlert = document.getElementById('location-status-alert');
+        if (existingAlert) {
+            existingAlert.remove();
+        }
+
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-info';
+        const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-location-arrow';
+        
+        const alertHtml = `
+            <div id="location-status-alert" class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                <i class="fas ${iconClass} me-2" aria-hidden="true"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+
+        // Insert at the top of the main content
+        const mainContent = document.getElementById('main-content');
+        if (mainContent && mainContent.firstChild) {
+            mainContent.insertAdjacentHTML('afterbegin', alertHtml);
+        }
+    }
+
+    /**
+     * Hide location detection status message
+     */
+    private hideLocationDetectionStatus(): void {
+        const existingAlert = document.getElementById('location-status-alert');
+        if (existingAlert) {
+            existingAlert.remove();
         }
     }
 

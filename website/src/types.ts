@@ -209,3 +209,33 @@ export interface NavbarConfig {
     /** Maximum height for dropdown menu */
     maxHeight?: string;
 }
+
+/**
+ * Represents the result of location detection for default state selection
+ */
+export interface LocationDetectionResult {
+    /** Whether location detection was successful */
+    success: boolean;
+    /** The detected state name (if in US) */
+    stateName?: string;
+    /** The detected country code */
+    countryCode?: string;
+    /** Whether the user is in the United States */
+    isInUS: boolean;
+    /** Error message if detection failed */
+    error?: string;
+}
+
+/**
+ * Configuration for location detection service
+ */
+export interface LocationServiceConfig {
+    /** Timeout for geolocation API in milliseconds */
+    timeout: number;
+    /** Maximum age of cached position in milliseconds */
+    maximumAge: number;
+    /** Whether to enable high accuracy (may be slower) */
+    enableHighAccuracy: boolean;
+    /** Fallback to IP-based detection if geolocation fails */
+    enableIPFallback: boolean;
+}

@@ -71,9 +71,7 @@ export class IncomeRangeControls {
                             <div class="col-auto">
                                 <div class="input-group input-group-sm">
                                     <span class="input-group-text">Step Count</span>
-                                    <button class="btn btn-outline-secondary" type="button" id="step-count-minus">-</button>
-                                    <input type="number" class="form-control text-center" id="step-count" value="${this.config.stepCount}" min="1" max="100" style="width: 60px;">
-                                    <button class="btn btn-outline-secondary" type="button" id="step-count-plus">+</button>
+                                    <input type="number" class="form-control text-center" id="step-count" value="${this.config.stepCount}" min="1" max="100" style="width: 80px;">
                                 </div>
                             </div>
                         </form>
@@ -119,10 +117,8 @@ export class IncomeRangeControls {
             });
         });
 
-        // Step count controls
+        // Step count control
         const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
-        const stepCountMinus = document.getElementById('step-count-minus');
-        const stepCountPlus = document.getElementById('step-count-plus');
 
         if (stepCountInput) {
             stepCountInput.addEventListener('input', (event) => {
@@ -130,32 +126,6 @@ export class IncomeRangeControls {
                 const value = parseInt(target.value);
                 if (value >= 1 && value <= 100) {
                     this.config.stepCount = value;
-                    this.updateChart();
-                    this.updateRangeInfo();
-                }
-            });
-        }
-
-        if (stepCountMinus) {
-            stepCountMinus.addEventListener('click', () => {
-                if (this.config.stepCount > 1) {
-                    this.config.stepCount--;
-                    if (stepCountInput) {
-                        stepCountInput.value = this.config.stepCount.toString();
-                    }
-                    this.updateChart();
-                    this.updateRangeInfo();
-                }
-            });
-        }
-
-        if (stepCountPlus) {
-            stepCountPlus.addEventListener('click', () => {
-                if (this.config.stepCount < 100) {
-                    this.config.stepCount++;
-                    if (stepCountInput) {
-                        stepCountInput.value = this.config.stepCount.toString();
-                    }
                     this.updateChart();
                     this.updateRangeInfo();
                 }

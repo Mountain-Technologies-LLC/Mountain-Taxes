@@ -75,10 +75,8 @@ describe('IncomeRangeControls Component', () => {
             expect(document.getElementById('step-10m')).toBeTruthy();
             expect(document.getElementById('step-100m')).toBeTruthy();
             
-            // Verify step count controls are rendered
+            // Verify step count control is rendered
             expect(document.getElementById('step-count')).toBeTruthy();
-            expect(document.getElementById('step-count-minus')).toBeTruthy();
-            expect(document.getElementById('step-count-plus')).toBeTruthy();
             
             // Verify base income input is rendered
             expect(document.getElementById('base-income')).toBeTruthy();
@@ -181,47 +179,21 @@ describe('IncomeRangeControls Component', () => {
             controls = new IncomeRangeControls('test-controls', taxChart);
         });
 
-        test('should increase step count when plus button is clicked', () => {
-            const stepCountPlus = document.getElementById('step-count-plus') as HTMLButtonElement;
+        test('should validate step count input bounds', () => {
             const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
             
-            stepCountPlus.click();
+            // Test valid input
+            stepCountInput.value = '15';
+            stepCountInput.dispatchEvent(new Event('input'));
+            expect(controls.getConfig().stepCount).toBe(15);
             
-            expect(controls.getConfig().stepCount).toBe(11);
-            expect(stepCountInput.value).toBe('11');
-        });
-
-        test('should decrease step count when minus button is clicked', () => {
-            const stepCountMinus = document.getElementById('step-count-minus') as HTMLButtonElement;
-            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
-            
-            stepCountMinus.click();
-            
-            expect(controls.getConfig().stepCount).toBe(9);
-            expect(stepCountInput.value).toBe('9');
-        });
-
-        test('should not decrease step count below 1', () => {
-            const stepCountMinus = document.getElementById('step-count-minus') as HTMLButtonElement;
-            
-            // Set to 1 first
-            controls.setConfig({ stepCount: 1 });
-            
-            // Try to decrease below 1
-            stepCountMinus.click();
-            
+            // Test boundary values
+            stepCountInput.value = '1';
+            stepCountInput.dispatchEvent(new Event('input'));
             expect(controls.getConfig().stepCount).toBe(1);
-        });
-
-        test('should not increase step count above 100', () => {
-            const stepCountPlus = document.getElementById('step-count-plus') as HTMLButtonElement;
             
-            // Set to 100 first
-            controls.setConfig({ stepCount: 100 });
-            
-            // Try to increase above 100
-            stepCountPlus.click();
-            
+            stepCountInput.value = '100';
+            stepCountInput.dispatchEvent(new Event('input'));
             expect(controls.getConfig().stepCount).toBe(100);
         });
 

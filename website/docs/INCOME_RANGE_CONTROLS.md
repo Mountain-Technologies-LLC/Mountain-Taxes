@@ -15,9 +15,7 @@ The Income Range Controls component provides advanced functionality for configur
 ### Step Count Controls
 - **Range**: 1-100 steps
 - **Default**: 10 steps
-- **Controls**: 
-  - Direct input field with number validation
-  - Plus (+) and minus (-) buttons for increment/decrement
+- **Control**: Direct input field with number validation
 - **Validation**: Prevents values below 1 or above 100
 
 ### Base Income Configuration
@@ -87,7 +85,7 @@ The component renders a responsive Bootstrap form with two main sections:
   <div class="col-auto">
     <div class="input-group input-group-sm">
       <span class="input-group-text">Step Count</span>
-      <!-- Step count controls -->
+      <input type="number" class="form-control text-center" id="step-count">
     </div>
   </div>
 </form>
@@ -138,7 +136,7 @@ console.log(`Range: $${config.baseIncome} - $${config.baseIncome + (config.stepS
 The component handles the following events:
 
 - **Step Size Change**: Radio button `change` events
-- **Step Count Change**: Input field `input` events and button `click` events
+- **Step Count Change**: Input field `input` events
 - **Base Income Change**: Input field `input` events
 
 All events trigger immediate chart updates and range information refresh.

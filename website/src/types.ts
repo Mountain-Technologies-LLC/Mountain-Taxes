@@ -133,6 +133,18 @@ export interface IncomeRange {
 }
 
 /**
+ * Configuration for income range step controls
+ */
+export interface StepControlConfig {
+    /** Current step size (1k, 10k, 100k, etc.) */
+    stepSize: number;
+    /** Number of steps to display */
+    stepCount: number;
+    /** Base income starting point */
+    baseIncome: number;
+}
+
+/**
  * Represents application state for managing selected states and UI
  */
 export interface AppState {

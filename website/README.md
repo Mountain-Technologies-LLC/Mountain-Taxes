@@ -10,6 +10,7 @@ A TypeScript-based web application for visualizing and comparing state earned in
 - Comprehensive testing with Jest and fast-check
 - Responsive design for all devices
 - Accessible HTML legend positioned at bottom-start
+- **Advanced Income Range Controls**: Step-by functionality with configurable base income
 - **States Navigation Dropdown**: Easy access to individual state tax information
 - **Responsive Navbar**: Mobile-friendly navigation with collapsible menu
 - **State Detail Pages**: Comprehensive tax information for each state
@@ -62,6 +63,7 @@ website/
 │   ├── navbar.ts       # Navigation bar component
 │   ├── router.ts       # Client-side routing
 │   ├── chartComponent.ts # Chart visualization
+│   ├── incomeRangeControls.ts # Income range step controls
 │   ├── stateSelector.ts # Bulk state selection controls
 │   ├── stateData.ts    # State tax data
 │   ├── types.ts        # TypeScript interfaces
@@ -121,6 +123,30 @@ The navbar adapts to different screen sizes:
 - **Desktop**: Horizontal dropdown with two-column state layout
 - **Tablet**: Single-column dropdown with full-width menu
 - **Mobile**: Collapsible hamburger menu with touch-friendly state selection
+
+## Income Range Controls
+
+The application features advanced income range controls that allow users to customize the chart display:
+
+### Step-by Configuration
+
+- **Step Size Selection**: Choose from 1k, 10k, 100k, 1m, 10m, or 100m increments
+- **Step Count Adjustment**: Use +/- buttons or direct input to set the number of steps (1-100)
+- **Base Income Setting**: Configure the starting income level (default: $0)
+
+### Default Configuration
+
+- **Step Size**: 10k (10,000)
+- **Step Count**: 10 steps
+- **Base Income**: $0
+- **Default Range**: $0 - $100,000 with $10,000 increments
+
+### Interactive Features
+
+- **Real-time Updates**: Chart updates immediately when controls are changed
+- **Range Display**: Shows current income range (e.g., "$0 - $100K")
+- **Responsive Design**: Controls adapt to different screen sizes
+- **Accessibility**: Full keyboard navigation and screen reader support
 
 ## Local Assets
 

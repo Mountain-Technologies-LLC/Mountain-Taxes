@@ -1,20 +1,25 @@
 /**
- * Mountain Taxes - Income Range Adjustment Controls
+ * Mountain Taxes - Income Range Step Controls
  * 
  * This component provides UI controls for adjusting the income range displayed
- * on the tax comparison chart. It includes buttons for extending the range by
- * various increments and reducing the range.
+ * on the tax comparison chart using step-by functionality and base income configuration.
+ * Features step size selection, step count adjustment, and base income setting.
  */
 
 import { TaxChart } from './chartComponent';
+import { StepControlConfig } from './types';
 
 /**
- * Income range controls component for managing chart income range
+ * Income range controls component for managing chart income range with step-by functionality
  */
 export class IncomeRangeControls {
     private taxChart: TaxChart;
     private container: HTMLElement;
-    private lastIncrement: number = 0;
+    private config: StepControlConfig = {
+        stepSize: 10000, // Default to 10k
+        stepCount: 10,   // Default to 10 steps (0 to 100k)
+        baseIncome: 0    // Default base income
+    };
 
     constructor(containerId: string, taxChart: TaxChart) {
         const container = document.getElementById(containerId);
@@ -24,37 +29,69 @@ export class IncomeRangeControls {
         this.container = container;
         this.taxChart = taxChart;
         this.render();
+        this.updateChart();
     }
 
     /**
-     * Render the income range controls UI
+     * Render the income range controls UI with step-by functionality
      */
     private render(): void {
         this.container.innerHTML = `
             <div class="income-controls">
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-12">
-                        <h6 class="mb-3">Earned Income Range Adjustment</h6>
-                        <div class="btn-group flex-wrap" role="group" aria-label="Earned Income range controls">
-                            <button type="button" class="btn btn-primary btn-sm" id="add-10k">
-                                Add 10k
-                            </button>
-                            <button type="button" class="btn btn-primary btn-sm" id="add-100k">
-                                Add 100k
-                            </button>
-                            <button type="button" class="btn btn-primary btn-sm" id="add-1m">
-                                Add 1m
-                            </button>
-                            <button type="button" class="btn btn-primary btn-sm" id="add-10m">
-                                Add 10m
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm" id="remove-data-set">
-                                Remove data set
-                            </button>
-                        </div>
+                        <h6 class="mb-3">Income Range Controls</h6>
+                        
+                        <!-- Step By Controls -->
+                        <form class="row g-3 align-items-center mb-3">
+                            <div class="col-auto">
+                                <label class="col-form-label">Step by</label>
+                            </div>
+                            <div class="col-auto">
+                                <div class="btn-group" role="group" aria-label="Step size selection">
+                                    <input type="radio" class="btn-check" name="step-size" id="step-1k" value="1000">
+                                    <label class="btn btn-outline-primary btn-sm" for="step-1k">1k</label>
+                                    
+                                    <input type="radio" class="btn-check" name="step-size" id="step-10k" value="10000" checked>
+                                    <label class="btn btn-outline-primary btn-sm" for="step-10k">10k</label>
+                                    
+                                    <input type="radio" class="btn-check" name="step-size" id="step-100k" value="100000">
+                                    <label class="btn btn-outline-primary btn-sm" for="step-100k">100k</label>
+                                    
+                                    <input type="radio" class="btn-check" name="step-size" id="step-1m" value="1000000">
+                                    <label class="btn btn-outline-primary btn-sm" for="step-1m">1m</label>
+                                    
+                                    <input type="radio" class="btn-check" name="step-size" id="step-10m" value="10000000">
+                                    <label class="btn btn-outline-primary btn-sm" for="step-10m">10m</label>
+                                    
+                                    <input type="radio" class="btn-check" name="step-size" id="step-100m" value="100000000">
+                                    <label class="btn btn-outline-primary btn-sm" for="step-100m">100m</label>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text">Step Count</span>
+                                    <button class="btn btn-outline-secondary" type="button" id="step-count-minus">-</button>
+                                    <input type="number" class="form-control text-center" id="step-count" value="${this.config.stepCount}" min="1" max="100" style="width: 60px;">
+                                    <button class="btn btn-outline-secondary" type="button" id="step-count-plus">+</button>
+                                </div>
+                            </div>
+                        </form>
+                        
+                        <!-- Base Income Controls -->
+                        <form class="row g-3 align-items-center mb-3">
+                            <div class="col-auto">
+                                <label for="base-income" class="col-form-label">Start Base Income at</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" class="form-control form-control-sm" id="base-income" value="${this.config.baseIncome}" min="0" step="1000" style="width: 120px;">
+                            </div>
+                        </form>
+                        
+                        <!-- Range Information -->
                         <div class="mt-2">
                             <small class="text-muted" id="range-info">
-                                Current range: $0 - ${this.formatCurrency(this.taxChart.getIncomeRange().max)}
+                                Current range: ${this.formatCurrency(this.config.baseIncome)} - ${this.formatCurrency(this.calculateMaxIncome())}
                             </small>
                         </div>
                     </div>
@@ -63,81 +100,101 @@ export class IncomeRangeControls {
         `;
 
         this.attachEventListeners();
-        this.updateRangeInfo();
-        this.updateRemoveButtonState();
     }
 
     /**
-     * Attach event listeners to the control buttons
+     * Attach event listeners to the control elements
      */
     private attachEventListeners(): void {
-        // Add 10k button
-        const add10kBtn = document.getElementById('add-10k');
-        if (add10kBtn) {
-            add10kBtn.addEventListener('click', () => this.extendRange(10000));
+        // Step size radio buttons
+        const stepSizeInputs = document.querySelectorAll('input[name="step-size"]');
+        stepSizeInputs.forEach(input => {
+            input.addEventListener('change', (event) => {
+                const target = event.target as HTMLInputElement;
+                if (target.checked) {
+                    this.config.stepSize = parseInt(target.value);
+                    this.updateChart();
+                    this.updateRangeInfo();
+                }
+            });
+        });
+
+        // Step count controls
+        const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+        const stepCountMinus = document.getElementById('step-count-minus');
+        const stepCountPlus = document.getElementById('step-count-plus');
+
+        if (stepCountInput) {
+            stepCountInput.addEventListener('input', (event) => {
+                const target = event.target as HTMLInputElement;
+                const value = parseInt(target.value);
+                if (value >= 1 && value <= 100) {
+                    this.config.stepCount = value;
+                    this.updateChart();
+                    this.updateRangeInfo();
+                }
+            });
         }
 
-        // Add 100k button
-        const add100kBtn = document.getElementById('add-100k');
-        if (add100kBtn) {
-            add100kBtn.addEventListener('click', () => this.extendRange(100000));
+        if (stepCountMinus) {
+            stepCountMinus.addEventListener('click', () => {
+                if (this.config.stepCount > 1) {
+                    this.config.stepCount--;
+                    if (stepCountInput) {
+                        stepCountInput.value = this.config.stepCount.toString();
+                    }
+                    this.updateChart();
+                    this.updateRangeInfo();
+                }
+            });
         }
 
-        // Add 1m button
-        const add1mBtn = document.getElementById('add-1m');
-        if (add1mBtn) {
-            add1mBtn.addEventListener('click', () => this.extendRange(1000000));
+        if (stepCountPlus) {
+            stepCountPlus.addEventListener('click', () => {
+                if (this.config.stepCount < 100) {
+                    this.config.stepCount++;
+                    if (stepCountInput) {
+                        stepCountInput.value = this.config.stepCount.toString();
+                    }
+                    this.updateChart();
+                    this.updateRangeInfo();
+                }
+            });
         }
 
-        // Add 10m button
-        const add10mBtn = document.getElementById('add-10m');
-        if (add10mBtn) {
-            add10mBtn.addEventListener('click', () => this.extendRange(10000000));
-        }
-
-        // Remove data set button
-        const removeBtn = document.getElementById('remove-data-set');
-        if (removeBtn) {
-            removeBtn.addEventListener('click', () => this.removeDataSet());
+        // Base income input
+        const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+        if (baseIncomeInput) {
+            baseIncomeInput.addEventListener('input', (event) => {
+                const target = event.target as HTMLInputElement;
+                const value = parseInt(target.value) || 0;
+                if (value >= 0) {
+                    this.config.baseIncome = value;
+                    this.updateChart();
+                    this.updateRangeInfo();
+                }
+            });
         }
     }
 
     /**
-     * Extend the income range by the specified increment
+     * Calculate the maximum income based on current configuration
      */
-    private extendRange(increment: number): void {
-        try {
-            this.taxChart.extendRange(increment);
-            this.lastIncrement = increment;
-            this.updateRangeInfo();
-            this.updateRemoveButtonState();
-            
-            console.log(`Extended income range by ${this.formatCurrency(increment)}`);
-        } catch (error) {
-            console.error('Error extending range:', error);
-            this.showError('Failed to extend income range');
-        }
+    private calculateMaxIncome(): number {
+        return this.config.baseIncome + (this.config.stepSize * this.config.stepCount);
     }
 
     /**
-     * Remove the last added data set (reduce range by last increment)
+     * Update the chart with current step configuration
      */
-    private removeDataSet(): void {
-        if (this.lastIncrement <= 0) {
-            console.warn('No previous increment to remove');
-            return;
-        }
-
+    private updateChart(): void {
         try {
-            this.taxChart.reduceRange(this.lastIncrement);
-            this.lastIncrement = 0;
-            this.updateRangeInfo();
-            this.updateRemoveButtonState();
-            
-            console.log('Removed last data set increment');
+            const maxIncome = this.calculateMaxIncome();
+            this.taxChart.setIncomeRange(this.config.baseIncome, maxIncome, this.config.stepSize);
+            console.log(`Updated chart range: ${this.formatCurrency(this.config.baseIncome)} - ${this.formatCurrency(maxIncome)} (step: ${this.formatCurrency(this.config.stepSize)})`);
         } catch (error) {
-            console.error('Error removing data set:', error);
-            this.showError('Failed to remove data set');
+            console.error('Error updating chart:', error);
+            this.showError('Failed to update income range');
         }
     }
 
@@ -147,26 +204,8 @@ export class IncomeRangeControls {
     private updateRangeInfo(): void {
         const rangeInfo = document.getElementById('range-info');
         if (rangeInfo) {
-            const range = this.taxChart.getIncomeRange();
-            rangeInfo.textContent = `Current range: $0 - ${this.formatCurrency(range.max)}`;
-        }
-    }
-
-    /**
-     * Update the state of the remove button based on whether there's a last increment
-     */
-    private updateRemoveButtonState(): void {
-        const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
-        if (removeBtn) {
-            if (this.lastIncrement == 0) {
-                removeBtn.classList.add('disabled');
-            } else {
-                removeBtn.classList.remove('disabled');
-            }
-
-            removeBtn.title = this.lastIncrement <= 0 
-                ? 'No increment to remove' 
-                : `Remove last increment of ${this.formatCurrency(this.lastIncrement)}`;
+            const maxIncome = this.calculateMaxIncome();
+            rangeInfo.textContent = `Current range: ${this.formatCurrency(this.config.baseIncome)} - ${this.formatCurrency(maxIncome)}`;
         }
     }
 
@@ -208,18 +247,43 @@ export class IncomeRangeControls {
     }
 
     /**
-     * Get the last increment value
+     * Get the current step control configuration
      */
-    public getLastIncrement(): number {
-        return this.lastIncrement;
+    public getConfig(): StepControlConfig {
+        return { ...this.config };
     }
 
     /**
-     * Reset the last increment (useful for testing)
+     * Set the step control configuration
      */
-    public resetLastIncrement(): void {
-        this.lastIncrement = 0;
-        this.updateRemoveButtonState();
+    public setConfig(config: Partial<StepControlConfig>): void {
+        this.config = { ...this.config, ...config };
+        this.updateChart();
+        this.updateRangeInfo();
+        this.updateUIFromConfig();
+    }
+
+    /**
+     * Update UI elements to reflect current configuration
+     */
+    private updateUIFromConfig(): void {
+        // Update step size radio buttons
+        const stepSizeInput = document.querySelector(`input[name="step-size"][value="${this.config.stepSize}"]`) as HTMLInputElement;
+        if (stepSizeInput) {
+            stepSizeInput.checked = true;
+        }
+
+        // Update step count input
+        const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+        if (stepCountInput) {
+            stepCountInput.value = this.config.stepCount.toString();
+        }
+
+        // Update base income input
+        const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+        if (baseIncomeInput) {
+            baseIncomeInput.value = this.config.baseIncome.toString();
+        }
     }
 
     /**
@@ -227,6 +291,6 @@ export class IncomeRangeControls {
      */
     public refresh(): void {
         this.updateRangeInfo();
-        this.updateRemoveButtonState();
+        this.updateUIFromConfig();
     }
 }

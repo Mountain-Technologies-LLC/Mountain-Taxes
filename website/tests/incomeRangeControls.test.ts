@@ -1,11 +1,13 @@
 /**
- * Mountain Taxes - Income Range Controls Tests
+ * Mountain Taxes - Income Range Step Controls Tests
  * 
- * This file contains unit tests for the Income Range Controls component.
+ * This file contains unit tests for the Income Range Controls component
+ * with step-by functionality and base income configuration.
  */
 
 import { IncomeRangeControls } from '../src/incomeRangeControls';
 import { TaxChart } from '../src/chartComponent';
+import { StepControlConfig } from '../src/types';
 
 // Mock Chart.js
 jest.mock('chart.js', () => ({
@@ -65,12 +67,21 @@ describe('IncomeRangeControls Component', () => {
             const controls = new IncomeRangeControls('test-controls', taxChart);
             expect(controls).toBeDefined();
             
-            // Verify buttons are rendered
-            expect(document.getElementById('add-10k')).toBeTruthy();
-            expect(document.getElementById('add-100k')).toBeTruthy();
-            expect(document.getElementById('add-1m')).toBeTruthy();
-            expect(document.getElementById('add-10m')).toBeTruthy();
-            expect(document.getElementById('remove-data-set')).toBeTruthy();
+            // Verify step size radio buttons are rendered
+            expect(document.getElementById('step-1k')).toBeTruthy();
+            expect(document.getElementById('step-10k')).toBeTruthy();
+            expect(document.getElementById('step-100k')).toBeTruthy();
+            expect(document.getElementById('step-1m')).toBeTruthy();
+            expect(document.getElementById('step-10m')).toBeTruthy();
+            expect(document.getElementById('step-100m')).toBeTruthy();
+            
+            // Verify step count controls are rendered
+            expect(document.getElementById('step-count')).toBeTruthy();
+            expect(document.getElementById('step-count-minus')).toBeTruthy();
+            expect(document.getElementById('step-count-plus')).toBeTruthy();
+            
+            // Verify base income input is rendered
+            expect(document.getElementById('base-income')).toBeTruthy();
         });
 
         test('should throw error if container not found', () => {
@@ -86,206 +97,330 @@ describe('IncomeRangeControls Component', () => {
             expect(rangeInfo?.textContent).toContain('Current range: $0 - $100K');
         });
 
-        test('should disable remove button initially', () => {
+        test('should have default configuration', () => {
+            const controls = new IncomeRangeControls('test-controls', taxChart);
+            const config = controls.getConfig();
+            
+            expect(config.stepSize).toBe(10000); // 10k default
+            expect(config.stepCount).toBe(10);   // 10 steps default
+            expect(config.baseIncome).toBe(0);   // $0 base default
+        });
+
+        test('should have 10k step selected by default', () => {
             new IncomeRangeControls('test-controls', taxChart);
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
-            expect(removeBtn).toBeTruthy();
-            expect(removeBtn.classList.contains('disabled')).toBe(true);
+            
+            const step10kInput = document.getElementById('step-10k') as HTMLInputElement;
+            expect(step10kInput.checked).toBe(true);
+        });
+
+        test('should have default step count of 10', () => {
+            new IncomeRangeControls('test-controls', taxChart);
+            
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+            expect(stepCountInput.value).toBe('10');
+        });
+
+        test('should have default base income of 0', () => {
+            new IncomeRangeControls('test-controls', taxChart);
+            
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            expect(baseIncomeInput.value).toBe('0');
         });
     });
 
-    describe('Range Extension Functionality', () => {
+    describe('Step Size Selection', () => {
         let controls: IncomeRangeControls;
 
         beforeEach(() => {
             controls = new IncomeRangeControls('test-controls', taxChart);
         });
 
-        test('should extend range by 10k when Add 10k button is clicked', () => {
-            const initialRange = taxChart.getIncomeRange();
-            const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
+        test('should change step size when different radio button is selected', () => {
+            const step1kInput = document.getElementById('step-1k') as HTMLInputElement;
+            const step100kInput = document.getElementById('step-100k') as HTMLInputElement;
             
-            add10kBtn.click();
+            // Select 1k step
+            step1kInput.checked = true;
+            step1kInput.dispatchEvent(new Event('change'));
             
-            const newRange = taxChart.getIncomeRange();
-            expect(newRange.max).toBe(initialRange.max + 10000);
-            expect(controls.getLastIncrement()).toBe(10000);
+            expect(controls.getConfig().stepSize).toBe(1000);
+            
+            // Select 100k step
+            step100kInput.checked = true;
+            step100kInput.dispatchEvent(new Event('change'));
+            
+            expect(controls.getConfig().stepSize).toBe(100000);
         });
 
-        test('should extend range by 100k when Add 100k button is clicked', () => {
-            const initialRange = taxChart.getIncomeRange();
-            const add100kBtn = document.getElementById('add-100k') as HTMLButtonElement;
+        test('should update chart when step size changes', () => {
+            const step1mInput = document.getElementById('step-1m') as HTMLInputElement;
             
-            add100kBtn.click();
+            step1mInput.checked = true;
+            step1mInput.dispatchEvent(new Event('change'));
             
-            const newRange = taxChart.getIncomeRange();
-            expect(newRange.max).toBe(initialRange.max + 100000);
-            expect(controls.getLastIncrement()).toBe(100000);
+            const range = taxChart.getIncomeRange();
+            expect(range.step).toBe(1000000);
+            expect(range.max).toBe(10000000); // 10 steps * 1m = 10m
         });
 
-        test('should extend range by 1m when Add 1m button is clicked', () => {
-            const initialRange = taxChart.getIncomeRange();
-            const add1mBtn = document.getElementById('add-1m') as HTMLButtonElement;
+        test('should update range info when step size changes', () => {
+            const step100kInput = document.getElementById('step-100k') as HTMLInputElement;
             
-            add1mBtn.click();
-            
-            const newRange = taxChart.getIncomeRange();
-            expect(newRange.max).toBe(initialRange.max + 1000000);
-            expect(controls.getLastIncrement()).toBe(1000000);
-        });
-
-        test('should extend range by 10m when Add 10m button is clicked', () => {
-            const initialRange = taxChart.getIncomeRange();
-            const add10mBtn = document.getElementById('add-10m') as HTMLButtonElement;
-            
-            add10mBtn.click();
-            
-            const newRange = taxChart.getIncomeRange();
-            expect(newRange.max).toBe(initialRange.max + 10000000);
-            expect(controls.getLastIncrement()).toBe(10000000);
-        });
-
-        test('should update range information after extension', () => {
-            const add100kBtn = document.getElementById('add-100k') as HTMLButtonElement;
-            
-            add100kBtn.click();
+            step100kInput.checked = true;
+            step100kInput.dispatchEvent(new Event('change'));
             
             const rangeInfo = document.getElementById('range-info');
-            expect(rangeInfo?.textContent).toContain('Current range: $0 - $200K');
-        });
-
-        test('should enable remove button after extension', () => {
-            const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
-            
-            expect(removeBtn.classList.contains('disabled')).toBe(true);
-            
-            add10kBtn.click();
-            
-            expect(removeBtn.classList.contains('disabled')).toBe(false);
+            expect(rangeInfo?.textContent).toContain('Current range: $0 - $1.0M'); // 10 steps * 100k = 1m
         });
     });
 
-    describe('Range Reduction Functionality', () => {
+    describe('Step Count Controls', () => {
         let controls: IncomeRangeControls;
 
         beforeEach(() => {
             controls = new IncomeRangeControls('test-controls', taxChart);
         });
 
-        test('should reduce range when Remove data set button is clicked after extension', () => {
-            const initialRange = taxChart.getIncomeRange();
-            const add50kBtn = document.getElementById('add-100k') as HTMLButtonElement;
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+        test('should increase step count when plus button is clicked', () => {
+            const stepCountPlus = document.getElementById('step-count-plus') as HTMLButtonElement;
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
             
-            // First extend the range
-            add50kBtn.click();
-            const extendedRange = taxChart.getIncomeRange();
-            expect(extendedRange.max).toBe(initialRange.max + 100000);
+            stepCountPlus.click();
             
-            // Then reduce it
-            removeBtn.click();
-            const reducedRange = taxChart.getIncomeRange();
-            expect(reducedRange.max).toBe(initialRange.max);
-            expect(controls.getLastIncrement()).toBe(0);
+            expect(controls.getConfig().stepCount).toBe(11);
+            expect(stepCountInput.value).toBe('11');
         });
 
-        test('should disable remove button after reduction', () => {
-            const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+        test('should decrease step count when minus button is clicked', () => {
+            const stepCountMinus = document.getElementById('step-count-minus') as HTMLButtonElement;
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
             
-            // Extend then reduce
-            add10kBtn.click();
-            expect(removeBtn.classList.contains('disabled')).toBe(false);
+            stepCountMinus.click();
             
-            removeBtn.click();
-            expect(removeBtn.classList.contains('disabled')).toBe(true);
+            expect(controls.getConfig().stepCount).toBe(9);
+            expect(stepCountInput.value).toBe('9');
         });
 
-        test('should update range information after reduction', () => {
-            const add100kBtn = document.getElementById('add-100k') as HTMLButtonElement;
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+        test('should not decrease step count below 1', () => {
+            const stepCountMinus = document.getElementById('step-count-minus') as HTMLButtonElement;
             
-            add100kBtn.click();
-            removeBtn.click();
+            // Set to 1 first
+            controls.setConfig({ stepCount: 1 });
+            
+            // Try to decrease below 1
+            stepCountMinus.click();
+            
+            expect(controls.getConfig().stepCount).toBe(1);
+        });
+
+        test('should not increase step count above 100', () => {
+            const stepCountPlus = document.getElementById('step-count-plus') as HTMLButtonElement;
+            
+            // Set to 100 first
+            controls.setConfig({ stepCount: 100 });
+            
+            // Try to increase above 100
+            stepCountPlus.click();
+            
+            expect(controls.getConfig().stepCount).toBe(100);
+        });
+
+        test('should update chart when step count changes', () => {
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+            
+            stepCountInput.value = '20';
+            stepCountInput.dispatchEvent(new Event('input'));
+            
+            const range = taxChart.getIncomeRange();
+            expect(range.max).toBe(200000); // 20 steps * 10k = 200k
+        });
+
+        test('should handle direct input in step count field', () => {
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+            
+            stepCountInput.value = '15';
+            stepCountInput.dispatchEvent(new Event('input'));
+            
+            expect(controls.getConfig().stepCount).toBe(15);
+        });
+    });
+
+    describe('Base Income Controls', () => {
+        let controls: IncomeRangeControls;
+
+        beforeEach(() => {
+            controls = new IncomeRangeControls('test-controls', taxChart);
+        });
+
+        test('should update base income when input changes', () => {
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            
+            baseIncomeInput.value = '50000';
+            baseIncomeInput.dispatchEvent(new Event('input'));
+            
+            expect(controls.getConfig().baseIncome).toBe(50000);
+        });
+
+        test('should update chart when base income changes', () => {
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            
+            baseIncomeInput.value = '25000';
+            baseIncomeInput.dispatchEvent(new Event('input'));
+            
+            const range = taxChart.getIncomeRange();
+            expect(range.min).toBe(25000);
+            expect(range.max).toBe(125000); // 25k base + (10 steps * 10k) = 125k
+        });
+
+        test('should update range info when base income changes', () => {
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            
+            baseIncomeInput.value = '30000';
+            baseIncomeInput.dispatchEvent(new Event('input'));
             
             const rangeInfo = document.getElementById('range-info');
-            expect(rangeInfo?.textContent).toContain('Current range: $0 - $100K');
+            expect(rangeInfo?.textContent).toContain('Current range: $30K - $130K');
         });
 
-        test('should not reduce range if no previous increment exists', () => {
-            const initialRange = taxChart.getIncomeRange();
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+        test('should handle zero base income', () => {
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
             
-            // Try to remove without any previous increment
-            removeBtn.click();
+            baseIncomeInput.value = '0';
+            baseIncomeInput.dispatchEvent(new Event('input'));
             
-            const rangeAfterClick = taxChart.getIncomeRange();
-            expect(rangeAfterClick.max).toBe(initialRange.max);
+            expect(controls.getConfig().baseIncome).toBe(0);
+            
+            const range = taxChart.getIncomeRange();
+            expect(range.min).toBe(0);
+        });
+
+        test('should not allow negative base income', () => {
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            
+            baseIncomeInput.value = '-1000';
+            baseIncomeInput.dispatchEvent(new Event('input'));
+            
+            // Should default to 0 for negative values
+            expect(controls.getConfig().baseIncome).toBe(0);
         });
     });
 
-    describe('Multiple Operations', () => {
+    describe('Configuration Management', () => {
         let controls: IncomeRangeControls;
 
         beforeEach(() => {
             controls = new IncomeRangeControls('test-controls', taxChart);
         });
 
-        test('should handle multiple extensions correctly', () => {
-            const initialRange = taxChart.getIncomeRange();
+        test('should get current configuration', () => {
+            const config = controls.getConfig();
             
-            // Add 10k
-            const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
-            add10kBtn.click();
-            expect(taxChart.getIncomeRange().max).toBe(initialRange.max + 10000);
-            expect(controls.getLastIncrement()).toBe(10000);
-            
-            // Add 100k (should update last increment)
-            const add100kBtn = document.getElementById('add-100k') as HTMLButtonElement;
-            add100kBtn.click();
-            expect(taxChart.getIncomeRange().max).toBe(initialRange.max + 110000);
-            expect(controls.getLastIncrement()).toBe(100000);
+            expect(config).toEqual({
+                stepSize: 10000,
+                stepCount: 10,
+                baseIncome: 0
+            });
         });
 
-        test('should only remove the last increment', () => {
-            const initialRange = taxChart.getIncomeRange();
+        test('should set configuration and update UI', () => {
+            const newConfig: StepControlConfig = {
+                stepSize: 100000,
+                stepCount: 5,
+                baseIncome: 50000
+            };
             
-            // Add 10k then 100k
-            const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
-            const add100kBtn = document.getElementById('add-100k') as HTMLButtonElement;
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+            controls.setConfig(newConfig);
             
-            add10kBtn.click();
-            add100kBtn.click();
+            const config = controls.getConfig();
+            expect(config).toEqual(newConfig);
             
-            // Remove should only remove the 100k (last increment)
-            removeBtn.click();
-            expect(taxChart.getIncomeRange().max).toBe(initialRange.max + 10000);
+            // Check UI updates
+            const step100kInput = document.getElementById('step-100k') as HTMLInputElement;
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            
+            expect(step100kInput.checked).toBe(true);
+            expect(stepCountInput.value).toBe('5');
+            expect(baseIncomeInput.value).toBe('50000');
+        });
+
+        test('should partially update configuration', () => {
+            controls.setConfig({ stepCount: 15 });
+            
+            const config = controls.getConfig();
+            expect(config.stepCount).toBe(15);
+            expect(config.stepSize).toBe(10000); // Should remain unchanged
+            expect(config.baseIncome).toBe(0);   // Should remain unchanged
         });
 
         test('should refresh controls correctly', () => {
-            // Manually change the chart range
-            taxChart.setIncomeRange(0, 500000, 10000);
+            // Change configuration programmatically
+            controls.setConfig({
+                stepSize: 1000000,
+                stepCount: 5,
+                baseIncome: 100000
+            });
             
-            // Refresh controls
+            // Refresh should update range info
             controls.refresh();
             
             const rangeInfo = document.getElementById('range-info');
-            expect(rangeInfo?.textContent).toContain('Current range: $0 - $500K');
+            expect(rangeInfo?.textContent).toContain('Current range: $100K - $5.1M'); // 100k + (5 * 1m) = 5.1m
+        });
+    });
+
+    describe('Integration Tests', () => {
+        let controls: IncomeRangeControls;
+
+        beforeEach(() => {
+            controls = new IncomeRangeControls('test-controls', taxChart);
         });
 
-        test('should reset last increment correctly', () => {
-            const add10kBtn = document.getElementById('add-10k') as HTMLButtonElement;
-            const removeBtn = document.getElementById('remove-data-set') as HTMLButtonElement;
+        test('should handle complex configuration changes', () => {
+            // Change step size to 100k
+            const step100kInput = document.getElementById('step-100k') as HTMLInputElement;
+            step100kInput.checked = true;
+            step100kInput.dispatchEvent(new Event('change'));
             
-            add10kBtn.click();
-            expect(controls.getLastIncrement()).toBe(10000);
-            expect(removeBtn.classList.contains('disabled')).toBe(false);
+            // Change step count to 20
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+            stepCountInput.value = '20';
+            stepCountInput.dispatchEvent(new Event('input'));
             
-            controls.resetLastIncrement();
-            expect(controls.getLastIncrement()).toBe(0);
-            expect(removeBtn.classList.contains('disabled')).toBe(true);
+            // Change base income to 50k
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            baseIncomeInput.value = '50000';
+            baseIncomeInput.dispatchEvent(new Event('input'));
+            
+            // Verify final configuration
+            const config = controls.getConfig();
+            expect(config.stepSize).toBe(100000);
+            expect(config.stepCount).toBe(20);
+            expect(config.baseIncome).toBe(50000);
+            
+            // Verify chart range
+            const range = taxChart.getIncomeRange();
+            expect(range.min).toBe(50000);
+            expect(range.max).toBe(2050000); // 50k + (20 * 100k) = 2.05m
+            expect(range.step).toBe(100000);
+        });
+
+        test('should maintain consistency between UI and configuration', () => {
+            // Make multiple changes
+            controls.setConfig({ stepSize: 1000, stepCount: 50, baseIncome: 10000 });
+            
+            // Verify UI reflects configuration
+            const step1kInput = document.getElementById('step-1k') as HTMLInputElement;
+            const stepCountInput = document.getElementById('step-count') as HTMLInputElement;
+            const baseIncomeInput = document.getElementById('base-income') as HTMLInputElement;
+            
+            expect(step1kInput.checked).toBe(true);
+            expect(stepCountInput.value).toBe('50');
+            expect(baseIncomeInput.value).toBe('10000');
+            
+            // Verify range info
+            const rangeInfo = document.getElementById('range-info');
+            expect(rangeInfo?.textContent).toContain('Current range: $10K - $60K'); // 10k + (50 * 1k) = 60k
         });
     });
 
@@ -294,18 +429,15 @@ describe('IncomeRangeControls Component', () => {
             const controls = new IncomeRangeControls('test-controls', taxChart);
             
             // Test different range values
-            taxChart.setIncomeRange(0, 5000, 100);
-            controls.refresh();
+            controls.setConfig({ stepSize: 1000, stepCount: 5, baseIncome: 0 });
             let rangeInfo = document.getElementById('range-info');
             expect(rangeInfo?.textContent).toContain('$5,000');
             
-            taxChart.setIncomeRange(0, 50000, 1000);
-            controls.refresh();
+            controls.setConfig({ stepSize: 10000, stepCount: 5, baseIncome: 0 });
             rangeInfo = document.getElementById('range-info');
             expect(rangeInfo?.textContent).toContain('$50K');
             
-            taxChart.setIncomeRange(0, 2000000, 10000);
-            controls.refresh();
+            controls.setConfig({ stepSize: 1000000, stepCount: 2, baseIncome: 0 });
             rangeInfo = document.getElementById('range-info');
             expect(rangeInfo?.textContent).toContain('$2.0M');
         });

@@ -159,4 +159,36 @@ Task 15 (Final Integration and Testing) has been successfully completed. The Mou
 - **Testing**: Updated all StateSelector tests to reflect the removal of individual buttons while maintaining bulk operation functionality
 - **Validation**: All 225 tests pass, TypeScript compilation succeeds, linting passes (pre-existing warnings unrelated to changes)
 
+### Income Range Controls Enhancement (December 2024)
+- **Feature**: Completely redesigned income range controls with step-by functionality and base income configuration
+- **Previous Implementation**: Simple "Add 10k", "Add 100k", "Add 1m", "Add 10m" buttons with "Remove data set" functionality
+- **New Implementation**: 
+  - **Step Size Selection**: Radio button group with options for 1k, 10k, 100k, 1m, 10m, 100m increments
+  - **Step Count Controls**: Input field with +/- buttons to adjust number of steps (1-100 range)
+  - **Base Income Setting**: Number input field to set starting income level (default: $0)
+  - **Real-time Updates**: Chart updates immediately when any control is changed
+  - **Range Display**: Shows current income range (e.g., "$0 - $100K")
+- **Default Configuration**:
+  - Step Size: 10k (maintains backward compatibility)
+  - Step Count: 10 steps
+  - Base Income: $0
+  - Default Range: $0 - $100,000 with $10,000 increments (same as before)
+- **Components Updated**:
+  - `website/src/incomeRangeControls.ts`: Complete rewrite with new step-by functionality
+  - `website/src/types.ts`: Added `StepControlConfig` interface for configuration management
+  - `website/tests/incomeRangeControls.test.ts`: Comprehensive test suite rewrite (28 test cases)
+- **Features**:
+  - Bootstrap horizontal form layout with responsive design
+  - Input validation and bounds checking (step count 1-100, non-negative base income)
+  - Configuration management with get/set methods
+  - UI synchronization with programmatic configuration changes
+  - Accessibility compliance with proper labels and keyboard navigation
+- **User Experience Improvements**:
+  - More flexible income range configuration
+  - Ability to focus on specific income ranges (e.g., $50k - $150k)
+  - Better control over chart granularity
+  - Intuitive interface with clear visual feedback
+- **Testing**: Full test coverage including component initialization, step size selection, step count controls, base income controls, configuration management, and integration scenarios
+- **Backward Compatibility**: Default settings maintain the same initial chart behavior as the previous implementation
+
 **Status**: ✅ COMPLETE - Ready for Production Deployment

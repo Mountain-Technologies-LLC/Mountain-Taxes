@@ -83,7 +83,7 @@ describe('FilerDetails Component', () => {
             expect(form).toBeTruthy();
 
             const label = container.querySelector('.form-label');
-            expect(label?.textContent?.trim()).toBe('Filing Type:');
+            expect(label?.textContent?.trim()).toBe('Filing Type');
 
             const singleRadio = container.querySelector('#filing-single') as HTMLInputElement;
             const marriedRadio = container.querySelector('#filing-married') as HTMLInputElement;
@@ -259,7 +259,7 @@ describe('FilerDetails Component', () => {
             new FilerDetails('test-container');
 
             const formLabel = container.querySelector('.form-label');
-            expect(formLabel?.textContent?.trim()).toBe('Filing Type:');
+            expect(formLabel?.textContent?.trim()).toBe('Filing Type');
         });
     });
 

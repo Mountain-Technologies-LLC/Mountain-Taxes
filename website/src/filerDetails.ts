@@ -60,7 +60,7 @@ export class FilerDetails {
                 </div>
                 <div class="card-body py-2">
                     <div class="d-flex align-items-center justify-content-center">
-                        <label class="form-label me-3 mb-0 fw-bold text-nowrap">Filing Type:</label>
+                        <label class="form-label me-3 mb-0 fw-bold text-nowrap">Filing Type</label>
                         <div class="btn-group btn-group-sm" role="group" aria-label="Filing Type Selection">
                             <input type="radio" class="btn-check" name="filingType" id="filing-single" value="${FilingTypeName.Single}" ${this.currentFilingType === FilingTypeName.Single ? 'checked' : ''}>
                             <label class="btn btn-outline-primary" for="filing-single">

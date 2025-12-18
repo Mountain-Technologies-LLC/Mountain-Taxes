@@ -205,4 +205,36 @@ Task 15 (Final Integration and Testing) has been successfully completed. The Mou
   - `website/docs/INCOME_RANGE_CONTROLS.md`: Updated documentation to reflect simplified interface
 - **Validation**: All 231 tests pass, TypeScript compilation succeeds
 
+### Filer Details Component Addition (December 2024)
+- **Feature**: Added new Filer Details component positioned above the Tax Comparison Chart for filing type selection
+- **Implementation**:
+  - **Filing Type Selection**: Radio button toggle between Single and Married filing types
+  - **Default State**: Defaults to Single filing type on initialization
+  - **Real-time Updates**: Automatically recalculates and updates tax chart when filing type changes
+  - **Bootstrap Integration**: Uses Bootstrap 5.3 button groups and card styling for consistent appearance
+  - **Accessibility**: Full keyboard navigation, ARIA labels, and screen reader support
+- **Components Added**:
+  - `website/src/filerDetails.ts`: Main component with filing type selection logic
+  - `website/tests/filerDetails.test.ts`: Comprehensive test suite (40+ test cases)
+  - `website/docs/FILER_DETAILS_COMPONENT.md`: Complete component documentation
+- **Integration Points**:
+  - **TaxChart Integration**: Seamless integration with automatic chart recalculation
+  - **Main Application**: Added to main view above the Tax Comparison Chart
+  - **State Preservation**: Selected states remain active when switching filing types
+  - **Event Flow**: User selection → component validation → chart update → UI feedback
+- **Features**:
+  - **Radio Button Interface**: Clean, accessible toggle with FontAwesome icons
+  - **Responsive Design**: Adapts to all screen sizes using Bootstrap classes
+  - **Error Handling**: Graceful handling of missing containers and edge cases
+  - **Public API**: Methods for programmatic filing type management
+  - **Configuration Options**: Support for custom defaults and change callbacks
+- **User Experience**:
+  - **Visual Feedback**: Selected option clearly highlighted with Bootstrap styling
+  - **Immediate Updates**: Chart recalculates instantly when filing type changes
+  - **Consistent Styling**: Matches application theme with primary color scheme
+  - **Mobile Optimized**: Touch-friendly interface for mobile devices
+- **Testing**: Full test coverage including component initialization, filing type selection, TaxChart integration, public API methods, error handling, accessibility features, and UI state management
+- **Documentation**: Updated README files with Filer Details component information and project structure
+- **Validation**: All 250 tests pass, TypeScript compilation succeeds, linting passes (pre-existing warnings unrelated to new component)
+
 **Status**: ✅ COMPLETE - Ready for Production Deployment

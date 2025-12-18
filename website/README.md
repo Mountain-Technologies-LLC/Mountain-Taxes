@@ -10,6 +10,7 @@ A TypeScript-based web application for visualizing and comparing state earned in
 - Comprehensive testing with Jest and fast-check
 - Responsive design for all devices
 - Accessible HTML legend positioned at bottom-start
+- **Filer Details Component**: Filing type selection (Single or Married) with real-time tax calculations
 - **Advanced Income Range Controls**: Step-by functionality with configurable base income
 - **States Navigation Dropdown**: Easy access to individual state tax information
 - **Responsive Navbar**: Mobile-friendly navigation with collapsible menu
@@ -63,6 +64,7 @@ website/
 │   ├── navbar.ts       # Navigation bar component
 │   ├── router.ts       # Client-side routing
 │   ├── chartComponent.ts # Chart visualization
+│   ├── filerDetails.ts # Filing type selection component
 │   ├── incomeRangeControls.ts # Income range step controls
 │   ├── stateSelector.ts # Bulk state selection controls
 │   ├── stateData.ts    # State tax data
@@ -147,6 +149,32 @@ The application features advanced income range controls that allow users to cust
 - **Range Display**: Shows current income range (e.g., "$0 - $100K")
 - **Responsive Design**: Controls adapt to different screen sizes
 - **Accessibility**: Full keyboard navigation and screen reader support
+
+## Filer Details Component
+
+The application includes a dedicated Filer Details component positioned above the Tax Comparison Chart that allows users to select their filing type:
+
+### Filing Type Selection
+
+- **Single Filing**: Default option for individual tax filers
+- **Married Filing**: Option for married couples filing jointly
+- **Real-time Updates**: Chart automatically recalculates when filing type changes
+- **State Preservation**: Selected states remain active when switching filing types
+
+### Features
+
+- **Radio Button Interface**: Clean, accessible toggle between Single and Married
+- **Bootstrap Styling**: Consistent with application theme using button groups
+- **Responsive Design**: Adapts to all screen sizes
+- **Accessibility**: Full keyboard navigation and screen reader support
+- **Integration**: Seamlessly integrates with TaxChart component for automatic updates
+
+### Default Behavior
+
+- **Default Filing Type**: Single
+- **Automatic Chart Updates**: Changes immediately trigger tax recalculations
+- **Visual Feedback**: Selected option is clearly highlighted
+- **Error Handling**: Graceful handling of edge cases and missing components
 
 ## Local Assets
 

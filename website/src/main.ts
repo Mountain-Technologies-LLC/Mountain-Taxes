@@ -11,6 +11,7 @@ import { TaxChart } from './chartComponent';
 import { StateSelector } from './stateSelector';
 import { IncomeRangeControls } from './incomeRangeControls';
 import { HtmlLegend } from './htmlLegend';
+import { FilerDetails } from './filerDetails';
 import { Router, StateDetailView } from './router';
 import { Navbar } from './navbar';
 // STATE_TAX_DATA is used by the router component
@@ -26,6 +27,7 @@ class MountainTaxesApp {
     private stateSelector: StateSelector | null = null;
     private incomeRangeControls: IncomeRangeControls | null = null;
     private htmlLegend: HtmlLegend | null = null;
+    private filerDetails: FilerDetails | null = null;
     private navbar: Navbar | null = null;
     private router: Router;
     private stateDetailView: StateDetailView;
@@ -143,6 +145,14 @@ class MountainTaxesApp {
             
             <div class="row mb-4">
                 <div class="col-12">
+                    <div id="filer-details-container">
+                        <!-- Filer Details will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-12">
                     <div class="card">
                         <div class="card-header bg-primary">
                             <h5 class="card-title mb-0">
@@ -237,6 +247,9 @@ class MountainTaxesApp {
             // Initialize the tax chart
             this.taxChart = new TaxChart('tax-chart');
             
+            // Initialize the filer details
+            this.filerDetails = new FilerDetails('filer-details-container', this.taxChart);
+            
             // Initialize the HTML legend
             this.htmlLegend = new HtmlLegend('chart-legend-container', this.taxChart);
             
@@ -305,6 +318,13 @@ class MountainTaxesApp {
      */
     public getNavbar(): Navbar | null {
         return this.navbar;
+    }
+
+    /**
+     * Get the filer details instance
+     */
+    public getFilerDetails(): FilerDetails | null {
+        return this.filerDetails;
     }
 }
 

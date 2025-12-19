@@ -142,7 +142,7 @@ class MountainTaxesApp {
                 <div class="col-12">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
                         <div>
-                            <h1 class="mb-2 mb-md-0">Mountain Taxes</h1>
+                            <h1 class="mb-2 mb-md-0">State Income Taxes—On Earned Income</h1>
                             <p class="lead mb-0">Compare state earned income tax obligations across different income levels</p>
                         </div>
                     </div>

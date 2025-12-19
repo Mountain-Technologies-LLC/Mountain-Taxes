@@ -107,16 +107,13 @@ export class ThemeService {
      */
     private applyTheme(mode: ThemeMode): void {
         const htmlElement = document.documentElement;
-        const bodyElement = document.body;
 
         // Remove existing theme attributes
         htmlElement.removeAttribute('data-bs-theme');
-        bodyElement.removeAttribute('data-bs-theme');
 
         // Apply effective theme (resolve auto to actual preference)
         const effectiveTheme = this.getEffectiveTheme();
         htmlElement.setAttribute('data-bs-theme', effectiveTheme);
-        bodyElement.setAttribute('data-bs-theme', effectiveTheme);
 
         console.log(`Theme applied: ${mode} (effective: ${effectiveTheme})`);
     }
@@ -212,14 +209,11 @@ export class ThemeService {
             const theme = (saved && ['light', 'dark', 'auto'].includes(saved)) ? saved : 'auto';
             
             const htmlElement = document.documentElement;
-            const bodyElement = document.body;
             
             htmlElement.setAttribute('data-bs-theme', theme);
-            bodyElement.setAttribute('data-bs-theme', theme);
         } catch (error) {
             // Fallback to auto if localStorage fails
             document.documentElement.setAttribute('data-bs-theme', 'auto');
-            document.body.setAttribute('data-bs-theme', 'auto');
         }
     }
 }

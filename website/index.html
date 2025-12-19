@@ -26,13 +26,6 @@
                 
                 // Only set on documentElement since body doesn't exist yet
                 document.documentElement.setAttribute('data-bs-theme', effectiveTheme);
-                
-                // Set on body when it becomes available
-                document.addEventListener('DOMContentLoaded', function() {
-                    if (document.body) {
-                        document.body.setAttribute('data-bs-theme', effectiveTheme);
-                    }
-                });
             } catch (error) {
                 // Fallback to system preference
                 const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -271,10 +264,6 @@
         }
         
         [data-bs-theme="dark"] .legend-title h6 {
-            color: #f8f9fa;
-        }
-        
-        [data-bs-theme="dark"] .legend-label {
             color: #f8f9fa;
         }
         

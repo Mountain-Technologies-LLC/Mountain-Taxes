@@ -260,14 +260,12 @@ describe('ThemeService', () => {
             themeService.setTheme('light');
             
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'light');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'light');
         });
 
         test('should apply dark theme to DOM elements', () => {
             themeService.setTheme('dark');
             
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'dark');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'dark');
         });
 
         test('should apply auto theme to DOM elements', () => {
@@ -275,9 +273,7 @@ describe('ThemeService', () => {
             
             // Auto theme should resolve to actual system preference (light in test environment)
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'light');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'light');
             expect(document.documentElement.removeAttribute).toHaveBeenCalledWith('data-bs-theme');
-            expect(document.body.removeAttribute).toHaveBeenCalledWith('data-bs-theme');
         });
     });
 
@@ -353,7 +349,6 @@ describe('ThemeService', () => {
             ThemeService.applyInitialTheme();
             
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'dark');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'dark');
         });
 
         test('should apply auto theme when no saved theme', () => {
@@ -362,7 +357,6 @@ describe('ThemeService', () => {
             ThemeService.applyInitialTheme();
             
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'auto');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'auto');
         });
 
         test('should apply auto theme when invalid saved theme', () => {
@@ -371,7 +365,6 @@ describe('ThemeService', () => {
             ThemeService.applyInitialTheme();
             
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'auto');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'auto');
         });
 
         test('should handle localStorage errors in applyInitialTheme', () => {
@@ -382,7 +375,6 @@ describe('ThemeService', () => {
             ThemeService.applyInitialTheme();
             
             expect(document.documentElement.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'auto');
-            expect(document.body.setAttribute).toHaveBeenCalledWith('data-bs-theme', 'auto');
         });
     });
 

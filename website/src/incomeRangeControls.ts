@@ -43,7 +43,7 @@ export class IncomeRangeControls {
                         <h6 class="mb-3">Income Range Controls</h6>
                         
                         <!-- Step By Controls -->
-                        <form class="row g-3 align-items-center mb-3">
+                        <div class="row g-3 align-items-center mb-3">
                             <div class="col-auto">
                                 <label class="col-form-label">Step by</label>
                             </div>
@@ -74,17 +74,17 @@ export class IncomeRangeControls {
                                     <input type="number" class="form-control text-center" id="step-count" value="${this.config.stepCount}" min="1" max="100" style="width: 80px;">
                                 </div>
                             </div>
-                        </form>
+                        </div>
                         
                         <!-- Base Income Controls -->
-                        <form class="row g-3 align-items-center mb-3">
+                        <div class="row g-3 align-items-center mb-3">
                             <div class="col-auto">
                                 <label for="base-income" class="col-form-label">Start Base Income at</label>
                             </div>
                             <div class="col-auto">
                                 <input type="number" class="form-control form-control-sm" id="base-income" value="${this.config.baseIncome}" min="0" step="1000" style="width: 120px;">
                             </div>
-                        </form>
+                        </div>
                         
                         <!-- Range Information -->
                         <div class="mt-2">

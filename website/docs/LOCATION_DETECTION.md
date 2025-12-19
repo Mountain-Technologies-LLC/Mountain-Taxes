@@ -27,8 +27,10 @@ The Mountain Taxes application includes intelligent location detection to provid
 ## User Experience
 
 ### Status Messages
-- Users see friendly notifications about location detection
-- Messages automatically disappear after 5 seconds
+- Users see friendly toast notifications positioned below the navbar about location detection
+- Loading toast appears while detecting location
+- Success toast shows the selected states with explanation
+- Messages automatically disappear after 5-6 seconds
 - Clear explanation of why certain states were selected
 
 ### Privacy & Control

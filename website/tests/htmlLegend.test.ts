@@ -423,7 +423,7 @@ describe('HtmlLegend', () => {
 
         test('should lighten colors correctly', () => {
             // Access the private method through any to test it
-            const legend = htmlLegend as unknown;
+            const legend = htmlLegend as any;
             
             // Test lightening a red color
             const lightRed = legend.lightenColor('#FF0000', 0.5);

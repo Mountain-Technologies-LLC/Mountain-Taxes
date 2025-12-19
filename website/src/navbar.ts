@@ -1,12 +1,14 @@
 /**
  * Mountain Taxes - Navbar Component
  * 
- * Handles the navigation bar functionality including the states dropdown menu.
- * Provides easy access to individual state pages with responsive design.
+ * Handles the navigation bar functionality including the states dropdown menu
+ * and theme switching functionality. Provides easy access to individual state 
+ * pages with responsive design and Bootstrap Color Mode support.
  */
 
 import { STATE_TAX_DATA } from './stateData';
 import { State, StatesByTaxStatus } from './types';
+import { ThemeService, ThemeMode } from './themeService';
 
 interface RouterInterface {
     navigate(path: string): void;
@@ -15,10 +17,12 @@ interface RouterInterface {
 export class Navbar {
     private containerId: string;
     private router?: RouterInterface;
+    private themeService: ThemeService;
 
     constructor(containerId: string = 'states-dropdown-content', router?: RouterInterface) {
         this.containerId = containerId;
         this.router = router;
+        this.themeService = new ThemeService();
         this.init();
     }
 
@@ -27,6 +31,7 @@ export class Navbar {
      */
     private init(): void {
         this.populateStatesDropdown();
+        this.initializeTheme();
         this.setupEventListeners();
     }
 
@@ -82,12 +87,63 @@ export class Navbar {
     }
 
     /**
+     * Initialize theme functionality
+     */
+    private initializeTheme(): void {
+        this.updateThemeDisplay();
+        
+        // Listen for theme changes
+        this.themeService.addListener(() => {
+            this.updateThemeDisplay();
+        });
+    }
+
+    /**
+     * Update the theme dropdown display
+     */
+    private updateThemeDisplay(): void {
+        const themeIcon = document.getElementById('theme-icon');
+        const themeLabel = document.getElementById('theme-label');
+        
+        if (themeIcon && themeLabel) {
+            const currentTheme = this.themeService.getCurrentTheme();
+            const config = this.themeService.getThemeConfig(currentTheme);
+            
+            themeIcon.className = `${config.icon} me-1`;
+            themeLabel.textContent = config.label;
+        }
+
+        // Update active state in dropdown
+        const themeOptions = document.querySelectorAll('.theme-option');
+        themeOptions.forEach(option => {
+            const themeMode = option.getAttribute('data-theme');
+            if (themeMode === this.themeService.getCurrentTheme()) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+    }
+
+    /**
      * Setup event listeners for dropdown interactions
      */
     private setupEventListeners(): void {
         // Handle dropdown item clicks
         document.addEventListener('click', (event) => {
             const target = event.target as HTMLElement;
+            
+            // Check if clicked element is a theme option
+            if (target.classList.contains('theme-option')) {
+                event.preventDefault();
+                
+                const themeMode = target.getAttribute('data-theme') as ThemeMode;
+                if (themeMode) {
+                    this.themeService.setTheme(themeMode);
+                    this.closeDropdown();
+                }
+                return;
+            }
             
             // Check if clicked element is a state dropdown item
             if (target.classList.contains('dropdown-item') && target.hasAttribute('data-state-name')) {
@@ -143,18 +199,31 @@ export class Navbar {
     }
 
     /**
-     * Close the dropdown menu
+     * Close all dropdown menus
      */
     private closeDropdown(): void {
-        const dropdown = document.querySelector('.states-dropdown-menu');
-        const dropdownToggle = document.getElementById('statesDropdown');
+        // Close states dropdown
+        const statesDropdown = document.querySelector('.states-dropdown-menu');
+        const statesDropdownToggle = document.getElementById('statesDropdown');
         
-        if (dropdown && dropdown.classList.contains('show')) {
-            dropdown.classList.remove('show');
+        if (statesDropdown && statesDropdown.classList.contains('show')) {
+            statesDropdown.classList.remove('show');
         }
         
-        if (dropdownToggle) {
-            dropdownToggle.setAttribute('aria-expanded', 'false');
+        if (statesDropdownToggle) {
+            statesDropdownToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        // Close theme dropdown
+        const themeDropdown = document.querySelector('#themeDropdown + .dropdown-menu');
+        const themeDropdownToggle = document.getElementById('themeDropdown');
+        
+        if (themeDropdown && themeDropdown.classList.contains('show')) {
+            themeDropdown.classList.remove('show');
+        }
+        
+        if (themeDropdownToggle) {
+            themeDropdownToggle.setAttribute('aria-expanded', 'false');
         }
 
         // Also close the navbar collapse on mobile
@@ -211,5 +280,12 @@ export class Navbar {
      */
     public setRouter(router: RouterInterface): void {
         this.router = router;
+    }
+
+    /**
+     * Get the theme service instance
+     */
+    public getThemeService(): ThemeService {
+        return this.themeService;
     }
 }

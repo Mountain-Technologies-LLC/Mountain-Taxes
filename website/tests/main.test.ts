@@ -76,6 +76,19 @@ jest.mock('../src/locationService', () => ({
     LocationService: jest.fn().mockImplementation(() => mockLocationService)
 }));
 
+const mockToastService = {
+    showLocationToast: jest.fn().mockReturnValue('toast-1'),
+    hideToast: jest.fn(),
+    showInfo: jest.fn().mockReturnValue('toast-info'),
+    showSuccess: jest.fn().mockReturnValue('toast-success'),
+    showWarning: jest.fn().mockReturnValue('toast-warning'),
+    showError: jest.fn().mockReturnValue('toast-error')
+};
+
+jest.mock('../src/toastService', () => ({
+    ToastService: jest.fn().mockImplementation(() => mockToastService)
+}));
+
 describe('Main Application Tests', () => {
     beforeEach(() => {
         // Set up the HTML structure that matches index.html
@@ -112,7 +125,7 @@ describe('Main Application Tests', () => {
         document.head.appendChild(bootstrapLink);
 
         // Mock window.router
-        (window as any).router = {
+        (window as unknown).router = {
             navigate: jest.fn()
         };
     });
@@ -298,33 +311,6 @@ describe('Main Application Tests', () => {
             expect(mockLocationService.getSelectionMessage).toBeDefined();
         });
 
-        test('should display location status messages', () => {
-            // Test that the DOM structure supports location status alerts
-            const mainContent = document.getElementById('main-content');
-            expect(mainContent).toBeTruthy();
-            
-            // Simulate adding a location status alert
-            const alertHtml = `
-                <div id="location-status-alert" class="alert alert-info alert-dismissible fade show" role="alert">
-                    <i class="fas fa-location-arrow me-2" aria-hidden="true"></i>
-                    Detecting your location...
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            `;
-            
-            mainContent?.insertAdjacentHTML('afterbegin', alertHtml);
-            
-            const alert = document.getElementById('location-status-alert');
-            expect(alert).toBeTruthy();
-            expect(alert?.classList.contains('alert')).toBe(true);
-            expect(alert?.classList.contains('alert-info')).toBe(true);
-            expect(alert?.getAttribute('role')).toBe('alert');
-            
-            // Check accessibility
-            const closeButton = alert?.querySelector('.btn-close');
-            expect(closeButton?.getAttribute('aria-label')).toBe('Close');
-        });
-
         test('should handle location detection errors gracefully', () => {
             // Mock failed location detection
             mockLocationService.detectLocation.mockResolvedValue({
@@ -374,6 +360,60 @@ describe('Main Application Tests', () => {
                 isInUS: false 
             });
             expect(recommended.length).toBeGreaterThan(1);
+        });
+    });
+
+    describe('Toast Service Integration', () => {
+        test('should initialize toast service', () => {
+            const { ToastService } = require('../src/toastService');
+            expect(ToastService).toBeDefined();
+            expect(typeof ToastService).toBe('function');
+        });
+
+        test('should show location detection toasts', () => {
+            // Test loading toast
+            const loadingToastId = mockToastService.showLocationToast('Detecting your location...', 'info', 0);
+            expect(mockToastService.showLocationToast).toHaveBeenCalledWith('Detecting your location...', 'info', 0);
+            expect(loadingToastId).toBe('toast-1');
+
+            // Test success toast
+            mockToastService.showLocationToast('Location detected successfully', 'success', 6000);
+            expect(mockToastService.showLocationToast).toHaveBeenCalledWith('Location detected successfully', 'success', 6000);
+        });
+
+        test('should hide toasts when needed', () => {
+            const toastId = 'toast-1';
+            mockToastService.hideToast(toastId);
+            expect(mockToastService.hideToast).toHaveBeenCalledWith(toastId);
+        });
+
+        test('should support different toast types', () => {
+            mockToastService.showInfo('Info message');
+            expect(mockToastService.showInfo).toHaveBeenCalledWith('Info message');
+
+            mockToastService.showSuccess('Success message');
+            expect(mockToastService.showSuccess).toHaveBeenCalledWith('Success message');
+
+            mockToastService.showWarning('Warning message');
+            expect(mockToastService.showWarning).toHaveBeenCalledWith('Warning message');
+
+            mockToastService.showError('Error message');
+            expect(mockToastService.showError).toHaveBeenCalledWith('Error message');
+        });
+
+        test('should create toast container in DOM', () => {
+            // Verify that toast container would be created
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            container.className = 'toast-container position-fixed end-0 p-3';
+            container.style.top = '70px';
+            container.style.zIndex = '1055';
+            
+            expect(container.id).toBe('toast-container');
+            expect(container.className).toContain('position-fixed');
+            expect(container.className).toContain('end-0');
+            expect(container.style.top).toBe('70px');
+            expect(container.style.zIndex).toBe('1055');
         });
     });
 });

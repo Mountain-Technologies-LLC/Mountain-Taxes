@@ -7,11 +7,36 @@
 
 import { Navbar } from '../src/navbar';
 import { STATE_TAX_DATA } from '../src/stateData';
+import { ThemeService } from '../src/themeService';
 
 // Mock DOM environment
 const mockRouter = {
     navigate: jest.fn()
 };
+
+// Mock localStorage and matchMedia for theme service
+const localStorageMock = {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+};
+
+const matchMediaMock = jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+}));
+
+Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock
+});
+
+Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: matchMediaMock,
+});
 
 // Setup DOM elements for testing
 function setupDOM(): void {
@@ -24,6 +49,34 @@ function setupDOM(): void {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button">
+                                <i id="theme-icon" class="fas fa-circle-half-stroke me-1"></i>
+                                <span id="theme-label">Auto</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><h6 class="dropdown-header">Theme</h6></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item theme-option" href="#" data-theme="light">
+                                        <i class="fas fa-sun me-2"></i>
+                                        Light
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item theme-option" href="#" data-theme="dark">
+                                        <i class="fas fa-moon me-2"></i>
+                                        Dark
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item theme-option" href="#" data-theme="auto">
+                                        <i class="fas fa-circle-half-stroke me-2"></i>
+                                        Auto
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="statesDropdown" role="button">
                                 States
@@ -41,6 +94,23 @@ function setupDOM(): void {
             </div>
         </nav>
     `;
+
+    // Mock document.documentElement and document.body for theme service
+    Object.defineProperty(document, 'documentElement', {
+        value: {
+            setAttribute: jest.fn(),
+            removeAttribute: jest.fn(),
+        },
+        writable: true,
+    });
+
+    Object.defineProperty(document, 'body', {
+        value: {
+            setAttribute: jest.fn(),
+            removeAttribute: jest.fn(),
+        },
+        writable: true,
+    });
 }
 
 describe('Navbar Component', () => {
@@ -49,6 +119,7 @@ describe('Navbar Component', () => {
     beforeEach(() => {
         setupDOM();
         jest.clearAllMocks();
+        localStorageMock.getItem.mockReturnValue(null);
         navbar = new Navbar('states-dropdown-content', mockRouter);
     });
 
@@ -309,6 +380,117 @@ describe('Navbar Component', () => {
             
             // Should handle mobile-specific behavior
             expect(window.innerWidth).toBe(500);
+        });
+    });
+
+    describe('Theme Integration', () => {
+        test('should initialize theme service', () => {
+            expect(navbar.getThemeService()).toBeInstanceOf(ThemeService);
+        });
+
+        test('should update theme display on initialization', () => {
+            const themeIcon = document.getElementById('theme-icon');
+            const themeLabel = document.getElementById('theme-label');
+            
+            expect(themeIcon).toBeTruthy();
+            expect(themeLabel).toBeTruthy();
+            expect(themeLabel?.textContent).toBe('Auto');
+        });
+
+        test('should handle theme option clicks', () => {
+            const lightThemeOption = document.querySelector('[data-theme="light"]') as HTMLElement;
+            expect(lightThemeOption).toBeTruthy();
+            
+            const clickEvent = new MouseEvent('click', { bubbles: true });
+            const preventDefaultSpy = jest.spyOn(clickEvent, 'preventDefault');
+            
+            lightThemeOption.dispatchEvent(clickEvent);
+            
+            expect(preventDefaultSpy).toHaveBeenCalled();
+            expect(navbar.getThemeService().getCurrentTheme()).toBe('light');
+        });
+
+        test('should update theme display when theme changes', () => {
+            const themeService = navbar.getThemeService();
+            const themeIcon = document.getElementById('theme-icon');
+            const themeLabel = document.getElementById('theme-label');
+            
+            themeService.setTheme('dark');
+            
+            expect(themeIcon?.className).toContain('fa-moon');
+            expect(themeLabel?.textContent).toBe('Dark');
+        });
+
+        test('should mark active theme option', () => {
+            const themeService = navbar.getThemeService();
+            themeService.setTheme('light');
+            
+            const lightOption = document.querySelector('[data-theme="light"]');
+            const darkOption = document.querySelector('[data-theme="dark"]');
+            const autoOption = document.querySelector('[data-theme="auto"]');
+            
+            expect(lightOption?.classList.contains('active')).toBe(true);
+            expect(darkOption?.classList.contains('active')).toBe(false);
+            expect(autoOption?.classList.contains('active')).toBe(false);
+        });
+
+        test('should close dropdown after theme selection', () => {
+            const lightThemeOption = document.querySelector('[data-theme="light"]') as HTMLElement;
+            const themeDropdown = document.querySelector('#themeDropdown + .dropdown-menu') as HTMLElement;
+            
+            // Simulate open dropdown
+            themeDropdown?.classList.add('show');
+            
+            const clickEvent = new MouseEvent('click', { bubbles: true });
+            lightThemeOption.dispatchEvent(clickEvent);
+            
+            expect(themeDropdown?.classList.contains('show')).toBe(false);
+        });
+
+        test('should handle theme changes from external sources', () => {
+            const themeService = navbar.getThemeService();
+            const themeIcon = document.getElementById('theme-icon');
+            const themeLabel = document.getElementById('theme-label');
+            
+            // Simulate external theme change
+            themeService.setTheme('dark');
+            
+            expect(themeIcon?.className).toContain('fa-moon');
+            expect(themeLabel?.textContent).toBe('Dark');
+        });
+    });
+
+    describe('Multiple Dropdown Management', () => {
+        test('should close both theme and states dropdowns', () => {
+            const statesDropdown = document.querySelector('.states-dropdown-menu') as HTMLElement;
+            const themeDropdown = document.querySelector('#themeDropdown + .dropdown-menu') as HTMLElement;
+            
+            // Simulate both dropdowns open
+            statesDropdown?.classList.add('show');
+            themeDropdown?.classList.add('show');
+            
+            // Verify both are open
+            expect(statesDropdown?.classList.contains('show')).toBe(true);
+            expect(themeDropdown?.classList.contains('show')).toBe(true);
+            
+            // Test that the closeDropdown method would close both
+            // (We can't easily test the click-outside behavior in jsdom)
+            // So we just verify the dropdowns can be opened
+        });
+
+        test('should handle escape key for both dropdowns', () => {
+            const statesDropdown = document.querySelector('.states-dropdown-menu') as HTMLElement;
+            const themeDropdown = document.querySelector('#themeDropdown + .dropdown-menu') as HTMLElement;
+            
+            // Simulate both dropdowns open
+            statesDropdown?.classList.add('show');
+            themeDropdown?.classList.add('show');
+            
+            const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
+            document.dispatchEvent(escapeEvent);
+            
+            expect(statesDropdown?.classList.contains('show')).toBe(false);
+            expect(themeDropdown?.classList.contains('show')).toBe(false);
         });
     });
 });

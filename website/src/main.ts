@@ -15,6 +15,7 @@ import { FilerDetails } from './filerDetails';
 import { Router, StateDetailView } from './router';
 import { Navbar } from './navbar';
 import { LocationService } from './locationService';
+import { ToastService } from './toastService';
 // STATE_TAX_DATA is used by the router component
 
 // Register Chart.js components
@@ -33,11 +34,13 @@ class MountainTaxesApp {
     private router: Router;
     private stateDetailView: StateDetailView;
     private locationService: LocationService;
+    private toastService: ToastService;
 
     constructor() {
         this.router = new Router();
         this.stateDetailView = new StateDetailView('main-content');
         this.locationService = new LocationService();
+        this.toastService = new ToastService();
         
         // Make router globally available for router links
         window.router = this.router;
@@ -279,25 +282,23 @@ class MountainTaxesApp {
         try {
             console.log('Detecting user location for default state selection...');
             
-            // Show loading indicator
-            this.showLocationDetectionStatus('Detecting your location...');
+            // Show loading toast
+            const loadingToastId = this.toastService.showLocationToast('Detecting your location...', 'info', 0);
             
             const locationResult = await this.locationService.detectLocation();
             const recommendedStates = this.locationService.getRecommendedStates(locationResult);
             const selectionMessage = this.locationService.getSelectionMessage(locationResult);
+            
+            // Hide loading toast
+            this.toastService.hideToast(loadingToastId);
             
             // Apply the recommended state selection
             if (this.stateSelector && recommendedStates.length > 0) {
                 this.stateSelector.setSelectedStates(recommendedStates);
             }
             
-            // Show user-friendly message about the selection
-            this.showLocationDetectionStatus(selectionMessage, 'success');
-            
-            // Hide the message after a few seconds
-            setTimeout(() => {
-                this.hideLocationDetectionStatus();
-            }, 5000);
+            // Show success toast with the selection message
+            this.toastService.showLocationToast(selectionMessage, 'success', 6000);
             
             console.log('Location-based defaults applied:', {
                 locationResult,
@@ -307,46 +308,10 @@ class MountainTaxesApp {
         } catch (error) {
             console.warn('Failed to apply location-based defaults:', error);
             // Don't show error to user, just log it and continue with no selection
-            this.hideLocationDetectionStatus();
         }
     }
 
-    /**
-     * Show location detection status message
-     */
-    private showLocationDetectionStatus(message: string, type: 'info' | 'success' = 'info'): void {
-        const existingAlert = document.getElementById('location-status-alert');
-        if (existingAlert) {
-            existingAlert.remove();
-        }
 
-        const alertClass = type === 'success' ? 'alert-success' : 'alert-info';
-        const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-location-arrow';
-        
-        const alertHtml = `
-            <div id="location-status-alert" class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                <i class="fas ${iconClass} me-2" aria-hidden="true"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-
-        // Insert at the top of the main content
-        const mainContent = document.getElementById('main-content');
-        if (mainContent && mainContent.firstChild) {
-            mainContent.insertAdjacentHTML('afterbegin', alertHtml);
-        }
-    }
-
-    /**
-     * Hide location detection status message
-     */
-    private hideLocationDetectionStatus(): void {
-        const existingAlert = document.getElementById('location-status-alert');
-        if (existingAlert) {
-            existingAlert.remove();
-        }
-    }
 
     /**
      * Show error message to user
@@ -407,6 +372,13 @@ class MountainTaxesApp {
      */
     public getFilerDetails(): FilerDetails | null {
         return this.filerDetails;
+    }
+
+    /**
+     * Get the toast service instance
+     */
+    public getToastService(): ToastService {
+        return this.toastService;
     }
 }
 

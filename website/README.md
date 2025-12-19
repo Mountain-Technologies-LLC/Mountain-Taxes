@@ -14,6 +14,7 @@ A TypeScript-based web application for visualizing and comparing state earned in
 - **Filer Details Component**: Filing type selection (Single or Married) with real-time tax calculations
 - **Advanced Income Range Controls**: Step-by functionality with configurable base income
 - **States Navigation Dropdown**: Easy access to individual state tax information
+- **Theme Mode Switching**: Light, Dark, and Auto themes with system preference detection
 - **Responsive Navbar**: Mobile-friendly navigation with collapsible menu
 - **State Detail Pages**: Comprehensive tax information for each state
 - Local asset hosting for improved reliability
@@ -69,6 +70,8 @@ website/
 │   ├── incomeRangeControls.ts # Income range step controls
 │   ├── stateSelector.ts # Bulk state selection controls
 │   ├── locationService.ts # Location detection service
+│   ├── toastService.ts # Toast notification service
+│   ├── themeService.ts # Theme switching service
 │   ├── stateData.ts    # State tax data
 │   ├── types.ts        # TypeScript interfaces
 │   └── ...             # Other components
@@ -98,6 +101,7 @@ website/
 - **Jest**: Testing framework
 - **fast-check**: Property-based testing library
 - **ESLint**: Code linting and quality
+- **Toast Notifications**: Bootstrap-based toast system for user feedback
 
 ## Testing
 
@@ -119,6 +123,45 @@ The application includes a responsive states dropdown in the navigation bar that
 - **Direct State Navigation**: Click any state to view detailed tax information
 - **Mobile-Responsive Design**: Optimized layout for small screens
 - **Keyboard Accessibility**: Full keyboard navigation support
+
+### Theme Mode Switching
+
+The application includes a comprehensive theme system with Bootstrap Color Mode support:
+
+#### Available Themes
+
+- **Light Theme**: Clean, bright interface optimized for daylight use
+- **Dark Theme**: Dark interface that reduces eye strain in low-light conditions
+- **Auto Theme**: Automatically switches between light and dark based on system preferences
+
+#### Theme Features
+
+- **Persistent Selection**: Theme choice is saved in localStorage and restored on page reload
+- **System Integration**: Auto mode respects the user's OS-level dark/light mode preference
+- **Real-time Switching**: Instant theme changes without page refresh
+- **Accessible Icons**: Font Awesome icons clearly indicate each theme option
+- **Dropdown Interface**: Clean dropdown menu in the navbar for easy theme selection
+
+#### Theme Dropdown
+
+The theme selector is located in the navbar and includes:
+
+- **Sun Icon**: Light theme option
+- **Moon Icon**: Dark theme option  
+- **Half-Circle Icon**: Auto theme option (follows system preference)
+- **Active State**: Currently selected theme is highlighted
+- **Responsive Design**: Works seamlessly on all device sizes
+
+#### Technical Implementation
+
+- **Bootstrap Color Mode**: Uses Bootstrap 5.3's native color mode system
+- **CSS Custom Properties**: Leverages CSS variables for smooth theme transitions
+- **Event-Driven**: Theme changes trigger events for component updates
+- **Error Handling**: Graceful fallback to auto mode if localStorage is unavailable
+- **Performance Optimized**: Minimal overhead with efficient theme switching
+- **Component Theming**: All UI components including chart legend adapt to selected theme
+- **System Preference Detection**: Auto theme properly resolves to system preference on page load
+- **Flash Prevention**: Theme applied immediately during page load to prevent visual flash
 
 ### Responsive Design
 
@@ -205,8 +248,9 @@ The application automatically detects the user's location to provide intelligent
 
 ### User Experience
 
-- **Status Messages**: Friendly notifications about location detection and selection
-- **Auto-Dismissing Alerts**: Status messages automatically disappear after 5 seconds
+- **Toast Notifications**: Friendly toast notifications positioned below the navbar about location detection and selection
+- **Auto-Dismissing Messages**: Toast messages automatically disappear after 5-6 seconds
+- **Loading Indicators**: Shows progress while detecting location
 - **Manual Override**: Users can always add/remove states using the interactive legend
 - **No Tracking**: Location data is used only for initial selection and not stored
 

@@ -8,6 +8,47 @@
     <!-- Bootswatch Flatly Theme (Local) -->
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Font Awesome for icons -->
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> -->
+    
+    <!-- Apply saved theme immediately to prevent flash -->
+    <script>
+        (function() {
+            try {
+                const saved = localStorage.getItem('mountain-taxes-theme');
+                const theme = (saved && ['light', 'dark', 'auto'].includes(saved)) ? saved : 'auto';
+                
+                let effectiveTheme = theme;
+                if (theme === 'auto') {
+                    // Resolve auto to actual system preference
+                    effectiveTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                
+                // Only set on documentElement since body doesn't exist yet
+                document.documentElement.setAttribute('data-bs-theme', effectiveTheme);
+                
+                // Set on body when it becomes available
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (document.body) {
+                        document.body.setAttribute('data-bs-theme', effectiveTheme);
+                    }
+                });
+            } catch (error) {
+                // Fallback to system preference
+                const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const fallbackTheme = systemDark ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-bs-theme', fallbackTheme);
+                
+                // Set on body when it becomes available
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (document.body) {
+                        document.body.setAttribute('data-bs-theme', fallbackTheme);
+                    }
+                });
+            }
+        })();
+    </script>
+    
     <!-- Custom styles for enhanced responsive design -->
     <style>
         /* Chart container with responsive height */
@@ -192,6 +233,65 @@
             box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
         }
         
+        /* Theme dropdown styles */
+        .theme-option.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        
+        .theme-option.active:hover {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        
+        /* Dark mode card title improvements */
+        [data-bs-theme="dark"] .card-header.bg-primary .card-title,
+        [data-bs-theme="dark"] .card-header.bg-primary h5,
+        [data-bs-theme="dark"] .card-header.bg-primary i {
+            color: #000000 !important;
+        }
+        
+        /* Ensure card titles are always readable */
+        .card-header.bg-primary .card-title,
+        .card-header.bg-primary h5 {
+            font-weight: 600;
+        }
+        
+        /* Light mode card titles remain white for contrast */
+        [data-bs-theme="light"] .card-header.bg-primary .card-title,
+        [data-bs-theme="light"] .card-header.bg-primary h5,
+        [data-bs-theme="light"] .card-header.bg-primary i {
+            color: #ffffff !important;
+        }
+        
+        /* Dark mode HTML legend styles */
+        [data-bs-theme="dark"] .html-legend-container {
+            background-color: #2b2b2b;
+            border-color: #495057;
+        }
+        
+        [data-bs-theme="dark"] .legend-title h6 {
+            color: #f8f9fa;
+        }
+        
+        [data-bs-theme="dark"] .legend-label {
+            color: #f8f9fa;
+        }
+        
+        [data-bs-theme="dark"] .legend-color-box {
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        [data-bs-theme="dark"] .legend-item:hover {
+            box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+        }
+        
+        [data-bs-theme="dark"] .no-states-message {
+            color: #adb5bd;
+        }
+        
+
+        
         /* HTML Legend Styles */
         .html-legend-container {
             margin-top: 15px;
@@ -312,7 +412,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="light">
+        <nav class="navbar navbar-expand-lg bg-primary">
             <div class="container">
                 <a class="navbar-brand router-link" href="#/">Mountain Taxes</a>
                 
@@ -322,6 +422,34 @@
                 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Change theme">
+                                <i id="theme-icon" class="fas fa-circle-half-stroke me-1" aria-hidden="true"></i>
+                                <span id="theme-label">Auto</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+                                <li><h6 class="dropdown-header">Theme</h6></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item theme-option" href="#" data-theme="light">
+                                        <i class="fas fa-sun me-2" aria-hidden="true"></i>
+                                        Light
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item theme-option" href="#" data-theme="dark">
+                                        <i class="fas fa-moon me-2" aria-hidden="true"></i>
+                                        Dark
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item theme-option" href="#" data-theme="auto">
+                                        <i class="fas fa-circle-half-stroke me-2" aria-hidden="true"></i>
+                                        Auto
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="statesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 States

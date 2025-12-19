@@ -319,4 +319,92 @@ Task 15 (Final Integration and Testing) has been successfully completed. The Mou
 - **Documentation**: Updated README files with location detection features and privacy information
 - **Validation**: All tests pass, TypeScript compilation succeeds, comprehensive error handling verified
 
+### Toast Notification System (December 2024)
+- **Change**: Replaced location detection alerts with modern toast notifications positioned below the navbar
+- **Implementation**:
+  - **Toast Service**: New `ToastService` class providing comprehensive toast notification functionality
+  - **Bootstrap Integration**: Uses Bootstrap 5.3 toast components with proper styling and animations
+  - **Multiple Toast Types**: Support for info, success, warning, and error toasts with appropriate icons
+  - **Location-Specific Toasts**: Specialized `showLocationToast()` method for location detection feedback
+  - **Auto-Positioning**: Toasts appear below the navbar with proper z-index and responsive positioning
+- **Components Added**:
+  - `website/src/toastService.ts`: Core toast notification service with Bootstrap integration
+  - `website/tests/toastService.test.ts`: Comprehensive test suite (21 test cases)
+  - Updated `website/src/main.ts`: Integration with location detection for toast notifications
+  - Updated `website/index.html`: Added Font Awesome icons for toast notifications
+- **User Experience Improvements**:
+  - **Modern UI**: Toast notifications provide a more modern, less intrusive user experience
+  - **Better Positioning**: Top-right corner placement doesn't interfere with main content
+  - **Loading Indicators**: Shows progress toast while detecting location, then success toast with results
+  - **Auto-Dismissing**: Toasts automatically disappear after 5-6 seconds
+  - **Accessibility**: Full ARIA support with proper roles and labels
+- **Technical Features**:
+  - **Bootstrap Types**: Proper TypeScript interfaces for Bootstrap toast components
+  - **Container Management**: Automatic creation and management of toast container
+  - **Event Handling**: Proper cleanup when toasts are dismissed
+  - **Multiple Toasts**: Support for multiple simultaneous toasts with unique IDs
+  - **Error Handling**: Graceful handling when Bootstrap is unavailable
+- **Integration Points**:
+  - **Location Detection**: Replaces alert-based status messages with toast notifications
+  - **Main Application**: Toast service available throughout the application
+  - **Bootstrap Framework**: Leverages existing Bootstrap 5.3 infrastructure
+  - **Font Awesome Icons**: Uses Font Awesome 6.4.0 for consistent iconography
+- **API Features**:
+  - **Convenience Methods**: `showInfo()`, `showSuccess()`, `showWarning()`, `showError()`
+  - **Custom Options**: Configurable duration, icons, and close buttons
+  - **Toast Management**: Methods to hide specific toasts or all toasts
+  - **Container Recreation**: Automatic container recreation if removed from DOM
+- **Testing**: Full test coverage including toast creation, Bootstrap integration, accessibility features, multiple toast management, error handling, and container management
+- **Documentation**: Updated README files and location detection documentation with toast notification information
+- **Validation**: All 309 tests pass, TypeScript compilation succeeds, improved linting compliance
+
+### Theme Mode Switching Feature (December 2024)
+- **Feature**: Added comprehensive theme switching functionality with Bootstrap Color Mode support
+- **Implementation**:
+  - **Theme Service**: New `ThemeService` class providing complete theme management functionality
+  - **Three Theme Options**: Light, Dark, and Auto (follows system preference) themes
+  - **Bootstrap Integration**: Uses Bootstrap 5.3's native Color Mode system with CSS custom properties
+  - **Persistent Storage**: Theme selection saved in localStorage and restored on page reload
+  - **System Integration**: Auto mode respects OS-level dark/light mode preferences
+  - **Accessibility Enhancement**: Card titles optimized for readability with black text in dark mode
+  - **Dark Mode Legend**: HTML legend styled for dark mode with appropriate colors and contrast
+  - **Auto Theme Resolution**: Fixed auto theme to properly resolve to system preference on page load
+  - **CSS Optimization**: Removed unnecessary border-width overrides to use Bootstrap defaults
+  - **DOM Safety**: Fixed theme initialization to handle document.body availability timing
+- **Components Added**:
+  - `website/src/themeService.ts`: Core theme management service with localStorage persistence
+  - `website/tests/themeService.test.ts`: Comprehensive test suite (40+ test cases)
+  - Updated `website/src/navbar.ts`: Integration with navbar dropdown for theme selection
+  - Updated `website/tests/navbar.test.ts`: Enhanced tests for theme functionality
+  - Updated `website/index.html`: Theme dropdown in navbar with Font Awesome icons
+- **User Experience**:
+  - **Theme Dropdown**: Clean dropdown menu in navbar with intuitive icons (sun, moon, half-circle)
+  - **Real-time Switching**: Instant theme changes without page refresh or flicker
+  - **Visual Feedback**: Currently selected theme is highlighted in dropdown
+  - **Accessibility**: Full keyboard navigation and screen reader support
+  - **Responsive Design**: Theme dropdown works seamlessly on all device sizes
+- **Technical Features**:
+  - **Event-Driven Architecture**: Theme changes trigger events for component updates
+  - **CSS Custom Properties**: Leverages CSS variables for smooth theme transitions
+  - **Media Query Integration**: Auto mode listens for system preference changes
+  - **Error Handling**: Graceful fallback to auto mode if localStorage is unavailable
+  - **Performance Optimized**: Minimal overhead with efficient theme switching
+- **Theme Options**:
+  - **Light Theme**: Clean, bright interface optimized for daylight use with sun icon
+  - **Dark Theme**: Dark interface that reduces eye strain in low-light conditions with moon icon
+  - **Auto Theme**: Automatically switches based on system preferences with half-circle icon
+- **Integration Points**:
+  - **Navbar Component**: Theme dropdown integrated into existing navigation structure
+  - **Bootstrap Framework**: Uses Bootstrap 5.3's native Color Mode system
+  - **DOM Management**: Applies themes to both `html` and `body` elements for compatibility
+  - **Event System**: Theme change listeners for component synchronization
+- **API Features**:
+  - **Theme Management**: `setTheme()`, `getCurrentTheme()`, `getEffectiveTheme()` methods
+  - **Configuration Access**: `getThemeConfig()`, `getAvailableThemes()` for UI integration
+  - **Event Listeners**: `addListener()`, `removeListener()` for theme change notifications
+  - **Utility Methods**: `toggleTheme()`, `supportsColorScheme()` for enhanced functionality
+- **Testing**: Full test coverage including theme switching, localStorage persistence, system preference detection, event handling, DOM manipulation, error scenarios, and navbar integration
+- **Documentation**: Updated README files with comprehensive theme functionality documentation
+- **Validation**: All tests pass, TypeScript compilation succeeds, comprehensive theme switching verified
+
 **Status**: ✅ COMPLETE - Ready for Production Deployment

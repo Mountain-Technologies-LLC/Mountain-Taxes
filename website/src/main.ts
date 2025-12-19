@@ -217,7 +217,7 @@ class MountainTaxesApp {
                     <div class="card">
                         <div class="card-body text-center text-muted">
                             <small>
-                                Data based on Tax Foundation 2025 state income tax rates. 
+                                Data based on <a href="https://taxfoundation.org/data/all/state/state-income-tax-rates/" target="_blank">Tax Foundation 2025</a> state income tax rates. 
                             </small>
                         </div>
                     </div>

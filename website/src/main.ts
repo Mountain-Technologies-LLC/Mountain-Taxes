@@ -218,7 +218,6 @@ class MountainTaxesApp {
                         <div class="card-body text-center text-muted">
                             <small>
                                 Data based on Tax Foundation 2025 state income tax rates. 
-                                For detailed state information, click the "i" button next to any state.
                             </small>
                         </div>
                     </div>

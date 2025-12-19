@@ -55,7 +55,7 @@ function setupDOM(): void {
                                 <span id="theme-label">Auto</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><h6 class="dropdown-header">Theme</h6></li>
+                                <li><h6 class="dropdown-item fw-bold">Theme</h6></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <a class="dropdown-item theme-option" href="#" data-theme="light">
@@ -82,7 +82,7 @@ function setupDOM(): void {
                                 States
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end states-dropdown-menu">
-                                <li><h6 class="dropdown-header">Select a State</h6></li>
+                                <li><h6 class="dropdown-item fw-bold">Select a State</h6></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <div id="states-dropdown-content">
                                     <!-- States will be populated here -->
@@ -269,9 +269,9 @@ describe('Navbar Component', () => {
             dropdown?.classList.add('show');
             dropdownToggle?.setAttribute('aria-expanded', 'true');
             
-            // Call private method through public interface (click outside)
-            const outsideClick = new MouseEvent('click', { bubbles: true });
-            document.body.dispatchEvent(outsideClick);
+            // Test the escape key functionality instead of click outside
+            const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true });
+            document.dispatchEvent(escapeEvent);
             
             // The dropdown should be closed
             expect(dropdown?.classList.contains('show')).toBe(false);

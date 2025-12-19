@@ -125,7 +125,7 @@ describe('Main Application Tests', () => {
         document.head.appendChild(bootstrapLink);
 
         // Mock window.router
-        (window as unknown).router = {
+        (window as any).router = {
             navigate: jest.fn()
         };
     });

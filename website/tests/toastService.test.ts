@@ -276,7 +276,7 @@ describe('ToastService', () => {
     describe('Error Handling', () => {
         it('should handle missing Bootstrap gracefully', () => {
             // Remove Bootstrap mock
-            delete (window as unknown).bootstrap;
+            delete (window as any).bootstrap;
             
             expect(() => {
                 toastService.showInfo('Test message');

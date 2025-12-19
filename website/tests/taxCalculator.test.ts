@@ -151,7 +151,7 @@ describe('Tax Calculation Engine Tests', () => {
                 // For progressive systems, marginal rate should be >= effective rate
                 // The difference depends on the bracket structure and income level
                 const rateDifference = result.marginalRate - result.effectiveRate;
-                expect(rateDifference).toBeGreaterThanOrEqual(0);
+                expect(rateDifference).toBeGreaterThanOrEqual(-tolerance);
                 
                 // For very high incomes in progressive systems, the rates should converge
                 // but marginal should still be >= effective

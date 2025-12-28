@@ -37,14 +37,14 @@ export class StateSelector {
     private render(): void {
         this.container.innerHTML = `
             <div class="state-selector">
-                <div class="row mb-3">
+                <div class="row mb-1">
                     <div class="col-12">
                         <h5>Select States to Compare</h5>
                         <p class="text-muted">Use the bulk operations below to select states for comparison.</p>
                     </div>
                 </div>
                 
-                <div class="row mb-3">
+                <div class="row">
                     <div class="col-12">
                         <div class="bulk-controls">
                             <button id="all-states-btn" class="btn btn-primary btn-sm me-2">All States</button>

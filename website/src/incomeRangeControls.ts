@@ -77,7 +77,7 @@ export class IncomeRangeControls {
                         </div>
                         
                         <!-- Base Income Controls -->
-                        <div class="row g-3 align-items-center mb-3">
+                        <div class="row g-3 align-items-center mb-1">
                             <div class="col-auto">
                                 <label for="base-income" class="col-form-label">Start Base Income at</label>
                             </div>
@@ -87,11 +87,9 @@ export class IncomeRangeControls {
                         </div>
                         
                         <!-- Range Information -->
-                        <div class="mt-2">
-                            <small class="text-muted" id="range-info">
-                                Current range: ${this.formatCurrency(this.config.baseIncome)} - ${this.formatCurrency(this.calculateMaxIncome())}
-                            </small>
-                        </div>
+                        <small class="text-muted" id="range-info">
+                            Current range: ${this.formatCurrency(this.config.baseIncome)} - ${this.formatCurrency(this.calculateMaxIncome())}
+                        </small>
                     </div>
                 </div>
             </div>

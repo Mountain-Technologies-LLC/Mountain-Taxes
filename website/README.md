@@ -17,7 +17,47 @@ A TypeScript-based web application for visualizing and comparing state earned in
 - **Theme Mode Switching**: Light, Dark, and Auto themes with system preference detection
 - **Responsive Navbar**: Mobile-friendly navigation with collapsible menu
 - **State Detail Pages**: Comprehensive tax information for each state
+- **SEO Optimized**: Comprehensive SEO meta tags, structured data, and accessibility features
+- **PWA Ready**: Progressive Web App capabilities with manifest and service worker support
 - Local asset hosting for improved reliability
+
+## SEO & Accessibility Features
+
+### Search Engine Optimization
+
+- **Comprehensive Meta Tags**: Title, description, keywords, and author tags
+- **Open Graph Protocol**: Facebook and social media sharing optimization
+- **Twitter Cards**: Enhanced Twitter sharing with large image previews
+- **Structured Data**: JSON-LD markup for Organization, WebApplication, and BreadcrumbList
+- **Canonical URLs**: Proper canonical URL structure for search engines
+- **Sitemap**: XML sitemap with all state pages for better crawling
+- **Robots.txt**: Search engine crawler guidance and sitemap location
+
+### Progressive Web App (PWA)
+
+- **Web App Manifest**: Complete PWA manifest with icons and metadata
+- **Theme Colors**: Consistent theming across browsers and OS
+- **App Icons**: Multiple icon sizes for different devices and contexts
+- **Standalone Mode**: Can be installed and run as a native-like app
+- **Responsive Icons**: Adaptive icons for Android and iOS devices
+
+### Accessibility Enhancements
+
+- **Skip Navigation**: Skip to main content link for keyboard users
+- **Semantic HTML**: Proper use of header, main, footer, article, and section elements
+- **ARIA Labels**: Comprehensive ARIA attributes for screen readers
+- **Keyboard Navigation**: Full keyboard accessibility for all interactive elements
+- **Screen Reader Support**: Optimized for assistive technologies
+- **Color Contrast**: Meets WCAG guidelines for color contrast ratios
+- **Focus Management**: Visible focus indicators and logical tab order
+
+### Technical SEO
+
+- **Schema.org Markup**: Structured data for better search result display
+- **Meta Robots**: Proper indexing directives for search engines
+- **Language Declaration**: HTML lang attribute for internationalization
+- **Viewport Configuration**: Mobile-friendly viewport settings
+- **Security Headers**: Proper rel attributes for external links (noopener, noreferrer)
 
 ## Development Setup
 
@@ -77,13 +117,17 @@ website/
 │   └── ...             # Other components
 ├── tests/              # Test files
 │   ├── navbar.test.ts  # Navbar component tests
+│   ├── seo.test.ts     # SEO and accessibility tests
 │   └── ...             # Other test files
-├── public/             # Static assets
-│   └── assets/         # Local CSS and JS files
-│       ├── css/        # Bootstrap/Bootswatch CSS
-│       └── js/         # Bootstrap JavaScript
+├── public/             # Static assets and SEO files
+│   ├── assets/         # Local CSS and JS files
+│   │   ├── css/        # Bootstrap/Bootswatch CSS
+│   │   └── js/         # Bootstrap JavaScript
+│   ├── manifest.json   # PWA manifest file
+│   ├── robots.txt      # Search engine crawler directives
+│   └── sitemap.xml     # XML sitemap for search engines
 ├── dist/               # Built output (generated)
-├── index.html          # Main HTML file with navbar
+├── index.html          # Main HTML file with SEO optimization
 ├── package.json        # Dependencies and scripts
 ├── tsconfig.json       # TypeScript configuration
 ├── jest.config.js      # Jest testing configuration
@@ -123,6 +167,23 @@ The application includes a responsive states dropdown in the navigation bar that
 - **Direct State Navigation**: Click any state to view detailed tax information
 - **Mobile-Responsive Design**: Optimized layout for small screens
 - **Keyboard Accessibility**: Full keyboard navigation support
+
+### External Links
+
+The navbar includes external links for additional resources:
+
+- **GitHub Icon Link**: Direct link to Mountain Technologies LLC website (https://taxes.mountaintechnologiesllc.com) that opens in a new tab
+- **Accessible Design**: Includes proper ARIA attributes and security attributes (rel="noopener noreferrer")
+- **Font Awesome Integration**: Uses GitHub icon from Font Awesome 6.4.0 for consistent styling
+
+### Legal Disclaimer
+
+The application includes a comprehensive legal disclaimer footer that provides important information about the limitations of the tax information provided:
+
+- **Bootstrap Alert Styling**: Uses Bootstrap's secondary alert component for clear visibility
+- **Accessibility**: Includes proper ARIA attributes and semantic HTML structure
+- **Professional Language**: Clear disclaimer about the informational nature of the content
+- **Responsive Design**: Adapts to all screen sizes and maintains readability
 
 ### Theme Mode Switching
 

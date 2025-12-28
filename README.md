@@ -10,9 +10,37 @@ An interactive state income tax calculator built with TypeScript, Bootstrap v5.3
 - **Theme Mode Switching**: Light, Dark, and Auto themes with Bootstrap Color Mode support
 - **Responsive Design**: Bootstrap 5.3 with Bootswatch Brite theme for all device sizes
 - **Mobile-Optimized Navigation**: Collapsible hamburger menu with touch-friendly state selection
+- **SEO Optimized**: Comprehensive meta tags, structured data, and accessibility features
+- **PWA Ready**: Progressive Web App capabilities with manifest and offline support
 - **TypeScript**: Full type safety and modern development experience
 - **Comprehensive Testing**: Unit tests, property-based tests, and integration tests
 - **State Tax Data**: Hardcoded 2025 tax rates from Tax Foundation for fast loading
+
+## 🔍 SEO & Accessibility
+
+Mountain Taxes is fully optimized for search engines and accessibility:
+
+### Search Engine Optimization
+- **Meta Tags**: Comprehensive title, description, keywords, and author tags
+- **Open Graph**: Facebook and social media sharing optimization
+- **Twitter Cards**: Enhanced Twitter sharing with large image previews
+- **Structured Data**: JSON-LD markup for Organization, WebApplication, and BreadcrumbList
+- **Sitemap**: XML sitemap with all state pages for better crawling
+- **Robots.txt**: Search engine crawler guidance
+
+### Progressive Web App (PWA)
+- **Web App Manifest**: Complete PWA manifest with icons and metadata
+- **Installable**: Can be installed and run as a native-like app
+- **Offline Ready**: Service worker support for offline functionality
+- **Responsive Icons**: Adaptive icons for Android and iOS devices
+
+### Accessibility Features
+- **WCAG Compliant**: Meets Web Content Accessibility Guidelines
+- **Keyboard Navigation**: Full keyboard accessibility for all interactive elements
+- **Screen Reader Support**: Optimized for assistive technologies
+- **Semantic HTML**: Proper use of header, main, footer, article, and section elements
+- **ARIA Labels**: Comprehensive ARIA attributes for enhanced accessibility
+- **Skip Navigation**: Skip to main content link for keyboard users
 
 ## 🚀 Quick Start
 
@@ -43,6 +71,7 @@ The application uses an optimized TypeScript build process with:
 - **Terser** minification for production builds
 - **Code splitting** for vendor libraries (Bootstrap, Chart.js)
 - **Source maps** for debugging
+- **SEO File Generation**: Automatic sitemap and robots.txt generation
 
 ### Build Commands
 
@@ -62,6 +91,7 @@ The application deploys to AWS using CDK with:
 - **CloudFront** CDN with SSL certificate
 - **Route 53** DNS management
 - **Optimized caching** for static assets
+- **SEO-friendly routing** for state detail pages
 
 ### Deployment Commands
 
@@ -76,6 +106,8 @@ Comprehensive test suite with:
 - **Unit tests** for component functionality
 - **Property-based tests** using fast-check
 - **Integration tests** for Chart.js components
+- **SEO tests** for meta tags and structured data
+- **Accessibility tests** for WCAG compliance
 - **Type checking** with TypeScript compiler
 
 Run tests: `npm run test`

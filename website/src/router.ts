@@ -222,7 +222,7 @@ export class StateDetailView {
 
             ${this.renderFilingTypes(state)}
 
-            <div class="row mt-4">
+            <div class="row m-4">
                 <div class="col-12">
                     <a href="#/" class="btn btn-primary router-link">
                         <i class="bi bi-arrow-left"></i> Back to Chart

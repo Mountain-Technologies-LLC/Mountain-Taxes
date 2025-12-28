@@ -1,0 +1,50 @@
+{
+  "name": "Mountain Taxes - State Income Tax Calculator",
+  "short_name": "Mountain Taxes",
+  "description": "Compare state earned income tax obligations across all 50 US states with our interactive tax calculator",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#a2e436",
+  "orientation": "portrait-primary",
+  "categories": ["taxes", "finance", "productivity", "utilities"],
+  "lang": "en-US",
+  "icons": [
+    {
+      "src": "/assets/images/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/images/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/images/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/assets/images/mountain-taxes-preview.png",
+      "sizes": "1200x675",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Mountain Taxes desktop view showing interactive tax comparison chart"
+    }
+  ]
+}

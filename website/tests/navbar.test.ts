@@ -89,6 +89,11 @@ function setupDOM(): void {
                                 </div>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="https://taxes.mountaintechnologiesllc.com" target="_blank" rel="noopener noreferrer" title="Visit Mountain Technologies LLC">
+                                <i class="fab fa-github" aria-hidden="true"></i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -361,6 +366,18 @@ describe('Navbar Component', () => {
                 expect(title).toContain(stateName || '');
                 expect(title).toContain('tax information');
             });
+        });
+
+        test('should include GitHub link with proper attributes', () => {
+            const githubLink = document.querySelector('a[href="https://taxes.mountaintechnologiesllc.com"]');
+            expect(githubLink).toBeTruthy();
+            expect(githubLink?.getAttribute('target')).toBe('_blank');
+            expect(githubLink?.getAttribute('rel')).toBe('noopener noreferrer');
+            expect(githubLink?.getAttribute('title')).toBe('Visit Mountain Technologies LLC');
+            
+            const githubIcon = githubLink?.querySelector('i.fab.fa-github');
+            expect(githubIcon).toBeTruthy();
+            expect(githubIcon?.getAttribute('aria-hidden')).toBe('true');
         });
     });
 

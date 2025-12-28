@@ -22,8 +22,11 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+    // Copy SEO and PWA files to root of dist
+    copyPublicDir: true
   },
+  publicDir: 'public',
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')

@@ -136,102 +136,103 @@ class MountainTaxesApp {
             return;
         }
 
-        // Render the main application interface with enhanced responsive design
+        // Render the main application interface with enhanced responsive design and SEO optimization
         mainContent.innerHTML = `
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
-                        <div>
-                            <h1 class="mb-2 mb-md-0">State Income Taxes—On Earned Income</h1>
-                            <p class="lead mb-0">Compare state earned income tax obligations across different income levels</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div id="filer-details-container">
-                        <!-- Filer Details will be rendered here -->
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-primary">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
-                                Tax Comparison Chart
-                            </h5>
-                        </div>
-                        <div class="card-body p-3">
-                            <div class="chart-container">
-                                <canvas id="tax-chart" role="img" aria-label="Interactive tax comparison chart showing tax obligations across income levels for selected states"></canvas>
-                            </div>
-                            <div id="chart-legend-container">
-                                <!-- HTML Legend will be rendered here -->
+            <article>
+                <header class="row">
+                    <div class="col-12">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                            <div>
+                                <h1 class="mb-2 mb-md-0">State Income Taxes—On Earned Income</h1>
+                                <p class="lead mb-0">Compare state earned income tax obligations across different income levels for all 50 US states</p>
+                                <p class="text-muted small mt-2 mb-0">Interactive tax calculator and visualization tool for informed financial planning</p>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="row mb-4">
-                <div class="col-12 mb-3">
-                    <div class="card">
-                        <div class="card-header bg-primary">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-sliders-h me-2" aria-hidden="true"></i>
-                                Income Range Controls
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="income-range-controls">
-                                <!-- Income range controls will be rendered here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </header>
                 
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header bg-primary">
-                            <h5 class="card-title mb-0">
-                                <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
-                                State Selection
-                            </h5>
+                <section class="row mb-4" aria-labelledby="filer-details-heading">
+                    <div class="col-12">
+                        <div id="filer-details-container">
+                            <!-- Filer Details will be rendered here -->
                         </div>
-                        <div class="card-body">
-                            <div id="state-selector-container">
-                                <!-- State selector will be rendered here -->
+                    </div>
+                </section>
+                
+                <section class="row mb-4" aria-labelledby="chart-heading">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h2 id="chart-heading" class="card-title mb-0 h5">
+                                    <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
+                                    Interactive Tax Comparison Chart
+                                </h2>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="chart-container">
+                                    <canvas id="tax-chart" role="img" aria-label="Interactive tax comparison chart showing tax obligations across income levels for selected states" aria-describedby="chart-description"></canvas>
+                                    <div id="chart-description" class="visually-hidden">
+                                        This interactive chart displays state income tax obligations across different income levels. 
+                                        Select states from the dropdown menu to compare their tax rates and obligations. 
+                                        The chart updates in real-time as you modify income ranges and state selections.
+                                    </div>
+                                </div>
+                                <div id="chart-legend-container" role="region" aria-label="Chart legend">
+                                    <!-- HTML Legend will be rendered here -->
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body text-center text-muted">
-                            <small>
-                                Data based on <a href="https://taxfoundation.org/data/all/state/state-income-tax-rates/" target="_blank">Tax Foundation 2025</a> state income tax rates. 
-                            </small>
+                </section>
+                
+                <section class="row mb-4">
+                    <div class="col-12 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h2 class="card-title mb-0 h5" id="income-controls-heading">
+                                    <i class="fas fa-sliders-h me-2" aria-hidden="true"></i>
+                                    Income Range Controls
+                                </h2>
+                            </div>
+                            <div class="card-body">
+                                <div id="income-range-controls" role="region" aria-labelledby="income-controls-heading">
+                                    <!-- Income range controls will be rendered here -->
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div> 
+                    
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h2 class="card-title mb-0 h5" id="state-selection-heading">
+                                    <i class="fas fa-map-marker-alt me-2" aria-hidden="true"></i>
+                                    State Selection
+                                </h2>
+                            </div>
+                            <div class="card-body">
+                                <div id="state-selector-container" role="region" aria-labelledby="state-selection-heading">
+                                    <!-- State selector will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-            <div class="row mb-4">
-                <div class="col-12 text-center text-muted">
-                    <small>
-                        Mountain Technologies LLC © 2025 - All rights reserved<br>
-                        By the team at <a href="https://mountaintechnologiesllc.com" target="_blank">Mountain Technologies LLC</a> - MIT License
-                    </small>
-                </div>
-            </div>
+                <section class="row mb-4" aria-labelledby="data-source-heading">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center text-muted">
+                                <h3 id="data-source-heading" class="visually-hidden">Data Source Information</h3>
+                                <small>
+                                    Tax data sourced from <a href="https://taxfoundation.org/data/all/state/state-income-tax-rates/" target="_blank" rel="noopener noreferrer" aria-label="View Tax Foundation 2025 state income tax rates data">Tax Foundation 2025</a> state income tax rates. 
+                                    Data includes current tax brackets, rates, and standard deductions for accurate tax obligation calculations.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </article>
         `;
 
         this.initializeComponents();

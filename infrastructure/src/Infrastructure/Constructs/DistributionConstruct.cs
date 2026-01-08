@@ -29,8 +29,7 @@ namespace Infrastructure.Constructs
                 this, "hostedZone",
                 new HostedZoneProviderProps
                 {
-                    //DomainName = domainName
-                    DomainName = "mountaintechnologiesllc.com"
+                    DomainName = string.Join(".", domainName.Split(".").Reverse().Take(2).Reverse().ToArray())
                 });
 
             var certificate = new Certificate(

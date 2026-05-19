@@ -172,7 +172,7 @@ The application includes a responsive states dropdown in the navigation bar that
 
 The navbar includes external links for additional resources:
 
-- **GitHub Icon Link**: Direct link to Mountain Technologies LLC website (https://taxes.mountaintechnologiesllc.com) that opens in a new tab
+- **GitHub Icon Link**: Direct link to Mountain Technologies LLC website (https://taxes.anthonyjamespearson.com) that opens in a new tab
 - **Accessible Design**: Includes proper ARIA attributes and security attributes (rel="noopener noreferrer")
 - **Font Awesome Integration**: Uses GitHub icon from Font Awesome 6.4.0 for consistent styling
 

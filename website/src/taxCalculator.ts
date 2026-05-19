@@ -5,7 +5,7 @@
  * handling standard deductions, personal exemptions, and both Single and Married filing types.
  */
 
-import { FilingTypeName, TaxCalculationResult, TaxBracket } from './types';
+import { FilingTypeName, TaxCalculationResult, TaxBracket, TaxYear } from './types';
 import { getStateByName } from './stateData';
 import { ErrorHandler, ErrorSeverity } from './validation';
 
@@ -17,9 +17,10 @@ import { ErrorHandler, ErrorSeverity } from './validation';
  * @returns TaxCalculationResult with tax owed, effective rate, and marginal rate
  */
 export function calculateTax(
-    income: number, 
-    stateName: string, 
-    filingType: FilingTypeName
+    income: number,
+    stateName: string,
+    filingType: FilingTypeName,
+    year: TaxYear = 2026
 ): TaxCalculationResult {
     // Validate input parameters
     if (typeof income !== 'number' || income < 0 || !isFinite(income) || isNaN(income)) {
@@ -35,7 +36,7 @@ export function calculateTax(
     }
 
     // Get state data
-    const state = getStateByName(stateName);
+    const state = getStateByName(stateName, year);
     if (!state) {
         const error = new Error(`State not found: ${stateName}`);
         ErrorHandler.handleStateDataError(stateName, error);
@@ -150,12 +151,13 @@ function getMarginalTaxRate(taxableIncome: number, taxBrackets: TaxBracket[]): n
  * @returns Array of tax amounts corresponding to income levels
  */
 export function calculateTaxForIncomes(
-    incomes: number[], 
-    stateName: string, 
-    filingType: FilingTypeName
+    incomes: number[],
+    stateName: string,
+    filingType: FilingTypeName,
+    year: TaxYear = 2026
 ): number[] {
     return incomes.map(income => {
-        const result = calculateTax(income, stateName, filingType);
+        const result = calculateTax(income, stateName, filingType, year);
         return result.taxOwed;
     });
 }
@@ -214,10 +216,11 @@ export function validateEarnedIncome(income: number): boolean {
 export function calculateTaxComparison(
     income: number,
     stateNames: string[],
-    filingType: FilingTypeName
+    filingType: FilingTypeName,
+    year: TaxYear = 2026
 ): { stateName: string; result: TaxCalculationResult }[] {
     return stateNames.map(stateName => ({
         stateName,
-        result: calculateTax(income, stateName, filingType)
+        result: calculateTax(income, stateName, filingType, year)
     }));
 }

@@ -341,10 +341,14 @@ describe('Unit Tests for Tax Calculation Edge Cases', () => {
     });
 
     test('States with no income tax return zero tax', () => {
-        const noTaxStates = ['Alaska', 'Florida', 'Nevada', 'New Hampshire', 'South Dakota', 'Tennessee', 'Texas', 'Washington', 'Wyoming'];
+        // Note: Washington introduced a 7% capital gains tax in 2026, so it's excluded from this list
+        const noTaxStates = ['Alaska', 'Florida', 'Nevada', 'New Hampshire', 'South Dakota', 'Tennessee', 'Texas', 'Wyoming'];
         
         noTaxStates.forEach(stateName => {
             const result = calculateTax(100000, stateName, FilingTypeName.Single);
+            if (result.marginalRate !== 0) {
+                console.log(`${stateName} has marginalRate: ${result.marginalRate}`);
+            }
             expect(result.taxOwed).toBe(0);
             expect(result.effectiveRate).toBe(0);
             expect(result.marginalRate).toBe(0);

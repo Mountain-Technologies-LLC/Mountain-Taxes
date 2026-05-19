@@ -111,5 +111,5 @@ Mountain Taxes is a Bootstrap v5.3 web application that helps users visualize an
 1. WHEN infrastructure code is reviewed THEN the system SHALL identify and implement performance optimizations
 2. WHEN the application deploys THEN the system SHALL serve content from the configured S3 bucket with CloudFront distribution
 3. WHEN routing is configured THEN the system SHALL properly handle single-page application navigation
-4. WHEN the domain is accessed THEN the system SHALL serve the application at http://taxes.mountaintechnologiesllc.com
+4. WHEN the domain is accessed THEN the system SHALL serve the application at http://taxes.anthonyjamespearson.com
 5. WHEN builds are executed THEN the system SHALL use NPM for local development and build processes

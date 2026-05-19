@@ -6,8 +6,10 @@
  */
 
 import { Router, StateDetailView } from '../src/router';
-import { STATE_TAX_DATA } from '../src/stateData';
+import { getStateTaxData } from '../src/stateData';
 import * as fc from 'fast-check';
+
+const STATE_TAX_DATA = getStateTaxData();
 
 // Mock window.history for testing
 const mockPushState = jest.fn();

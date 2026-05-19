@@ -7,7 +7,7 @@
  */
 
 import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
-import { ChartDataset, IncomeRange, FilingTypeName, LegendItem } from './types';
+import { ChartDataset, IncomeRange, FilingTypeName, LegendItem, TaxYear, LATEST_TAX_YEAR } from './types';
 import { calculateTaxForIncomes, generateIncomeRange } from './taxCalculator';
 import { getAllStateNames } from './stateData';
 import { ErrorHandler, ErrorSeverity, UserFeedback, GracefulDegradation, StateDataValidator } from './validation';
@@ -25,6 +25,7 @@ export class TaxChart {
         step: 10000
     };
     private currentFilingType: FilingTypeName = FilingTypeName.Single;
+    private currentYear: TaxYear = LATEST_TAX_YEAR;
     private colorPalette: string[] = [
         '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
         '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384',
@@ -194,7 +195,7 @@ export class TaxChart {
         );
 
         try {
-            const taxData = calculateTaxForIncomes(incomes, stateName, this.currentFilingType);
+            const taxData = calculateTaxForIncomes(incomes, stateName, this.currentFilingType, this.currentYear);
             const colorIndex = this.selectedStates.length % this.colorPalette.length;
             
             const dataset: ChartDataset = {
@@ -259,7 +260,7 @@ export class TaxChart {
      * Add all states to the chart
      */
     public addAllStates(): void {
-        const allStates = getAllStateNames();
+        const allStates = getAllStateNames(this.currentYear);
         allStates.forEach(stateName => {
             if (!this.selectedStates.includes(stateName)) {
                 this.addState(stateName);
@@ -349,6 +350,21 @@ export class TaxChart {
     }
 
     /**
+     * Change the tax year and recalculate all datasets
+     */
+    public setYear(year: TaxYear): void {
+        this.currentYear = year;
+        this.updateChart();
+    }
+
+    /**
+     * Get the current tax year
+     */
+    public getTaxYear(): TaxYear {
+        return this.currentYear;
+    }
+
+    /**
      * Update the entire chart with current settings
      */
     private updateChart(): void {
@@ -368,7 +384,7 @@ export class TaxChart {
             const stateName = this.selectedStates[index];
             if (stateName) {
                 try {
-                    const taxData = calculateTaxForIncomes(incomes, stateName, this.currentFilingType);
+                    const taxData = calculateTaxForIncomes(incomes, stateName, this.currentFilingType, this.currentYear);
                     dataset.data = taxData;
                 } catch (error) {
                     console.error(`Error updating data for state ${stateName}:`, error);

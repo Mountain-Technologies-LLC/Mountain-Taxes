@@ -84,7 +84,7 @@ This document summarizes the successful completion of the final integration and 
 
 ## Deployment Readiness
 
-The application is fully ready for deployment to the target domain `http://taxes.mountaintechnologiesllc.com` with:
+The application is fully ready for deployment to the target domain `http://taxes.anthonyjamespearson.com` with:
 
 1. **Complete Build Pipeline**: TypeScript → Vite → S3 → CloudFront
 2. **Infrastructure Optimization**: CDK stack with SPA routing support
@@ -411,7 +411,7 @@ Task 15 (Final Integration and Testing) has been successfully completed. The Mou
 - **Feature**: Added GitHub icon link to navbar for external website access
 - **Implementation**:
   - **Navbar Integration**: Added GitHub icon link positioned to the far right of the navbar after the States dropdown
-  - **External Link**: Links to https://taxes.mountaintechnologiesllc.com and opens in a new tab
+  - **External Link**: Links to https://taxes.anthonyjamespearson.com and opens in a new tab
   - **Font Awesome Integration**: Uses GitHub icon (`fab fa-github`) from existing Font Awesome 6.4.0 library
   - **Security Attributes**: Includes `rel="noopener noreferrer"` for security best practices
   - **Accessibility**: Proper `title` attribute for screen readers and hover information

@@ -6,8 +6,10 @@
  */
 
 import { Navbar } from '../src/navbar';
-import { STATE_TAX_DATA } from '../src/stateData';
+import { getStateTaxData } from '../src/stateData';
 import { ThemeService } from '../src/themeService';
+
+const STATE_TAX_DATA = getStateTaxData();
 
 // Mock DOM environment
 const mockRouter = {

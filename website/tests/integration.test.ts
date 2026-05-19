@@ -87,7 +87,8 @@ describe('Mountain Taxes - Integration Tests', () => {
     describe('Data Integrity', () => {
         test('should load state data without errors', async () => {
             // Import state data
-            const { STATE_TAX_DATA } = await import('../src/stateData');
+            const { getStateTaxData } = await import('../src/stateData');
+            const STATE_TAX_DATA = getStateTaxData();
             
             expect(STATE_TAX_DATA).toBeDefined();
             expect(Array.isArray(STATE_TAX_DATA)).toBe(true);
@@ -296,8 +297,9 @@ describe('Mountain Taxes - Integration Tests', () => {
         test('should support complete tax calculation workflow', async () => {
             // Import required modules
             const { calculateTax, calculateTaxForIncomes } = await import('../src/taxCalculator');
-            const { STATE_TAX_DATA } = await import('../src/stateData');
+            const { getStateTaxData } = await import('../src/stateData');
             const { FilingTypeName } = await import('../src/types');
+            const STATE_TAX_DATA = getStateTaxData();
             
             // Get a valid state
             const testState = STATE_TAX_DATA[0];
@@ -324,7 +326,8 @@ describe('Mountain Taxes - Integration Tests', () => {
             document.body.appendChild(canvas);
             
             const { TaxChart } = await import('../src/chartComponent');
-            const { STATE_TAX_DATA } = await import('../src/stateData');
+            const { getStateTaxData } = await import('../src/stateData');
+            const STATE_TAX_DATA = getStateTaxData();
             
             const chart = new TaxChart('test-chart');
             const testState = STATE_TAX_DATA[0];

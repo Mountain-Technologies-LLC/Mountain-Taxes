@@ -5,7 +5,7 @@
  * Manages browser history, deep linking, and URL updates.
  */
 
-import { STATE_TAX_DATA } from './stateData';
+import { getStateTaxData } from './stateData';
 import { State } from './types';
 
 export interface Route {
@@ -147,9 +147,11 @@ export class Router {
  */
 export class StateDetailView {
     private containerId: string;
+    private stateTaxData: State[];
 
     constructor(containerId: string) {
         this.containerId = containerId;
+        this.stateTaxData = getStateTaxData();
     }
 
     /**
@@ -163,7 +165,7 @@ export class StateDetailView {
         }
 
         // Find the state data
-        const state = STATE_TAX_DATA.find(s => 
+        const state = this.stateTaxData.find(s => 
             s.name.toLowerCase().replace(/\s+/g, '-') === stateName.toLowerCase()
         );
 

@@ -14,6 +14,17 @@ export enum FilingTypeName {
 }
 
 /**
+ * Supported tax data years
+ */
+export type TaxYear = 2025 | 2026;
+
+/** The latest available tax year (used as default) */
+export const LATEST_TAX_YEAR: TaxYear = 2026;
+
+/** All supported tax years in ascending order */
+export const SUPPORTED_TAX_YEARS: TaxYear[] = [2025, 2026];
+
+/**
  * Represents a tax bracket with income threshold and rate
  */
 export interface TaxBracket {

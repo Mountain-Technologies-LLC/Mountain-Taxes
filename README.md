@@ -46,7 +46,7 @@ Mountain Taxes is fully optimized for search engines and accessibility:
 
 ### Production Deployment
 ```bash
-./deploy.sh taxes.mountaintechnologiesllc.com
+./deploy.sh taxes.anthonyjamespearson.com
 ```
 
 ### Local Development
@@ -116,7 +116,7 @@ Run tests: `npm run test`
 # Initial Prompt
 I want to create a taxes website called Mountain Taxes. I want the website to be a Bootstrap v5.3 web app. I want the web app to be placed in the ./website folder. I want to only write TypeScript. JavaScript will not be allowed.
 
-In the ./infrastructure folder, I have copied .NET cdk code to deploy a website to a s3 bucket, with distributions and routing. I will be deploying to http://taxes.mountaintechnologiesllc.com. I am using NPM to locally run builds. Please do implement fixes and optimizations to existing cdk code.
+In the ./infrastructure folder, I have copied .NET cdk code to deploy a website to a s3 bucket, with distributions and routing. I will be deploying to http://taxes.anthonyjamespearson.com. I am using NPM to locally run builds. Please do implement fixes and optimizations to existing cdk code.
 
 I want the Bootstrap v5.3 web app to be made to create a Taxes app. I will help people see how much taxes one will pay as their earned income increases. I want to use Bootswatch's Brite theme. I want data to be used form https://taxfoundation.org/data/all/state/state-income-tax-rates/. Data is also in .kiro/steering/2025-State-Individual-Income-Tax-Rates-and-Brackets-2025.xlsx.
 

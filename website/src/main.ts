@@ -162,15 +162,35 @@ class MountainTaxesApp {
                 <section class="row mb-4" aria-labelledby="chart-heading">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header bg-primary">
+                            <div class="card-header bg-primary d-flex justify-content-between align-items-center">
                                 <h2 id="chart-heading" class="card-title mb-0 h5">
                                     <i class="fas fa-chart-line me-2" aria-hidden="true"></i>
-                                    Interactive Tax Comparison Chart
+                                    Tax Comparison Chart
                                 </h2>
+                                <div class="dropdown" id="year-selector-dropdown">
+                                    <button class="btn btn-sm btn-outline-dark dropdown-toggle fw-semibold" type="button" id="yearDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Select tax year">
+                                        <i class="fas fa-calendar-alt me-1" aria-hidden="true"></i>
+                                        <span id="year-dropdown-label">2026</span>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="yearDropdownBtn">
+                                        <li><h6 class="dropdown-item fw-bold">Tax Year</h6></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item year-option" href="#" data-year="2026" aria-label="View 2026 tax data">
+                                                2026 <span class="badge bg-primary ms-1">Latest</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item year-option" href="#" data-year="2025" aria-label="View 2025 tax data">
+                                                2025
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body p-3">
                                 <div class="chart-container">
-                                    <canvas id="tax-chart" role="img" aria-label="Interactive tax comparison chart showing tax obligations across income levels for selected states" aria-describedby="chart-description"></canvas>
+                                    <canvas id="tax-chart" role="img" aria-label="tax comparison chart showing tax obligations across income levels for selected states" aria-describedby="chart-description"></canvas>
                                     <div id="chart-description" class="visually-hidden">
                                         This interactive chart displays state income tax obligations across different income levels. 
                                         Select states from the dropdown menu to compare their tax rates and obligations. 
@@ -225,7 +245,7 @@ class MountainTaxesApp {
                             <div class="card-body text-center text-muted">
                                 <h3 id="data-source-heading" class="visually-hidden">Data Source Information</h3>
                                 <small>
-                                    Tax data sourced from <a href="https://taxfoundation.org/data/all/state/state-income-tax-rates/" target="_blank" rel="noopener noreferrer" aria-label="View Tax Foundation 2025 state income tax rates data">Tax Foundation 2025</a> state income tax rates. 
+                                    Tax data sourced from <a href="https://taxfoundation.org/data/all/state/state-income-tax-rates/" target="_blank" rel="noopener noreferrer" aria-label="View Tax Foundation state income tax rates data">Tax Foundation</a> state income tax rates (2025 &amp; 2026). 
                                     Data includes current tax brackets, rates, and standard deductions for accurate tax obligation calculations.
                                 </small>
                             </div>
@@ -252,6 +272,9 @@ class MountainTaxesApp {
         try {
             // Initialize the tax chart
             this.taxChart = new TaxChart('tax-chart');
+
+            // Wire up year selector dropdown
+            this.setupYearSelector();
             
             // Initialize the filer details
             this.filerDetails = new FilerDetails('filer-details-container', this.taxChart);
@@ -273,6 +296,34 @@ class MountainTaxesApp {
             console.error('Error initializing components:', error);
             this.showError('Failed to initialize application components. Please refresh the page.');
         }
+    }
+
+    /**
+     * Set up the year selector dropdown in the chart card-header
+     */
+    private setupYearSelector(): void {
+        document.querySelectorAll('.year-option').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                const year = parseInt((el as HTMLElement).dataset.year || '2026', 10) as 2025 | 2026;
+                if (!this.taxChart) return;
+
+                // Update chart data
+                this.taxChart.setYear(year);
+
+                // Update button label
+                const label = document.getElementById('year-dropdown-label');
+                if (label) label.textContent = String(year);
+
+                // Update active state on items
+                document.querySelectorAll('.year-option').forEach(opt => opt.classList.remove('active'));
+                el.classList.add('active');
+            });
+        });
+
+        // Mark the default (2026) as active
+        const defaultOption = document.querySelector('.year-option[data-year="2026"]');
+        if (defaultOption) defaultOption.classList.add('active');
     }
 
     /**

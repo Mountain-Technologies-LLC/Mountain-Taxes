@@ -17,12 +17,14 @@ import {
     AppState
 } from '../src/types';
 import { 
-    STATE_TAX_DATA, 
+    getStateTaxData,
     validateStateData, 
     validateAllStateData,
     getAllStateNames,
     getStateByName
 } from '../src/stateData';
+
+const STATE_TAX_DATA = getStateTaxData();
 
 describe('Data Model Conformance Tests', () => {
     /**
@@ -73,7 +75,7 @@ describe('Data Model Conformance Tests', () => {
                     // 3. Get all state names - should use hardcoded list only
                     const allStates = getAllStateNames();
                     expect(allStates).toContain(stateName);
-                    expect(allStates).toHaveLength(50);
+                    expect(allStates).toHaveLength(51); // 50 states + DC
                     
                     // 4. Validate all state data - should use local data only
                     const allValid = validateAllStateData();
@@ -87,7 +89,7 @@ describe('Data Model Conformance Tests', () => {
                     // Verify data is immediately available (synchronous)
                     // If data came from external sources, these operations would be async
                     expect(state).toBeDefined(); // Should be immediately available
-                    expect(allStates.length).toBe(50); // Should be immediately available
+                    expect(allStates.length).toBe(51); // Should be immediately available (50 states + DC)
                     
                     return true;
                 } finally {
@@ -327,13 +329,13 @@ describe('Data Model Conformance Tests', () => {
 });
 
 describe('Unit Tests for Data Models', () => {
-    test('All 50 states are present in hardcoded data', () => {
-        expect(STATE_TAX_DATA).toHaveLength(50);
+    test('All 50 states + DC are present in hardcoded data', () => {
+        expect(STATE_TAX_DATA).toHaveLength(51); // 50 states + DC
         expect(validateAllStateData()).toBe(true);
         
         const stateNames = getAllStateNames();
-        expect(stateNames).toHaveLength(50);
-        expect(new Set(stateNames).size).toBe(50); // No duplicates
+        expect(stateNames).toHaveLength(51); // 50 states + DC
+        expect(new Set(stateNames).size).toBe(51); // No duplicates
     });
 
     test('State lookup functions work correctly', () => {

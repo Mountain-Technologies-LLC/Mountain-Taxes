@@ -6,7 +6,7 @@
  * pages with responsive design and Bootstrap Color Mode support.
  */
 
-import { STATE_TAX_DATA } from './stateData';
+import { getStateTaxData } from './stateData';
 import { State, StatesByTaxStatus } from './types';
 import { ThemeService, ThemeMode } from './themeService';
 
@@ -18,11 +18,13 @@ export class Navbar {
     private containerId: string;
     private router?: RouterInterface;
     private themeService: ThemeService;
+    private stateTaxData: State[];
 
     constructor(containerId: string = 'states-dropdown-content', router?: RouterInterface) {
         this.containerId = containerId;
         this.router = router;
         this.themeService = new ThemeService();
+        this.stateTaxData = getStateTaxData();
         this.init();
     }
 
@@ -46,7 +48,7 @@ export class Navbar {
         }
 
         // Sort states alphabetically for better UX
-        const sortedStates = [...STATE_TAX_DATA].sort((a, b) => a.name.localeCompare(b.name));
+        const sortedStates = [...this.stateTaxData].sort((a, b) => a.name.localeCompare(b.name));
 
         // Create dropdown items for each state
         const stateItems = sortedStates.map(state => {
@@ -240,7 +242,7 @@ export class Navbar {
         const withTax: State[] = [];
         const withoutTax: State[] = [];
 
-        STATE_TAX_DATA.forEach(state => {
+        this.stateTaxData.forEach(state => {
             if (this.hasIncomeTax(state)) {
                 withTax.push(state);
             } else {
@@ -256,7 +258,7 @@ export class Navbar {
      */
     public searchStates(query: string): State[] {
         const lowercaseQuery = query.toLowerCase();
-        return STATE_TAX_DATA.filter(state => 
+        return this.stateTaxData.filter(state => 
             state.name.toLowerCase().includes(lowercaseQuery)
         );
     }

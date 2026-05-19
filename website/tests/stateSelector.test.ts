@@ -68,7 +68,7 @@ describe('StateSelector Component', () => {
         test('should initialize with correct container and chart', () => {
             expect(stateSelector).toBeDefined();
             expect(stateSelector.getSelectedStatesCount()).toBe(0);
-            expect(stateSelector.getTotalStatesCount()).toBe(50);
+            expect(stateSelector.getTotalStatesCount()).toBe(51); // 50 states + DC
         });
 
         test('should throw error if container not found', () => {

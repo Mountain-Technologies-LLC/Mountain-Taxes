@@ -1,19 +1,23 @@
 /**
  * Mountain Taxes - State Tax Data
  * 
- * Comprehensive state income tax data based on Tax Foundation 2025 rates.
+ * Comprehensive state income tax data based on Tax Foundation rates.
  * This file contains hardcoded tax information for all 50 US states including
  * filing types, standard deductions, personal exemptions, and tax brackets.
+ * 
+ * Data sources:
+ *   - 2025: Tax Foundation 2025 State Income Tax Rates
+ *   - 2026: Tax Foundation 2026 State Income Tax Rates and Brackets
  */
 
-import { State, FilingTypeName } from './types';
-import { StateDataValidator, ErrorHandler, ErrorSeverity } from './validation';
+import { State, FilingTypeName, TaxYear } from './types';
+import { StateDataValidator, ErrorHandler } from './validation';
 
 /**
- * Complete state tax data for all 50 US states
+ * Complete state tax data for all 50 US states + DC
  * Data sourced from Tax Foundation 2025 state income tax rates
  */
-export const STATE_TAX_DATA: State[] = [
+export const STATE_TAX_DATA_2025: State[] = [
     {
         name: "Alabama",
         dependentDeduction: 1000,
@@ -1414,30 +1418,40 @@ export const STATE_TAX_DATA: State[] = [
 ];
 
 /**
- * Helper function to get state data by name
+ * Get the state tax data array for a given year.
+ * Defaults to 2026 (the latest year) if no year is provided.
+ */
+export function getStateTaxData(year: TaxYear = 2026): State[] {
+    return year === 2025 ? STATE_TAX_DATA_2025 : STATE_TAX_DATA_2026;
+}
+
+/**
+ * Helper function to get state data by name for a given year
  * @param stateName - The name of the state to retrieve
+ * @param year - Tax year (defaults to 2026)
  * @returns State object or undefined if not found
  */
-export function getStateByName(stateName: string): State | undefined {
-    const state = STATE_TAX_DATA.find(state => state.name === stateName);
-    
+export function getStateByName(stateName: string, year: TaxYear = 2026): State | undefined {
+    const data = getStateTaxData(year);
+    const state = data.find(s => s.name === stateName);
+
     if (state) {
-        // Validate state data at runtime
         const validationResult = StateDataValidator.validateState(state);
         if (!validationResult.isValid) {
             ErrorHandler.handleValidationError(validationResult, { stateName });
         }
     }
-    
+
     return state;
 }
 
 /**
- * Helper function to get all state names
+ * Helper function to get all state names for a given year
+ * @param year - Tax year (defaults to 2026)
  * @returns Array of all state names
  */
-export function getAllStateNames(): string[] {
-    return STATE_TAX_DATA.map(state => state.name);
+export function getAllStateNames(year: TaxYear = 2026): string[] {
+    return getStateTaxData(year).map(s => s.name);
 }
 
 /**
@@ -1446,61 +1460,1319 @@ export function getAllStateNames(): string[] {
  * @returns boolean indicating if state data is complete
  */
 export function validateStateData(state: State): boolean {
-    // Check basic state properties
-    if (!state.name || typeof state.dependentDeduction !== 'number') {
-        return false;
-    }
-    
-    // Check that both filing types exist
-    if (!state.filingType || state.filingType.length !== 2) {
-        return false;
-    }
-    
-    // Check each filing type
+    if (!state.name || typeof state.dependentDeduction !== 'number') return false;
+    if (!state.filingType || state.filingType.length !== 2) return false;
+
     for (const filingType of state.filingType) {
-        if (!filingType.type || 
+        if (!filingType.type ||
             typeof filingType.standardDeduction !== 'number' ||
             typeof filingType.personalExemption !== 'number' ||
             !filingType.taxBrackets ||
             filingType.taxBrackets.length === 0) {
             return false;
         }
-        
-        // Check each tax bracket
         for (const bracket of filingType.taxBrackets) {
-            if (typeof bracket.bracket !== 'number' || 
+            if (typeof bracket.bracket !== 'number' ||
                 typeof bracket.rate !== 'number' ||
                 bracket.rate < 0 || bracket.rate > 1) {
                 return false;
             }
         }
     }
-    
     return true;
 }
 
 /**
- * Helper function to validate all state data
+ * Helper function to validate all state data for a given year
+ * @param year - Tax year (defaults to 2026)
  * @returns boolean indicating if all state data is valid
  */
-export function validateAllStateData(): boolean {
-    if (STATE_TAX_DATA.length !== 50) {
-        ErrorHandler.logError(
-            'INCOMPLETE_STATE_DATA',
-            `Expected 50 states, found ${STATE_TAX_DATA.length}`,
-            ErrorSeverity.ERROR
-        );
-        return false;
-    }
-    
+export function validateAllStateData(year: TaxYear = 2026): boolean {
+    const data = getStateTaxData(year);
+
     let allValid = true;
-    STATE_TAX_DATA.forEach((state, index) => {
+    data.forEach((state, index) => {
         const validationResult = StateDataValidator.validateState(state);
         if (!validationResult.isValid) {
             allValid = false;
             ErrorHandler.handleValidationError(validationResult, { stateIndex: index, stateName: state.name });
         }
     });
-    
+
     return allValid;
 }
+
+
+/**
+ * Complete state tax data for all 50 US states + DC
+ * Data sourced from Tax Foundation 2026 State Income Tax Rates and Brackets
+ */
+export const STATE_TAX_DATA_2026: State[] = [
+    {
+        name: "Alabama",
+        dependentDeduction: 1000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 3000,
+                personalExemption: 1500,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 500, rate: 0.04 },
+                    { bracket: 3000, rate: 0.05 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 8500,
+                personalExemption: 3000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 1000, rate: 0.04 },
+                    { bracket: 6000, rate: 0.05 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Alaska",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "Arizona",
+        dependentDeduction: 100,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 8350,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.025 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 16700,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.025 }]
+            }
+        ]
+    },
+    {
+        name: "Arkansas",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 2470,
+                personalExemption: 29,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 4600, rate: 0.039 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 4940,
+                personalExemption: 58,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 4600, rate: 0.039 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "California",
+        dependentDeduction: 153,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 5540,
+                personalExemption: 153,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.01 },
+                    { bracket: 11079, rate: 0.02 },
+                    { bracket: 26264, rate: 0.04 },
+                    { bracket: 41452, rate: 0.06 },
+                    { bracket: 57542, rate: 0.08 },
+                    { bracket: 72724, rate: 0.093 },
+                    { bracket: 371479, rate: 0.103 },
+                    { bracket: 445771, rate: 0.113 },
+                    { bracket: 742953, rate: 0.123 },
+                    { bracket: 1000000, rate: 0.133 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 11080,
+                personalExemption: 306,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.01 },
+                    { bracket: 22158, rate: 0.02 },
+                    { bracket: 52528, rate: 0.04 },
+                    { bracket: 82904, rate: 0.06 },
+                    { bracket: 115084, rate: 0.08 },
+                    { bracket: 145448, rate: 0.093 },
+                    { bracket: 742958, rate: 0.103 },
+                    { bracket: 891542, rate: 0.113 },
+                    { bracket: 1000000, rate: 0.123 },
+                    { bracket: 1485906, rate: 0.133 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Colorado",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.044 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.044 }]
+            }
+        ]
+    },
+    {
+        name: "Connecticut",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 15000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 10000, rate: 0.045 },
+                    { bracket: 50000, rate: 0.055 },
+                    { bracket: 100000, rate: 0.06 },
+                    { bracket: 200000, rate: 0.065 },
+                    { bracket: 250000, rate: 0.069 },
+                    { bracket: 500000, rate: 0.0699 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 24000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 20000, rate: 0.045 },
+                    { bracket: 100000, rate: 0.055 },
+                    { bracket: 200000, rate: 0.06 },
+                    { bracket: 400000, rate: 0.065 },
+                    { bracket: 500000, rate: 0.069 },
+                    { bracket: 1000000, rate: 0.0699 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Delaware",
+        dependentDeduction: 110,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 3250,
+                personalExemption: 110,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 2000, rate: 0.022 },
+                    { bracket: 5000, rate: 0.039 },
+                    { bracket: 10000, rate: 0.048 },
+                    { bracket: 20000, rate: 0.052 },
+                    { bracket: 25000, rate: 0.0555 },
+                    { bracket: 60000, rate: 0.066 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 6500,
+                personalExemption: 220,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 2000, rate: 0.022 },
+                    { bracket: 5000, rate: 0.039 },
+                    { bracket: 10000, rate: 0.048 },
+                    { bracket: 20000, rate: 0.052 },
+                    { bracket: 25000, rate: 0.0555 },
+                    { bracket: 60000, rate: 0.066 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Florida",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "Georgia",
+        dependentDeduction: 4000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 12000,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0519 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 24000,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0519 }]
+            }
+        ]
+    },
+    {
+        name: "Hawaii",
+        dependentDeduction: 1144,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 4400,
+                personalExemption: 1144,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.014 },
+                    { bracket: 9600, rate: 0.032 },
+                    { bracket: 14400, rate: 0.055 },
+                    { bracket: 19200, rate: 0.064 },
+                    { bracket: 24000, rate: 0.068 },
+                    { bracket: 36000, rate: 0.072 },
+                    { bracket: 48000, rate: 0.076 },
+                    { bracket: 125000, rate: 0.079 },
+                    { bracket: 175000, rate: 0.0825 },
+                    { bracket: 225000, rate: 0.09 },
+                    { bracket: 275000, rate: 0.10 },
+                    { bracket: 325000, rate: 0.11 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 8800,
+                personalExemption: 2288,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.014 },
+                    { bracket: 19200, rate: 0.032 },
+                    { bracket: 28800, rate: 0.055 },
+                    { bracket: 38400, rate: 0.064 },
+                    { bracket: 48000, rate: 0.068 },
+                    { bracket: 72000, rate: 0.072 },
+                    { bracket: 96000, rate: 0.076 },
+                    { bracket: 250000, rate: 0.079 },
+                    { bracket: 350000, rate: 0.0825 },
+                    { bracket: 450000, rate: 0.09 },
+                    { bracket: 550000, rate: 0.10 },
+                    { bracket: 650000, rate: 0.11 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Idaho",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 4811, rate: 0.053 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 9622, rate: 0.053 }]
+            }
+        ]
+    },
+    {
+        name: "Illinois",
+        dependentDeduction: 2925,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 2925,
+                taxBrackets: [{ bracket: 0, rate: 0.0495 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 5850,
+                taxBrackets: [{ bracket: 0, rate: 0.0495 }]
+            }
+        ]
+    },
+    {
+        name: "Indiana",
+        dependentDeduction: 1000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 1000,
+                taxBrackets: [{ bracket: 0, rate: 0.0295 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 2000,
+                taxBrackets: [{ bracket: 0, rate: 0.0295 }]
+            }
+        ]
+    },
+    {
+        name: "Iowa",
+        dependentDeduction: 40,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 40,
+                taxBrackets: [{ bracket: 0, rate: 0.038 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 80,
+                taxBrackets: [{ bracket: 0, rate: 0.038 }]
+            }
+        ]
+    },
+    {
+        name: "Kansas",
+        dependentDeduction: 2320,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 3605,
+                personalExemption: 9160,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.052 },
+                    { bracket: 23000, rate: 0.0558 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 8240,
+                personalExemption: 18320,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.052 },
+                    { bracket: 46000, rate: 0.0558 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Kentucky",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 3360,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.035 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 3360,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.035 }]
+            }
+        ]
+    },
+    {
+        name: "Louisiana",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 12875,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.03 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 25750,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.03 }]
+            }
+        ]
+    },
+    {
+        name: "Maine",
+        dependentDeduction: 305,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 8350,
+                personalExemption: 5300,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.058 },
+                    { bracket: 27399, rate: 0.0675 },
+                    { bracket: 64849, rate: 0.0715 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 16700,
+                personalExemption: 10600,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.058 },
+                    { bracket: 54849, rate: 0.0675 },
+                    { bracket: 129749, rate: 0.0715 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Maryland",
+        dependentDeduction: 3200,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 3350,
+                personalExemption: 3200,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 1000, rate: 0.03 },
+                    { bracket: 2000, rate: 0.04 },
+                    { bracket: 3000, rate: 0.0475 },
+                    { bracket: 100000, rate: 0.05 },
+                    { bracket: 125000, rate: 0.0525 },
+                    { bracket: 150000, rate: 0.055 },
+                    { bracket: 250000, rate: 0.0575 },
+                    { bracket: 500000, rate: 0.0625 },
+                    { bracket: 1000000, rate: 0.065 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 6700,
+                personalExemption: 6400,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 1000, rate: 0.03 },
+                    { bracket: 2000, rate: 0.04 },
+                    { bracket: 3000, rate: 0.0475 },
+                    { bracket: 150000, rate: 0.05 },
+                    { bracket: 175000, rate: 0.0525 },
+                    { bracket: 225000, rate: 0.055 },
+                    { bracket: 300000, rate: 0.0575 },
+                    { bracket: 600000, rate: 0.0625 },
+                    { bracket: 1200000, rate: 0.065 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Massachusetts",
+        dependentDeduction: 1000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 4400,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.05 },
+                    { bracket: 1083150, rate: 0.09 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 8800,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.05 },
+                    { bracket: 1083150, rate: 0.09 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Michigan",
+        dependentDeduction: 5900,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 5900,
+                taxBrackets: [{ bracket: 0, rate: 0.0425 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 11800,
+                taxBrackets: [{ bracket: 0, rate: 0.0425 }]
+            }
+        ]
+    },
+    {
+        name: "Minnesota",
+        dependentDeduction: 5300,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 15300,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0535 },
+                    { bracket: 33310, rate: 0.068 },
+                    { bracket: 109430, rate: 0.0785 },
+                    { bracket: 203150, rate: 0.0985 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 30600,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0535 },
+                    { bracket: 48700, rate: 0.068 },
+                    { bracket: 193480, rate: 0.0785 },
+                    { bracket: 337930, rate: 0.0985 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Mississippi",
+        dependentDeduction: 1500,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 2300,
+                personalExemption: 6000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 10000, rate: 0.04 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 4600,
+                personalExemption: 12000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 10000, rate: 0.04 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Missouri",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 1348, rate: 0.02 },
+                    { bracket: 2696, rate: 0.025 },
+                    { bracket: 4044, rate: 0.03 },
+                    { bracket: 5392, rate: 0.035 },
+                    { bracket: 6740, rate: 0.04 },
+                    { bracket: 8088, rate: 0.045 },
+                    { bracket: 9436, rate: 0.047 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 1348, rate: 0.02 },
+                    { bracket: 2696, rate: 0.025 },
+                    { bracket: 4044, rate: 0.03 },
+                    { bracket: 5392, rate: 0.035 },
+                    { bracket: 6740, rate: 0.04 },
+                    { bracket: 8088, rate: 0.045 },
+                    { bracket: 9436, rate: 0.047 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Montana",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.047 },
+                    { bracket: 47500, rate: 0.0565 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.047 },
+                    { bracket: 95000, rate: 0.0565 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Nebraska",
+        dependentDeduction: 176,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 8850,
+                personalExemption: 176,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0246 },
+                    { bracket: 4130, rate: 0.0351 },
+                    { bracket: 24760, rate: 0.0455 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 17700,
+                personalExemption: 352,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0246 },
+                    { bracket: 8250, rate: 0.0351 },
+                    { bracket: 49530, rate: 0.0455 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Nevada",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "New Hampshire",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "New Jersey",
+        dependentDeduction: 1500,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 1000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.014 },
+                    { bracket: 20000, rate: 0.0175 },
+                    { bracket: 35000, rate: 0.035 },
+                    { bracket: 40000, rate: 0.0553 },
+                    { bracket: 75000, rate: 0.0637 },
+                    { bracket: 500000, rate: 0.0897 },
+                    { bracket: 1000000, rate: 0.1075 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 2000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.014 },
+                    { bracket: 20000, rate: 0.0175 },
+                    { bracket: 50000, rate: 0.0245 },
+                    { bracket: 70000, rate: 0.035 },
+                    { bracket: 80000, rate: 0.0553 },
+                    { bracket: 150000, rate: 0.0637 },
+                    { bracket: 500000, rate: 0.0897 },
+                    { bracket: 1000000, rate: 0.1075 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "New Mexico",
+        dependentDeduction: 4000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.015 },
+                    { bracket: 5500, rate: 0.032 },
+                    { bracket: 16500, rate: 0.043 },
+                    { bracket: 33500, rate: 0.047 },
+                    { bracket: 66500, rate: 0.049 },
+                    { bracket: 210000, rate: 0.059 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.015 },
+                    { bracket: 8000, rate: 0.032 },
+                    { bracket: 25000, rate: 0.043 },
+                    { bracket: 50000, rate: 0.047 },
+                    { bracket: 100000, rate: 0.049 },
+                    { bracket: 315000, rate: 0.059 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "New York",
+        dependentDeduction: 1000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 8000,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.039 },
+                    { bracket: 8500, rate: 0.044 },
+                    { bracket: 11700, rate: 0.0515 },
+                    { bracket: 13900, rate: 0.054 },
+                    { bracket: 80650, rate: 0.059 },
+                    { bracket: 215400, rate: 0.0685 },
+                    { bracket: 1077550, rate: 0.0965 },
+                    { bracket: 5000000, rate: 0.103 },
+                    { bracket: 25000000, rate: 0.109 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 16050,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.039 },
+                    { bracket: 17150, rate: 0.044 },
+                    { bracket: 23600, rate: 0.0515 },
+                    { bracket: 27900, rate: 0.054 },
+                    { bracket: 161550, rate: 0.059 },
+                    { bracket: 323200, rate: 0.0685 },
+                    { bracket: 2155350, rate: 0.0965 },
+                    { bracket: 5000000, rate: 0.103 },
+                    { bracket: 25000000, rate: 0.109 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "North Carolina",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 12750,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0399 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 25500,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0399 }]
+            }
+        ]
+    },
+    {
+        name: "North Dakota",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 48475, rate: 0.0195 },
+                    { bracket: 244825, rate: 0.025 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 80975, rate: 0.0195 },
+                    { bracket: 298075, rate: 0.025 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Ohio",
+        dependentDeduction: 2400,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 2400,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 26050, rate: 0.0275 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 4800,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 26050, rate: 0.0275 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Oklahoma",
+        dependentDeduction: 1000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 6350,
+                personalExemption: 1000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 3750, rate: 0.025 },
+                    { bracket: 4900, rate: 0.035 },
+                    { bracket: 7200, rate: 0.045 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 12700,
+                personalExemption: 2000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 7500, rate: 0.025 },
+                    { bracket: 9800, rate: 0.035 },
+                    { bracket: 14400, rate: 0.045 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Oregon",
+        dependentDeduction: 256,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 2910,
+                personalExemption: 256,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0475 },
+                    { bracket: 4550, rate: 0.0675 },
+                    { bracket: 11400, rate: 0.0875 },
+                    { bracket: 125000, rate: 0.099 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 5820,
+                personalExemption: 512,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0475 },
+                    { bracket: 9100, rate: 0.0675 },
+                    { bracket: 22800, rate: 0.0875 },
+                    { bracket: 250000, rate: 0.099 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Pennsylvania",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0307 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0307 }]
+            }
+        ]
+    },
+    {
+        name: "Rhode Island",
+        dependentDeduction: 5250,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 11200,
+                personalExemption: 5250,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0375 },
+                    { bracket: 82050, rate: 0.0475 },
+                    { bracket: 186450, rate: 0.0599 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 22400,
+                personalExemption: 10500,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0375 },
+                    { bracket: 82050, rate: 0.0475 },
+                    { bracket: 186450, rate: 0.0599 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "South Carolina",
+        dependentDeduction: 4930,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 8350,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 3640, rate: 0.03 },
+                    { bracket: 18230, rate: 0.06 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 16700,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0 },
+                    { bracket: 3640, rate: 0.03 },
+                    { bracket: 18230, rate: 0.06 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "South Dakota",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "Tennessee",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "Texas",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "Utah",
+        dependentDeduction: 2111,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 966,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.045 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 1932,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.045 }]
+            }
+        ]
+    },
+    {
+        name: "Vermont",
+        dependentDeduction: 5300,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 7650,
+                personalExemption: 5300,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0335 },
+                    { bracket: 49400, rate: 0.066 },
+                    { bracket: 119700, rate: 0.076 },
+                    { bracket: 249700, rate: 0.0875 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 15300,
+                personalExemption: 10600,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0335 },
+                    { bracket: 82500, rate: 0.066 },
+                    { bracket: 199450, rate: 0.076 },
+                    { bracket: 304000, rate: 0.0875 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Virginia",
+        dependentDeduction: 930,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 8750,
+                personalExemption: 930,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 3000, rate: 0.03 },
+                    { bracket: 5000, rate: 0.05 },
+                    { bracket: 17000, rate: 0.0575 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 17500,
+                personalExemption: 1860,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.02 },
+                    { bracket: 3000, rate: 0.03 },
+                    { bracket: 5000, rate: 0.05 },
+                    { bracket: 17000, rate: 0.0575 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Washington",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 278000,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.07 },
+                    { bracket: 1000000, rate: 0.09 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 278000,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.07 },
+                    { bracket: 1000000, rate: 0.09 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "West Virginia",
+        dependentDeduction: 2000,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 2000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0222 },
+                    { bracket: 10000, rate: 0.0296 },
+                    { bracket: 25000, rate: 0.0333 },
+                    { bracket: 40000, rate: 0.0444 },
+                    { bracket: 60000, rate: 0.0482 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 4000,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.0222 },
+                    { bracket: 10000, rate: 0.0296 },
+                    { bracket: 25000, rate: 0.0333 },
+                    { bracket: 40000, rate: 0.0444 },
+                    { bracket: 60000, rate: 0.0482 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Wisconsin",
+        dependentDeduction: 700,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 13960,
+                personalExemption: 700,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.035 },
+                    { bracket: 15110, rate: 0.044 },
+                    { bracket: 51950, rate: 0.053 },
+                    { bracket: 332720, rate: 0.0765 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 25840,
+                personalExemption: 1400,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.035 },
+                    { bracket: 20150, rate: 0.044 },
+                    { bracket: 69260, rate: 0.053 },
+                    { bracket: 443630, rate: 0.0765 }
+                ]
+            }
+        ]
+    },
+    {
+        name: "Wyoming",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 0,
+                personalExemption: 0,
+                taxBrackets: [{ bracket: 0, rate: 0.0 }]
+            }
+        ]
+    },
+    {
+        name: "Washington DC",
+        dependentDeduction: 0,
+        filingType: [
+            {
+                type: FilingTypeName.Single,
+                standardDeduction: 16100,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.04 },
+                    { bracket: 10000, rate: 0.06 },
+                    { bracket: 40000, rate: 0.065 },
+                    { bracket: 60000, rate: 0.085 },
+                    { bracket: 250000, rate: 0.0925 },
+                    { bracket: 500000, rate: 0.0975 },
+                    { bracket: 1000000, rate: 0.1075 }
+                ]
+            },
+            {
+                type: FilingTypeName.Married,
+                standardDeduction: 32200,
+                personalExemption: 0,
+                taxBrackets: [
+                    { bracket: 0, rate: 0.04 },
+                    { bracket: 10000, rate: 0.06 },
+                    { bracket: 40000, rate: 0.065 },
+                    { bracket: 60000, rate: 0.085 },
+                    { bracket: 250000, rate: 0.0925 },
+                    { bracket: 500000, rate: 0.0975 },
+                    { bracket: 1000000, rate: 0.1075 }
+                ]
+            }
+        ]
+    }
+];

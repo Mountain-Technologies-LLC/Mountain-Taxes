@@ -6,7 +6,7 @@
  */
 
 import { getStateTaxData } from './stateData';
-import { State } from './types';
+import { State, TaxYear, LATEST_TAX_YEAR, SUPPORTED_TAX_YEARS } from './types';
 
 export interface Route {
     path: string;
@@ -147,25 +147,30 @@ export class Router {
  */
 export class StateDetailView {
     private containerId: string;
-    private stateTaxData: State[];
+    private currentYear: TaxYear = LATEST_TAX_YEAR;
 
     constructor(containerId: string) {
         this.containerId = containerId;
-        this.stateTaxData = getStateTaxData();
     }
 
     /**
      * Render state detail page
      */
-    public render(stateName: string): void {
+    public render(stateName: string, year?: TaxYear): void {
         const container = document.getElementById(this.containerId);
         if (!container) {
             console.error(`Container with id '${this.containerId}' not found`);
             return;
         }
 
+        // Use provided year or default to latest
+        this.currentYear = year || LATEST_TAX_YEAR;
+
+        // Get data for the specified year
+        const stateTaxData = getStateTaxData(this.currentYear);
+
         // Find the state data
-        const state = this.stateTaxData.find(s => 
+        const state = stateTaxData.find(s => 
             s.name.toLowerCase().replace(/\s+/g, '-') === stateName.toLowerCase()
         );
 
@@ -174,13 +179,18 @@ export class StateDetailView {
             return;
         }
 
-        this.renderStateDetail(container, state);
+        this.renderStateDetail(container, state, stateName);
     }
 
     /**
      * Render state detail information
      */
-    private renderStateDetail(container: HTMLElement, state: State): void {
+    private renderStateDetail(container: HTMLElement, state: State, stateName: string): void {
+        // Generate year list items for popover
+        const yearListItems = SUPPORTED_TAX_YEARS.map(year => 
+            `<li class="py-2"><a href="#" class="year-link" data-year="${year}">${year}</a></li>`
+        ).join('');
+
         container.innerHTML = `
             <div class="row">
                 <div class="col-12">
@@ -190,6 +200,21 @@ export class StateDetailView {
                                 <a href="#/" class="router-link">Home</a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">${state.name}</li>
+                            <li class="breadcrumb-item">
+                                <div
+                                   id="yearSelectorLink" 
+                                   class=""
+                                   tabindex="0"
+                                   role="button"
+                                   data-bs-toggle="popover"
+                                   data-bs-trigger="focus"
+                                   data-bs-placement="bottom"
+                                   data-bs-html="true"
+                                   data-bs-content='<ul class="list-unstyled mb-0">${yearListItems}</ul>'
+                                   style="white-space: nowrap;">
+                                    <i class="fas fa-calendar"></i> <span class="text-decoration-underline">${this.currentYear}</span>
+                                </div>
+                            </li>
                         </ol>
                     </nav>
                 </div>
@@ -197,7 +222,7 @@ export class StateDetailView {
 
             <div class="row">
                 <div class="col-12">
-                    <h1 class="mb-4">${state.name} Tax Information</h1>
+                    <h1 class="mb-4">${state.name} Tax Information (${this.currentYear})</h1>
                     <p class="lead">Complete tax bracket and deduction information for ${state.name}</p>
                 </div>
             </div>
@@ -235,6 +260,40 @@ export class StateDetailView {
 
         // Add click handlers for router links
         this.addRouterLinkHandlers(container);
+
+        // Initialize Bootstrap popover
+        const yearSelectorLink = document.getElementById('yearSelectorLink');
+        if (yearSelectorLink) {
+            // Import Bootstrap dynamically if needed
+            const bootstrap = (window as any).bootstrap;
+            if (bootstrap && bootstrap.Popover) {
+                const popover = new bootstrap.Popover(yearSelectorLink, {
+                    sanitize: false // Allow HTML content
+                });
+
+                // Add event listener to handle year selection from popover
+                yearSelectorLink.addEventListener('shown.bs.popover', () => {
+                    // Find all year links in the popover and add click handlers
+                    const yearLinks = document.querySelectorAll('.year-link');
+                    yearLinks.forEach(link => {
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault();
+                            const selectedYear = parseInt((event.target as HTMLElement).closest('.year-link')?.getAttribute('data-year') || '') as TaxYear;
+                            if (selectedYear) {
+                                // Hide the popover
+                                popover.hide();
+                                
+                                // Navigate to the new year
+                                const newPath = `#/state/${stateName}/${selectedYear}`;
+                                if (window.router) {
+                                    window.router.navigate(newPath);
+                                }
+                            }
+                        });
+                    });
+                });
+            }
+        }
     }
 
     /**

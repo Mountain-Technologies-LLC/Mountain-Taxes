@@ -71,7 +71,17 @@ class MountainTaxesApp {
         this.router.addRoute('home', () => this.renderMainView());
         this.router.addRoute('#/', () => this.renderMainView());
         
-        // State detail routes
+        // State detail routes with optional year parameter
+        this.router.addRoute('state/:stateName/:year', (params) => {
+            const year = parseInt(params.year) as 2025 | 2026;
+            this.renderStateDetail(params.stateName, year);
+        });
+        this.router.addRoute('#/state/:stateName/:year', (params) => {
+            const year = parseInt(params.year) as 2025 | 2026;
+            this.renderStateDetail(params.stateName, year);
+        });
+        
+        // State detail routes without year (defaults to latest)
         this.router.addRoute('state/:stateName', (params) => {
             this.renderStateDetail(params.stateName);
         });
@@ -261,8 +271,8 @@ class MountainTaxesApp {
     /**
      * Render state detail view
      */
-    private renderStateDetail(stateName: string): void {
-        this.stateDetailView.render(stateName);
+    private renderStateDetail(stateName: string, year?: 2025 | 2026): void {
+        this.stateDetailView.render(stateName, year);
     }
 
     /**

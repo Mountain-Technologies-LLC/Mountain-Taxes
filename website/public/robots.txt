@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://taxes.mountaintechnologiesllc.com/sitemap.xml
+Sitemap: https://taxes.anthonyjamespearson.com/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

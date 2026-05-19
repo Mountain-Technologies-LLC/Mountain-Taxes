@@ -90,7 +90,7 @@ function setupDOM(): void {
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="https://taxes.mountaintechnologiesllc.com" target="_blank" rel="noopener noreferrer" title="Visit Mountain Technologies LLC">
+                            <a class="nav-link" href="https://taxes.anthonyjamespearson.com" target="_blank" rel="noopener noreferrer" title="Visit Mountain Technologies LLC">
                                 <i class="fab fa-github" aria-hidden="true"></i>
                             </a>
                         </li>
@@ -369,7 +369,7 @@ describe('Navbar Component', () => {
         });
 
         test('should include GitHub link with proper attributes', () => {
-            const githubLink = document.querySelector('a[href="https://taxes.mountaintechnologiesllc.com"]');
+            const githubLink = document.querySelector('a[href="https://taxes.anthonyjamespearson.com"]');
             expect(githubLink).toBeTruthy();
             expect(githubLink?.getAttribute('target')).toBe('_blank');
             expect(githubLink?.getAttribute('rel')).toBe('noopener noreferrer');

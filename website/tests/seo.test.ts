@@ -37,7 +37,7 @@ describe('SEO and Accessibility Tests', () => {
 
         test('should have canonical URL', () => {
             expect(htmlContent).toContain('rel="canonical"');
-            expect(htmlContent).toContain('href="https://taxes.mountaintechnologiesllc.com/"');
+            expect(htmlContent).toContain('href="https://taxes.anthonyjamespearson.com/"');
         });
 
         test('should have proper language attribute', () => {
@@ -68,7 +68,7 @@ describe('SEO and Accessibility Tests', () => {
 
         test('should have Open Graph URL', () => {
             expect(htmlContent).toContain('property="og:url"');
-            expect(htmlContent).toContain('https://taxes.mountaintechnologiesllc.com/');
+            expect(htmlContent).toContain('https://taxes.anthonyjamespearson.com/');
         });
 
         test('should have Open Graph image', () => {
@@ -174,7 +174,7 @@ describe('SEO Files Tests', () => {
             const content = fs.readFileSync(robotsPath, 'utf-8');
             expect(content).toContain('User-agent: *');
             expect(content).toContain('Allow: /');
-            expect(content).toContain('Sitemap: https://taxes.mountaintechnologiesllc.com/sitemap.xml');
+            expect(content).toContain('Sitemap: https://taxes.anthonyjamespearson.com/sitemap.xml');
         });
     });
 
@@ -186,7 +186,7 @@ describe('SEO Files Tests', () => {
             const content = fs.readFileSync(sitemapPath, 'utf-8');
             expect(content).toContain('<?xml version="1.0" encoding="UTF-8"?>');
             expect(content).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"');
-            expect(content).toContain('https://taxes.mountaintechnologiesllc.com/');
+            expect(content).toContain('https://taxes.anthonyjamespearson.com/');
         });
 
         test('should include all state pages in sitemap', () => {

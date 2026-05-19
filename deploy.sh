@@ -12,7 +12,7 @@ echo "========================================"
 if [ -z "$1" ]; then
     echo "❌ Error: Domain name is required"
     echo "Usage: ./deploy.sh <domain-name>"
-    echo "Example: ./deploy.sh taxes.mountaintechnologiesllc.com"
+    echo "Example: ./deploy.sh taxes.anthonyjamespearson.com"
     exit 1
 fi
 

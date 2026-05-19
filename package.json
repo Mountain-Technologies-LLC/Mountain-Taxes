@@ -9,13 +9,13 @@
     "build:website": "npm run build --prefix ./website",
     "build:all": "npm run build:lambda && npm run build:website",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "synth": "npm run build:all && cdk synth --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.mountaintechnologiesllc.com",
-    "diff": "npm run build:all && cdk diff --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.mountaintechnologiesllc.com",
-    "deploy:infra": "npm run build:all && cdk deploy --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.mountaintechnologiesllc.com --require-approval never",
-    "deploy": "npm run build:all && cdk deploy --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.mountaintechnologiesllc.com",
+    "synth": "npm run build:all && cdk synth --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.anthonyjamespearson.com",
+    "diff": "npm run build:all && cdk diff --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.anthonyjamespearson.com",
+    "deploy:infra": "npm run build:all && cdk deploy --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.anthonyjamespearson.com --require-approval never",
+    "deploy": "npm run build:all && cdk deploy --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.anthonyjamespearson.com",
     "update-config": "node scripts/update-config.js",
     "deploy:full": "npm run deploy:infra && npm run update-config && npm run build:website && npm run deploy:infra",
-    "destroy": "cdk destroy --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.mountaintechnologiesllc.com"
+    "destroy": "cdk destroy --app \"dotnet run --project infrastructure/src/Infrastructure/Infrastructure.csproj\" --context name=taxes.anthonyjamespearson.com"
   },
   "repository": {
     "type": "git",
